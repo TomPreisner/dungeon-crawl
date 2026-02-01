@@ -1,0 +1,15 @@
+winget install Bazel.Bazelisk
+
+To build C++:
+https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019
+vs_BuildTools.exe
+
+run
+set BAZEL_VC=C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC
+
+To get CLang
+https://releases.llvm.org/download.html
+
+set BAZEL_LLVM=C:\Program Files\LLVM
+
+bazelisk build :protoc :protobuf
