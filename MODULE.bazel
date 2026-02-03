@@ -1,2 +1,16 @@
+module(name = "dungeon-crawl", version = "1.0")
+
 bazel_dep(name = "rules_license", version = "1.0.0")
 bazel_dep(name = "rules_cc", version = "0.2.16")
+
+# Choose the most recent version available at
+# https://registry.bazel.build/modules/googletest
+bazel_dep(name = "googletest", version = "1.17.0")
+
+# Choose the most recent version available at
+# https://registry.bazel.build/modules/eigen
+bazel_dep(name = "eigen", version = "5.0.0")
+
+# Choose the most recent version available at
+# https://registry.bazel.build/modules/protobuf
+bazel_dep(name = "protobuf", version = "33.4")
