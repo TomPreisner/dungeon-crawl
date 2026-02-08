@@ -13,4 +13,4 @@ bazel_dep(name = "eigen", version = "5.0.0")
 
 # Choose the most recent version available at
 # https://registry.bazel.build/modules/protobuf
-bazel_dep(name = "protobuf", version = "33.4")
+bazel_dep(name = "protobuf", version = "33.5")
