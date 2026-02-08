@@ -1,5 +1,4 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 cc_test(
     name = "eigen_test",
@@ -10,4 +9,16 @@ cc_test(
         "@eigen",
     ],
     size="small"
+)
+
+cc_test(
+    name = "protobuf_test",
+    srcs = ["protobuf_test.cpp"],
+    deps = [
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "//code/test/test_data:test_data_cc_proto",
+        "@protobuf//:protobuf",
+        "@protobuf//src/google/protobuf/util:time_util",
+    ],
 )
