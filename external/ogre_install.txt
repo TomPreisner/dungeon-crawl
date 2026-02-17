@@ -1,0 +1,7 @@
+http://www.ogre3d.org/download/sdk
+
+version v14.5.2
+
+https://dl.cloudsmith.io/public/ogrecave/ogre/raw/versions/v14.5.2/ogre-sdk-v14.5.2-msvc142-x64.zip
+
+Extract SDK to C:\OgreSDK

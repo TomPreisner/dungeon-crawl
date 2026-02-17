@@ -17,8 +17,19 @@ cc_test(
     deps = [
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "//code/test/test_data:test_data_cc_proto",
         "@protobuf//:protobuf",
         "@protobuf//src/google/protobuf/util:time_util",
+        "//code/test/test_data:test_data_cc_proto",
     ],
+)
+
+cc_test(
+    name = "ogre_test",
+    srcs = ["ogre_test.cpp"],
+    deps = [
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@ogre_sdk//:ogre",
+    ],
+    data = ["//code/test/test_data:test_data_ogre"],
 )
