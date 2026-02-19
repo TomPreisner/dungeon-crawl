@@ -14,3 +14,41 @@ bazel_dep(name = "eigen", version = "5.0.0")
 # Choose the most recent version available at
 # https://registry.bazel.build/modules/protobuf
 bazel_dep(name = "protobuf", version = "33.5")
+
+new_local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "new_local_repository")
+new_local_repository(
+    name = "ogre_sdk", 
+    path = "C:\\OgreSDK", 
+    build_file_content = """
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_import")
+
+cc_import(
+    name = "ogre_main",
+    shared_library = "bin/OgreMain.dll",
+    interface_library = "lib/OgreMain.lib",
+)
+cc_import(
+    name = "ogre_overlay",
+    shared_library = "bin/OgreOverlay.dll",
+    interface_library = "lib/OgreOverlay.lib",
+)
+cc_import(
+    name = "ogre_rtShader",
+    shared_library = "bin/OgreRTShaderSystem.dll",
+    interface_library = "lib/OgreRTShaderSystem.lib",
+)
+
+cc_library(
+    name = "ogre",
+    hdrs = glob(["include/OGRE/**/*.h"]),
+    deps = [
+        ":ogre_main",
+        ":ogre_overlay",
+        ":ogre_rtShader",
+    ],
+    includes = ["include"],
+    strip_include_prefix = "include/OGRE/",
+    visibility = ["//visibility:public"],
+)
+""",
+)
