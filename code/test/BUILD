@@ -21,6 +21,7 @@ cc_test(
         "@protobuf//src/google/protobuf/util:time_util",
         "//code/test/test_data:test_data_cc_proto",
     ],
+    size="small"
 )
 
 cc_test(
@@ -32,4 +33,5 @@ cc_test(
         "@ogre_sdk//:ogre",
     ],
     data = ["//code/test/test_data:test_data_ogre"],
+    size="small"
 )

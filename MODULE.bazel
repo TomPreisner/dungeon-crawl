@@ -32,6 +32,11 @@ cc_import(
     shared_library = "bin/OgreOverlay.dll",
     interface_library = "lib/OgreOverlay.lib",
 )
+cc_import(
+    name = "ogre_rtShader",
+    shared_library = "bin/OgreRTShaderSystem.dll",
+    interface_library = "lib/OgreRTShaderSystem.lib",
+)
 
 cc_library(
     name = "ogre",
@@ -39,6 +44,7 @@ cc_library(
     deps = [
         ":ogre_main",
         ":ogre_overlay",
+        ":ogre_rtShader",
     ],
     includes = ["include"],
     strip_include_prefix = "include/OGRE/",

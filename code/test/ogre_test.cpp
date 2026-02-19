@@ -1,14 +1,21 @@
 #include <gtest/gtest.h>
+#include <iostream>
+#include <stdexcept>
+#include <typeinfo>
+#include <windows.h>
 
 #include <OgreCamera.h>
+#include <OgreConfigFile.h>
 #include <OgreEntity.h>
 #include <OgreLogManager.h>
-#include <OgreRoot.h>
-#include <OgreViewport.h>
-#include <OgreSceneManager.h>
+#include <OgreRenderSystem.h>
 #include <OgreRenderWindow.h>
-#include <OgreConfigFile.h>
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <OgreSceneNode.h>
+#include <OgreViewport.h>
 #include <Overlay/OgreOverlaySystem.h>
+#include <RTShaderSystem/OgreShaderGenerator.h>
 #include <Bites/OgreCameraMan.h>
 
 class OgreApplication_test {
@@ -16,9 +23,6 @@ public:
   OgreApplication_test() {}
   ~OgreApplication_test() {
     delete m_overlaySystem;
-    delete m_window;
-    delete m_sceneMgr;
-    delete m_camera;
     delete m_root;
   }
 
@@ -27,16 +31,19 @@ public:
 private:
   void initResources();
   void createSceneManager();
+  void createCamera();
+  void createViewports();
+  void initializeShaderGenerator();
+  void loadResources();
 
   Ogre::Root* m_root = nullptr;
   Ogre::Camera* m_camera = nullptr;
+  Ogre::SceneNode* m_cameraNode = nullptr;
   Ogre::SceneManager* m_sceneMgr = nullptr;
   Ogre::RenderWindow* m_window = nullptr;
   Ogre::String m_resourcesCfg = Ogre::StringUtil::BLANK;
   Ogre::String m_pluginsCfg = Ogre::StringUtil::BLANK;
 	Ogre::OverlaySystem* m_overlaySystem = nullptr;
-  
-  OgreBites::CameraMan* m_cameraMan;       // basic camera controller
 };
 
 void OgreApplication_test::setup() {
@@ -45,13 +52,19 @@ void OgreApplication_test::setup() {
 
   m_root = new Ogre::Root(m_pluginsCfg);
   initResources();
-
-  if (!m_root->showConfigDialog(nullptr)) {
-    return;
-  }
+  
+  Ogre::RenderSystem* rs = m_root->getRenderSystemByName("Direct3D11 Rendering Subsystem");
+  m_root->setRenderSystem(rs);
+  rs->setConfigOption("Full Screen", "No");
+  rs->setConfigOption("Video Mode", "800 x 600 @ 32-bit colour");
 
   m_window = m_root->initialise(true, "Test Render Window");
+
   createSceneManager();
+  createCamera();
+  createViewports();
+  initializeShaderGenerator(); //< MUST come before loading resources
+  loadResources();
 }
 
 void OgreApplication_test::initResources() {
@@ -80,6 +93,38 @@ void OgreApplication_test::createSceneManager() {
   m_sceneMgr = m_root->createSceneManager();
 	m_overlaySystem = new Ogre::OverlaySystem();
 	m_sceneMgr->addRenderQueueListener(m_overlaySystem);
+}
+
+void OgreApplication_test::createCamera() {
+  // Create the camera
+  m_camera = m_sceneMgr->createCamera("PlayerCam");
+
+  // Create a SceneNode and attach the camera to it
+  m_cameraNode = m_sceneMgr->getRootSceneNode()->createChildSceneNode();
+  m_cameraNode->attachObject(m_camera);
+  // Position it at 500 in Z direction
+  m_cameraNode->setPosition(Ogre::Vector3(0,0,500));
+  // Look back along -Z
+  m_cameraNode->lookAt(Ogre::Vector3(0,0,-300), Ogre::Node::TS_WORLD);
+}
+
+void OgreApplication_test::createViewports() {
+    // Create one viewport, entire window
+    Ogre::Viewport* vp = m_window->addViewport(m_camera);
+    vp->setBackgroundColour(Ogre::ColourValue(0,0,0));
+
+    // Alter the camera aspect ratio to match the viewport
+    m_camera->setAspectRatio(
+        Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
+}
+
+
+void OgreApplication_test::initializeShaderGenerator() {
+  Ogre::RTShader::ShaderGenerator::initialize();
+}
+
+void OgreApplication_test::loadResources() {
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
 TEST(OgreTest, ogre_scene_test) {
