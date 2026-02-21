@@ -3,12 +3,13 @@
 /*           Created and Maintained by Thomas Preisner              */
 /********************************************************************/
 #pragma once
-//  The CharacterBase class exist to provide a common base interface 
-//      for the enemies, player characters, and non-player characters.
+//  The ObjectDynamic class exist to provide a common base interface 
+//      for objects that need animation loops
 
+#include "object_base.h"
 
-class CharacterBase {
-
-private:
-
+class ObjectDynamic : public ObjectBase {
+ protected:
+    ObjectDynamic();
 };
+
