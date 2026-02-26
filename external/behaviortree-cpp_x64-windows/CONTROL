@@ -1,0 +1,7 @@
+Package: behaviortree-cpp
+Version: 4.9.0
+Depends: boost-coroutine2, cppzmq, flatbuffers, minitrace, tinyxml2, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 202f41f99ab7086e8014c8626dfa9ad6d55010db79aa1652c4b0637565d44f52
+Description: Behavior Trees Library in C++.

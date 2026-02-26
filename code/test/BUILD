@@ -35,3 +35,15 @@ cc_test(
     data = ["//code/test/test_data:test_data_ogre"],
     size="small"
 )
+
+cc_test(
+    name = "behaviortree_cpp_test",
+    srcs = ["behaviorTreeCPP_test.cpp"],
+    deps = [
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@behaviortree_cpp//:bt_cpp",
+    ],
+    data = ["//code/test/test_data:test_data_behaviortree_cpp"],
+    size="small"
+)

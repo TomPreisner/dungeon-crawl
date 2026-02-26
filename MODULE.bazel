@@ -52,3 +52,39 @@ cc_library(
 )
 """,
 )
+
+new_local_repository(
+    name = "behaviortree_cpp", 
+    path = "external\\behaviortree-cpp_x64-windows", 
+    build_file_content = """
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_import")
+
+cc_import(
+    name = "behaviortree_cpp_libs",
+    shared_library = "bin/behaviortree_cpp.dll",
+    interface_library = "lib/behaviortree_cpp.lib",
+)
+cc_import(
+    name = "minitrace",
+    shared_library = "bin/minitrace.dll",
+    interface_library = "lib/minitrace.lib",
+)
+cc_import(
+    name = "tinyxml2",
+    shared_library = "bin/tinyxml2.dll",
+    interface_library = "lib/tinyxml2.lib",
+)
+cc_library(
+    name = "bt_cpp",
+    hdrs = glob(["include/behaviortree_cpp/**/*.h"]),
+    deps = [
+        ":behaviortree_cpp_libs",
+        ":minitrace",
+        ":tinyxml2",
+    ],
+    includes = ["include"],
+    strip_include_prefix = "include/behaviortree_cpp/",
+    visibility = ["//visibility:public"],
+)
+""",
+)
