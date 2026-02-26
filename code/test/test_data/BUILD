@@ -10,6 +10,15 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+filegroup(
+    name = "test_data_behaviortree_cpp",
+    srcs = [
+        "generic_ports_BT.xml",
+        "simple_tree_BT.xml",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 proto_library(
     name = "test_data_proto",
     srcs = ["test_data.proto"],

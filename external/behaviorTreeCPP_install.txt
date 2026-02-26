@@ -1,0 +1,11 @@
+Install behaviortree-cpp via vcpkg
+
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+./vcpkg integrate install
+./vcpkg install behaviortree-cpp 
+
+Version 4.9.0 used
+
+The built `behaviortree-cpp_x64-windows" folder is copied into externals, and the minitrace, and tinyxml2 dlls added as well to allow for linking.
