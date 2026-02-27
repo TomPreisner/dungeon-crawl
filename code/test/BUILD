@@ -1,4 +1,6 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_python//python:defs.bzl", "py_test")
+load("@pip//:requirements.bzl", "requirement")
 
 cc_test(
     name = "eigen_test",
@@ -45,5 +47,14 @@ cc_test(
         "@behaviortree_cpp//:bt_cpp",
     ],
     data = ["//code/test/test_data:test_data_behaviortree_cpp"],
+    size="small"
+)
+
+py_test(
+    name = "py_navmesh_test",
+    srcs = ["py_navmesh_test.py"],
+    deps = [
+        requirement("pytest"),
+    ],
     size="small"
 )
