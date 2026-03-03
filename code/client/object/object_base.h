@@ -11,7 +11,9 @@
     #include <uuid/uuid.h>
 #endif
 
+#include <chrono>
 #include <string>
+
 #include <Eigen/Dense>
 
 enum class ObjectType {
@@ -20,18 +22,11 @@ enum class ObjectType {
 };
 
 class ObjectBase {
- private:
-    class ObjectBasePasskey {
-     private:
-        ObjectBasePasskey() = default;
-        ~ObjectBasePasskey() = default;
-    };
  public:
-    ObjectBase(ObjectBasePasskey pass); // < Needed for smart pointers
+    virtual void on_update(const std::chrono::milliseconds& dt) = 0;
 
  protected:
     ObjectBase(ObjectType type);
-
     ObjectType m_objectType;
     Eigen::Vector3d m_position;
     Eigen::Vector3d m_lookDir;

@@ -3,8 +3,10 @@
 /*           Created and Maintained by Thomas Preisner              */
 /********************************************************************/
 
-#include "character_base.h"
+#include "player_base.h"
 
-void CharacterBase::on_update(const std::chrono::milliseconds& dt) {
-    m_behavior_tree.tickOnce();
-}
+void PlayerBase::on_heal(const int amt) 
+{}
+
+void PlayerBase::on_damage(const int amt) 
+{}

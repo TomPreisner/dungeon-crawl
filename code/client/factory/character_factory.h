@@ -2,9 +2,8 @@
 /*                      Copyright 2026                              */
 /*           Created and Maintained by Thomas Preisner              */
 /********************************************************************/
+#pragma once
 
-#include "character_base.h"
+class CharacterFactory {
 
-void CharacterBase::on_update(const std::chrono::milliseconds& dt) {
-    m_behavior_tree.tickOnce();
-}
+};

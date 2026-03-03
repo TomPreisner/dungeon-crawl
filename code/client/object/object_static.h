@@ -9,6 +9,10 @@
 #include "object_base.h"
 
 class ObjectStatic : public ObjectBase {
+public:
+    // disable the update function for static objects
+    virtual void on_update(const std::chrono::milliseconds& dt) final {}
+
  protected:
     ObjectStatic();
 };
