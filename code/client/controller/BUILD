@@ -9,12 +9,14 @@ cc_library(
         ":stage_manager",
         ":battle_coordinator",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
     name = "battle_coordinator",
     srcs = ["battle_coordinator.cpp"],
     hdrs = ["battle_coordinator.h"],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -25,16 +27,19 @@ cc_library(
         ":casting_director",
         ":prop_manager",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
     name = "prop_manager",
     srcs = ["prop_manager.cpp"],
     hdrs = ["prop_manager.h"],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
     name = "casting_director",
     srcs = ["casting_director.cpp"],
     hdrs = ["casting_director.h"],
+    visibility = ["//visibility:public"],
 )
