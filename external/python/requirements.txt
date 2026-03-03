@@ -1,0 +1,7 @@
+colorama>=0.4
+iniconfig>=1.0.1
+packaging>=22
+pluggy<2,>=1.5
+pygments>=2.7.2
+pytest==9.0.2
+pynavmesh==1.2.5
