@@ -55,6 +55,8 @@ py_test(
     srcs = ["py_navmesh_test.py"],
     deps = [
         requirement("pytest"),
+        requirement("pynavmesh"),
     ],
-    size="small"
+    data = ["//code/test/test_data:test_data_navmesh"],
+    size="medium"
 )

@@ -19,6 +19,14 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+filegroup(
+    name = "test_data_navmesh",
+    srcs = [
+        "navmesh_testdata.json",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 proto_library(
     name = "test_data_proto",
     srcs = ["test_data.proto"],
