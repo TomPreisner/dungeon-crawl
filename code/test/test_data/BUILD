@@ -27,6 +27,14 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+filegroup(
+    name = "test_data_yaml",
+    srcs = [
+        "test_yaml.yaml",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 proto_library(
     name = "test_data_proto",
     srcs = ["test_data.proto"],
