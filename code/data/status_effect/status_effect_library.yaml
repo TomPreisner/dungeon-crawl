@@ -1,0 +1,28 @@
+Ignite_V1:
+  type: FIRE
+  update_rate_turns: 1
+  duration_turns: 10
+  on_heal:
+    - effect: CLEAR
+  on_update:
+    - effect: DAMAGE
+      amount: 2.0
+  vfx: ""
+  sfx: ""
+  icon: ""
+
+DeepCut_V1:
+  type: BLEED
+  update_rate_turns: 1
+  duration_turns: 5
+  on_heal:
+    - effect: CLEAR
+  on_damage:
+    - effect: MULTIPLY
+      amount: 1.5
+  on_update:
+    - effect: DAMAGE
+      amount: 0.1
+  vfx: ""
+  sfx: ""
+  icon: ""
