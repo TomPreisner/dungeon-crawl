@@ -51,6 +51,17 @@ cc_test(
 )
 
 cc_test(
+    name = "spdlog_test",
+    srcs = ["spdlog_test.cpp"],
+    deps = [
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@spdlog",
+    ],
+    size="small"
+)
+
+cc_test(
     name = "yaml_cpp_test",
     srcs = ["yaml_cpp_test.cpp"],
     deps = [
