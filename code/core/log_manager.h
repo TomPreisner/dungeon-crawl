@@ -26,6 +26,15 @@ private:
         ~LogManagerPasskey() = default;
     };
 public:
+    enum class LogLevel {
+        TRACE,
+        DEBUG,
+        INFO,
+        WARN,
+        ERR,    //< calling this ERROR causes compiler errors
+        CRITICAL,
+    };
+
     LogManager(LogManagerPasskey passkey) : LogManager() {}
     ~LogManager() = default;
 
@@ -60,15 +69,37 @@ public:
         return s_instance.get();
     }
 
-    static void init_logger(std::shared_ptr<spdlog::logger> logger, spdlog::level::level_enum log_level) {
+    static void init_logger(std::shared_ptr<spdlog::logger> logger, LogLevel log_level) {
         // set the default logging sinks
         logger->sinks().reserve(LogManager::get_Instance()->get_default_sinks().size());
         for (const auto& default_sink : LogManager::get_Instance()->get_default_sinks() ) {
             logger->sinks().push_back(default_sink);
         }
 
+        spdlog::level::level_enum spdlog_level = spdlog::level::info;
+        switch (log_level) {
+            case LogLevel::TRACE:
+                spdlog_level = spdlog::level::trace;
+                break;
+            case LogLevel::DEBUG:
+                spdlog_level = spdlog::level::debug;
+                break;
+            case LogLevel::INFO:
+                spdlog_level = spdlog::level::info;
+                break;
+            case LogLevel::WARN:
+                spdlog_level = spdlog::level::warn;
+                break;
+            case LogLevel::ERR:
+                spdlog_level = spdlog::level::err;
+                break;
+            case LogLevel::CRITICAL:
+                spdlog_level = spdlog::level::critical;
+                break;
+        }
+
         // assign the log level
-        logger->set_level(log_level);
+        logger->set_level(spdlog_level);
     }
 
 private:
@@ -86,7 +117,7 @@ private:
     core::LogManager::init_logger(logName##_log, logLevel);
     
 #define CREATE_LOGGER(logName) \
-    CREATE_LOGGER_LEVEL(logName, spdlog::level::info)
+    CREATE_LOGGER_LEVEL(logName, core::LogManager::LogLevel::INFO)
 
 #define LOG_TRACE(logName, entry) \
     logName##_log->log(spdlog::level::trace, entry);

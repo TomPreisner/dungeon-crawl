@@ -40,7 +40,7 @@ TEST(LogManager_Test, Create_New_Logger_Level) {
     const std::filesystem::path tmp_dir = std::getenv("TEST_TMPDIR"); // the bazel test file dir
     core::LogManager::get_Instance()->init(tmp_dir.string());
 
-    CREATE_LOGGER_LEVEL(testTraceCreate, spdlog::level::trace);
+    CREATE_LOGGER_LEVEL(testTraceCreate, core::LogManager::LogLevel::TRACE);
 
     LOG_TRACE(testTraceCreate, "Trace logging")
     LOG_DEBUG(testTraceCreate, "Debug logging")
