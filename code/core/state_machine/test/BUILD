@@ -6,7 +6,7 @@ cc_test(
     deps = [
         "@googletest//:gtest",
         "@googletest//:gtest_main",
-        "//code/client/core/state_machine:state_machine",
+        "//code/core/state_machine:state_machine",
     ],
     size="small"
 )

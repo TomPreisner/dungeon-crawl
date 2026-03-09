@@ -1,0 +1,2 @@
+# Global options set on every build
+build --cxxopt=/utf-8
