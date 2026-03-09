@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include "code/core/state_machine/state_machine.h"
+#include "code/core/state_machine.h"
 
 class StateMachine_test {
 public:
