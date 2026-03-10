@@ -1,2 +1,7 @@
 # Global options set on every build
+test --test_env=USE_TEST_LOG_DIR=1
+test --test_env=LOG_DIR=test_log_files
+
 build --cxxopt=/utf-8
+
+run --action_env=LOG_DIR=log_files

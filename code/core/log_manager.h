@@ -35,32 +35,41 @@ public:
         CRITICAL,
     };
 
-    LogManager(LogManagerPasskey passkey) : LogManager() {}
-    ~LogManager() = default;
-
-    void init(const std::string& log_dir) {
-        if (s_initialized) {
-            return; //<  only initialize once
-        }
-        s_initialized = true;
-
-        std::filesystem::path error_file_path = log_dir + "/error.log";
+    LogManager(LogManagerPasskey passkey) : LogManager() {        
         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto errorLogSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(error_file_path.string());
-        errorLogSink->set_level(spdlog::level::warn);
-
-        m_default_sinks.reserve(3);
         m_default_sinks.push_back(consoleSink);
-        m_default_sinks.push_back(errorLogSink);
+
+        char * use_test_log_dir = std::getenv("USE_TEST_LOG_DIR");
+        if (use_test_log_dir != nullptr) {
+            if (std::stoi(use_test_log_dir) != 0) {
+                char * test_tmpdir = std::getenv("TEST_TMPDIR");
+                if (test_tmpdir != nullptr) {
+                    m_output_dir = std::string(test_tmpdir);
+                }
+            }
+        } else {
+            char * log_dir = std::getenv("LOG_DIR");
+            if (log_dir != nullptr) {
+                m_output_dir = std::string(log_dir);
+            }
+        }
+
+        if (!m_output_dir.empty()) {
+            std::filesystem::path error_file_path = m_output_dir + "/error.log";
+            auto errorLogSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(error_file_path.string());
+            errorLogSink->set_level(spdlog::level::warn);
+            m_default_sinks.push_back(errorLogSink);
+        }
     }
 
-    void shutdown() {
-        m_default_sinks.clear();
-        s_initialized = false;        
-    }
+    ~LogManager() = default;
 
     std::vector<std::shared_ptr<spdlog::sinks::sink>> get_default_sinks() const {
         return m_default_sinks;
+    }
+
+    std::string get_output_dir() const {
+        return m_output_dir;
     }
 
     static LogManager* get_Instance() {
@@ -107,17 +116,25 @@ private:
     LogManager(const LogManager&) = delete;
     LogManager& operator=(const LogManager&) = delete;
 
-    static inline bool s_initialized = false;
     std::vector<std::shared_ptr<spdlog::sinks::sink>> m_default_sinks;
+    std::string m_output_dir;
 };
 } // namespace core 
 
 #define CREATE_LOGGER_LEVEL(logName, logLevel) \
-    std::shared_ptr<spdlog::logger> logName##_log = std::make_shared<spdlog::logger>(std::string(#logName)); \
-    core::LogManager::init_logger(logName##_log, logLevel);
+    class logName##_logger { \
+     private: \
+        std::shared_ptr<spdlog::logger> logName##_log; \
+     public: \
+        logName##_logger() { \
+            logName##_log = std::make_shared<spdlog::logger>(std::string(#logName)); \
+            ::core::LogManager::init_logger(logName##_log, logLevel); \
+        } \
+        std::shared_ptr<spdlog::logger> operator-> () { return logName##_log; } \
+    } logName##_log;
     
 #define CREATE_LOGGER(logName) \
-    CREATE_LOGGER_LEVEL(logName, core::LogManager::LogLevel::INFO)
+    CREATE_LOGGER_LEVEL(logName, ::core::LogManager::LogLevel::INFO)
 
 #define LOG_TRACE(logName, entry) \
     logName##_log->log(spdlog::level::trace, entry);
