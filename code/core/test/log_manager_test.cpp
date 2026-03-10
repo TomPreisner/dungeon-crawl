@@ -6,16 +6,11 @@
 #include "code/core/log_manager.h"
 
 TEST(LogManager_Test, Create_LogManager) {
-    const std::filesystem::path tmp_dir = std::getenv("TEST_TMPDIR"); // the bazel test file dir
-    core::LogManager::get_Instance()->init(tmp_dir.string());
-
-    core::LogManager::get_Instance()->shutdown();
+    auto instance = core::LogManager::get_Instance();
+    EXPECT_TRUE(instance != nullptr);
 }
 
 TEST(LogManager_Test, Create_New_Logger) {
-    const std::filesystem::path tmp_dir = std::getenv("TEST_TMPDIR"); // the bazel test file dir
-    core::LogManager::get_Instance()->init(tmp_dir.string());
-
     CREATE_LOGGER(testCreate);
 
     LOG_TRACE(testCreate, "Trace logging")
@@ -26,20 +21,16 @@ TEST(LogManager_Test, Create_New_Logger) {
     LOG_CRITICAL(testCreate, "Critical logging")
 
     int numFiles = 0;
+    const std::filesystem::path tmp_dir = core::LogManager::get_Instance()->get_output_dir();
     EXPECT_TRUE(std::filesystem::is_directory(tmp_dir));
     for (const auto& entry : std::filesystem::directory_iterator(tmp_dir)) {
         std::filesystem::exists(entry.path());
         ++numFiles;
     }   
     EXPECT_GT(numFiles, 0);
-
-    core::LogManager::get_Instance()->shutdown();
 }
 
 TEST(LogManager_Test, Create_New_Logger_Level) {
-    const std::filesystem::path tmp_dir = std::getenv("TEST_TMPDIR"); // the bazel test file dir
-    core::LogManager::get_Instance()->init(tmp_dir.string());
-
     CREATE_LOGGER_LEVEL(testTraceCreate, core::LogManager::LogLevel::TRACE);
 
     LOG_TRACE(testTraceCreate, "Trace logging")
@@ -50,14 +41,13 @@ TEST(LogManager_Test, Create_New_Logger_Level) {
     LOG_CRITICAL(testTraceCreate, "Critical logging")
 
     int numFiles = 0;
+    const std::filesystem::path tmp_dir = core::LogManager::get_Instance()->get_output_dir();
     EXPECT_TRUE(std::filesystem::is_directory(tmp_dir));
     for (const auto& entry : std::filesystem::directory_iterator(tmp_dir)) {
         std::filesystem::exists(entry.path());
         ++numFiles;
     }   
     EXPECT_GT(numFiles, 0);
-
-    core::LogManager::get_Instance()->shutdown();
 }
 
 int main(int argc, char **argv) {
