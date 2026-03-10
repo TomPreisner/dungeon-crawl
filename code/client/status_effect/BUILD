@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "@yaml-cpp",
         ":effect",
+        "//code/core:log_manager",
     ],
     visibility = ["//visibility:public"],
 )
@@ -14,6 +15,9 @@ cc_library(
     name = "effect",
     srcs = ["effect.cpp"],
     hdrs = ["effect.h"],
-    deps = ["@yaml-cpp"],
+    deps = [
+        "@yaml-cpp",
+        "//code/core:log_manager",
+    ],
     visibility = ["//visibility:public"],
 )

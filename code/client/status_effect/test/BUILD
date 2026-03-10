@@ -8,6 +8,7 @@ cc_test(
         "@googletest//:gtest_main",
         "@yaml-cpp",
         "//code/client/status_effect:effect",
+        "//code/core:log_manager",
     ],
     data = ["//code/client/status_effect/test/data:test_effect_data_yaml"],
     size="small"

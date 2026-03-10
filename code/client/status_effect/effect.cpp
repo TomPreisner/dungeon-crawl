@@ -4,11 +4,15 @@
 /********************************************************************/
 #include "code/client/status_effect/effect.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <map>
 
+#include "code/core/log_manager.h"
+
 namespace Status {
+CREATE_LOGGER(Effect);
 
 EffectType convert_to_effect_type(std::string str) {
     static std::map<std::string, EffectType> s_string_to_enum = {
@@ -21,13 +25,13 @@ EffectType convert_to_effect_type(std::string str) {
     };
 
     std::transform(str.begin(), str.end(), str.begin(),
-                    std::toupper);
+                    [](char c) { return std::toupper(c); });
 
     if (s_string_to_enum.find(str) != s_string_to_enum.end()) {
         return s_string_to_enum[str];
     }
     
-    std::cout << "invalid enum string: " << str << std::endl;
+    LOG_ERROR(Effect, "Invalid enum string: " + str);
     return EffectType::NONE;
 }
 
@@ -41,7 +45,7 @@ Effect::Effect(const YAML::Node& node) {
         m_effect_type = convert_to_effect_type(entry.as<std::string>());    
     } catch (const YAML::TypedBadConversion<std::string>& e) {
         // Not a string 
-        std::cout << "Status::Effect - effect type for effect is not a string: " << YAML::Dump(node) << std::endl;
+        LOG_ERROR(Effect, "Status::Effect - effect type for effect is not a string: " + YAML::Dump(node));
     }
 
     // amount doesn't need to be there for some effect types
@@ -51,13 +55,13 @@ Effect::Effect(const YAML::Node& node) {
             try {
                 const float amt = entry.as<float>();
                 if (amt < 0.f) {
-                    std::cout << "Status::Effect - amount can not be negative! value: " << amt << std::endl;
+                    LOG_ERROR(Effect, "Status::Effect - amount can not be negative! value: " + std::to_string(amt));
                 } else {
                     m_amount = amt;
                 }
             } catch (const YAML::TypedBadConversion<float>& e) {
                 // Not a float 
-                std::cout << "Status::Effect - amount for effect is not a float: " << YAML::Dump(node) << std::endl;
+                LOG_ERROR(Effect, "Status::Effect - amount for effect is not a float: " + YAML::Dump(node));
             }
         }
     }

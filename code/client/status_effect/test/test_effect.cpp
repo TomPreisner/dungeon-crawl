@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "code/client/status_effect/effect.h"
+#include "code/core/log_manager.h"
 
 // This Test class is just being used to expose some functions to the 
 //  public for use in the Test functions. These are not meant to be available
@@ -18,7 +19,7 @@ public:
 
 std::string k_yaml_file = "code\\client\\status_effect\\test\\data\\test_effect_data.yaml";
 
-TEST(EffecType, Test_EffectCreation) {
+TEST(EffectType, Test_EffectCreation) {
     // A simple load of a yaml file and validate the contents
     YAML::Node config = YAML::LoadFile(k_yaml_file);
 
@@ -125,7 +126,7 @@ TEST(EffecType, Test_EffectCreation) {
     EXPECT_FALSE(test.public_test_has_valid_callback());
 }
 
-TEST(EffecType, Test_EffectProcess) {
+TEST(EffectType, Test_EffectProcess) {
     // A simple load of a yaml file and validate the contents
     YAML::Node config = YAML::LoadFile(k_yaml_file);
     const float effect_test_value = 5.f;
