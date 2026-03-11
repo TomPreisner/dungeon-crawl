@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "code/client/status_effect/base_status_effect.h"
+#include "code/client/status_effect/status_effect.h"
 
 
 namespace Status {
@@ -15,23 +15,35 @@ namespace Status {
 // This is a singleton that stores all of the status effects, referenced by 
 //  status id string
 class StatusEffectLibrary {
+private:
+    // The passkey pattern is necessary here to use the the unique_ptr without
+    //  exposing a constructor that other classes can use to create an instance
+    class StatusEffectLibraryPasskey {
+     private:
+        friend StatusEffectLibrary;
+        StatusEffectLibraryPasskey() = default;
+        ~StatusEffectLibraryPasskey() = default;
+    };
 public:
+    StatusEffectLibrary(StatusEffectLibraryPasskey passkey) : StatusEffectLibrary() { }
+    ~StatusEffectLibrary() = default;
+
     static StatusEffectLibrary* get_instance() {
-        static StatusEffectLibrary s_instance;
-        return &s_instance;
+        static StatusEffectLibrary::StatusEffectLibraryPasskey s_passkey;
+        static std::unique_ptr<StatusEffectLibrary> s_instance = std::make_unique<StatusEffectLibrary>(s_passkey);
+        return s_instance.get();
     }
 
     void init_from_file(const std::string& filepath);
 
-    std::optional<BaseStatusEffect> get_status_effect(const std::string& status_id);// { return m_status_library[status_id]; }
+    std::optional<const StatusEffect> get_status_effect(const std::string& status_id);
 
 private:
     StatusEffectLibrary() = default;
-    ~StatusEffectLibrary() = default;
     StatusEffectLibrary(const StatusEffectLibrary&) = delete;
     StatusEffectLibrary& operator=(const StatusEffectLibrary&) = delete;
 
-    std::map<std::string, BaseStatusEffect> m_status_library;
+    std::map<std::string, StatusEffect> m_status_library;
 };
 
 } // namespace Status

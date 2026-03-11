@@ -42,7 +42,7 @@ Effect::Effect(const YAML::Node& node) {
     assert(entry.IsScalar());
 
     try {
-        m_effect_type = convert_to_effect_type(entry.as<std::string>());    
+        m_effect_type = convert_to_effect_type(entry.as<std::string>());
     } catch (const YAML::TypedBadConversion<std::string>& e) {
         // Not a string 
         LOG_ERROR(Effect, "Status::Effect - effect type for effect is not a string: " + YAML::Dump(node));

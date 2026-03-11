@@ -1,11 +1,25 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 cc_library(
-    name = "base_status_effect",
-    hdrs = ["base_status_effect.h"],
+    name = "status_effect",
+    srcs = ["status_effect.cpp"],
+    hdrs = ["status_effect.h"],
     deps = [
         "@yaml-cpp",
         ":effect",
+        "//code/core:log_manager",
+        "//code/core:state_machine",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "status_effect_library",
+    srcs = ["status_effect_library.cpp"],
+    hdrs = ["status_effect_library.h"],
+    deps = [
+        "@yaml-cpp",
+        ":status_effect",
         "//code/core:log_manager",
     ],
     visibility = ["//visibility:public"],

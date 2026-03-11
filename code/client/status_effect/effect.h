@@ -24,8 +24,8 @@ public:
     explicit Effect(const YAML::Node& node);
     virtual ~Effect() {}
 
-    virtual void RegisterCallback(std::function<void(float)> callback) { m_callback = callback;}  //< Not great, I need some checks
-    virtual const EffectType effect_type() const { return m_effect_type; }
+    virtual void RegisterCallback(std::function<void(float)> callback) { m_callback = callback; }  //< Not great, I need some checks
+    virtual const EffectType get_effect_type() const { return m_effect_type; }
     virtual float process_effect(const float amt = 0.f);
 
 protected:
