@@ -27,23 +27,27 @@ void StatusEffectLibrary::init_from_file(const std::string& filepath) {
             key = iter->first.as<std::string>();  
         } catch (const YAML::TypedBadConversion<std::string>& e) {
             // Not a string 
-            LOG_ERROR(StatusEffectLibrary, "Key in map is not a string, skipping: " + YAML::Dump(*iter));
+            LOG_ERROR(StatusEffectLibrary, "Key in map is not a string, skipping: " + YAML::Dump(iter->second));
             continue;
         }
 
         if (key.empty()) {
-            LOG_ERROR(StatusEffectLibrary, "Key in empty. skipping: " + YAML::Dump(*iter));
+            LOG_ERROR(StatusEffectLibrary, "Key in empty. skipping: " + YAML::Dump(iter->second));
             continue;
         }
 
         if (m_status_library.find(key) != m_status_library.end()) {
-            LOG_ERROR(StatusEffectLibrary, "Duplicate key detected : " + key + " skipping: " + YAML::Dump(*iter));
+            LOG_ERROR(StatusEffectLibrary, "Duplicate key detected : " + key + " skipping:\n" + YAML::Dump(iter->second));
             continue;
         }
 
         LOG_DEBUG(StatusEffectLibrary, "Creating status effect with status_id: " + key);
         m_status_library[key] = StatusEffect(iter->second);
     }
+}
+
+bool StatusEffectLibrary::has_status_effect(const std::string& status_id) {
+    return m_status_library.find(status_id) != m_status_library.end();
 }
 
 std::optional<const StatusEffect> StatusEffectLibrary::get_status_effect(const std::string& status_id) {

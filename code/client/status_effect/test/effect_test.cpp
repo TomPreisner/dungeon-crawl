@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include "code/client/status_effect/effect.h"
-#include "code/core/log_manager.h"
 
 // This Test class is just being used to expose some functions to the 
 //  public for use in the Test functions. These are not meant to be available

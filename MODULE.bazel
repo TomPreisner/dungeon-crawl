@@ -21,6 +21,10 @@ pip.parse(
 use_repo(pip, "pip")
 
 # Choose the most recent version available at
+# https://registry.bazel.build/modules/boost.uuid
+bazel_dep(name = "boost.uuid", version = "1.89.0")
+
+# Choose the most recent version available at
 # https://registry.bazel.build/modules/googletest
 bazel_dep(name = "googletest", version = "1.17.0")
 
@@ -39,6 +43,7 @@ bazel_dep(name = "spdlog", version = "1.17.0")
 # Choose the most recent version available at
 # https://registry.bazel.build/modules/yaml-cpp
 bazel_dep(name = "yaml-cpp", version = "0.9.0")
+
 
 new_local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "new_local_repository")
 new_local_repository(

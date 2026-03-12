@@ -29,6 +29,7 @@ public:
     virtual float process_effect(const float amt = 0.f);
 
 protected:
+    // Protected functions exposing functionality for unit tests only
     const bool test_has_valid_amount() const { return m_amount >= 0.f; }
     const float test_get_amount() const { return m_amount; }
     const bool test_has_valid_callback() const { return (m_callback != nullptr); }

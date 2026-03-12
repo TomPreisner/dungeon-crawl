@@ -97,12 +97,12 @@ StateMachine_test::StateMachine_test(){
       {
         [&]() { return State_2_OnEnter(); },
         [&](const std::chrono::milliseconds& dt) { return State_2_OnUpdate(dt); },
-        core::StateNoOp
+        core::State::StateNoOp
       }
     },
     { StateEnum::STATE_3,
       {
-        core::StateNoOp,
+        core::State::StateNoOp,
         [&](const std::chrono::milliseconds& dt) { return State_3_OnUpdate(dt); },
         [&]() { return State_3_OnExit(); }
       }
@@ -110,22 +110,22 @@ StateMachine_test::StateMachine_test(){
     { StateEnum::STATE_4,
       {
         [&]() { return State_4_OnEnter(); },
-        core::StateUpdateNoOp,
+        core::State::StateUpdateNoOp,
         [&]() { return State_4_OnExit(); }
       }
     },
     { StateEnum::STATE_5,
       {
-        core::StateNoOp,
+        core::State::StateNoOp,
         [&](const std::chrono::milliseconds& dt) { return State_5_OnUpdate(dt); },
-        core::StateNoOp
+        core::State::StateNoOp
       }
     },
     { StateEnum::STATE_6,
       {
         [&]() { return State_6_OnEnter(); },
-        core::StateUpdateNoOp,
-        core::StateNoOp
+        core::State::StateUpdateNoOp,
+        core::State::StateNoOp
       }
     }
     };

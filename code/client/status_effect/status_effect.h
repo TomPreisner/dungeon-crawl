@@ -36,15 +36,30 @@ public:
 
     virtual StatusEffectType get_type() const { return m_status_type; }
     virtual std::string get_icon() const { return m_icon_path; }
+    virtual std::string get_vfx() const { return m_vfx; }
+    virtual std::string get_sfx() const { return m_sfx; }
 
     virtual void activate() { m_state_machine.request_transition(StatusState::ACTIVE); }
     virtual void clear_status_effect() { m_state_machine.request_transition(StatusState::ENDED); }
+
+    virtual std::string get_uuid() const { return m_uuid_string; }
 
 protected:
     virtual void clear_callback() { clear_status_effect(); }
     virtual void heal_callback(float amount) { /* TODO: HEAL CHARACTER */ }
     virtual void damage_callback(float amount) { /* TODO: DAMAGE CHARACTER */ }
     virtual void augment_callback(float amount) { /* TODO: AUGMENT VALUE CHARACTER */ }
+
+protected:
+    // Protected functions exposing functionality for unit tests only
+    const bool test_has_valid_update_rate_turns() const { return m_update_rate_turns >= 0; }
+    const int test_get_update_rate_turns() const { return m_update_rate_turns; }
+    const bool test_has_valid_duration_turns() const { return m_duration_turns >= 0; }
+    const int test_get_duration_turns() const { return m_duration_turns; }
+    const int test_get_current_tick() const { return m_current_tick; }
+    const std::vector<Effect>& test_get_heal_effects() const { return m_heal_effects; }
+    const std::vector<Effect>& test_get_damage_effects() const { return m_damage_effects; }
+    const std::vector<Effect>& test_get_update_effects() const { return m_update_effects; }
 
 private:
     // Functions to extract values from the data.
@@ -77,6 +92,10 @@ private:
     std::string m_vfx;
     std::string m_sfx;
     std::string m_icon_path;
+
+    std::string m_uuid_string;
+
+    bool m_is_active = false;
 };
 
 } // namespace Status

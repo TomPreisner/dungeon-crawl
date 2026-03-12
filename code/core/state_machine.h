@@ -11,13 +11,13 @@
 
 namespace core {
 
-void StateNoOp() { return; }
-void StateUpdateNoOp(const std::chrono::milliseconds& dt) { return; }
-
 struct State {
     std::function<void()> onEnter;
     std::function<void(const std::chrono::milliseconds& dt)> onUpdate;
     std::function<void()> onExit;
+    
+    static void StateNoOp() { return; }
+    static void StateUpdateNoOp(const std::chrono::milliseconds& dt) { return; }
 };
 
 template<typename T>

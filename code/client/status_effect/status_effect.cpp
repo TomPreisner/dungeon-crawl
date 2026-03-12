@@ -9,6 +9,10 @@
 #include <iostream>
 #include <map>
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include "code/core/log_manager.h"
 
 namespace Status {
@@ -36,8 +40,8 @@ StatusEffect::StatusEffect() {
     std::map<StatusState, core::State> stateMap = {
     { StatusState::INACTIVE,
       {
-        core::StateNoOp,
-        core::StateUpdateNoOp,
+        core::State::StateNoOp,
+        core::State::StateUpdateNoOp,
         [&]() { return Inactive_OnExit(); }
       }
     },
@@ -51,13 +55,18 @@ StatusEffect::StatusEffect() {
     { StatusState::ENDED,
       {
         [&]() { return Ended_OnEnter(); },
-        core::StateUpdateNoOp,
-        core::StateNoOp
+        core::State::StateUpdateNoOp,
+        core::State::StateNoOp
       }
     }
     };
 
     m_state_machine.init(StatusState::INACTIVE, stateMap);
+
+    // Use the boost uuid library to create a uuid to uniquely identify this status effect instance
+    boost::uuids::random_generator gen;
+    boost::uuids::uuid id = gen();
+    m_uuid_string = boost::uuids::to_string(id);
 }
 
 StatusEffect::StatusEffect(const YAML::Node& node)
@@ -75,19 +84,19 @@ StatusEffect::StatusEffect(const YAML::Node& node)
             key = iter->first.as<std::string>();  
         } catch (const YAML::TypedBadConversion<std::string>& e) {
             // Not a string 
-            LOG_ERROR(StatusEffect, "Key in map is not a string, skipping: " + YAML::Dump(*iter));
+            LOG_ERROR(StatusEffect, "Key in map is not a string, skipping: " + YAML::Dump(iter->first));
             continue;
         }
 
         if (key == "type") {
             if (!iter->second.IsScalar()) {
-                LOG_ERROR(StatusEffect, "Key \"type\" is not a scalar, skipping: " + YAML::Dump(*iter));
+                LOG_ERROR(StatusEffect, "Key \"type\" is not a scalar, skipping: " + YAML::Dump(iter->second));
                 continue;
             }
             try {
                 m_status_type = convert_to_status_effect_type(iter->second.as<std::string>());
             } catch (const YAML::TypedBadConversion<std::string>& e) {
-                LOG_ERROR(StatusEffect, "Value in \"type\" is not a string, skipping: " + YAML::Dump(*iter));
+                LOG_ERROR(StatusEffect, "Value in \"type\" is not a string, skipping: " + YAML::Dump(iter->second));
                 m_status_type = StatusEffectType::NONE;
             }
         } else if (key == "update_rate_turns") {
@@ -95,10 +104,13 @@ StatusEffect::StatusEffect(const YAML::Node& node)
         } else if (key == "duration_turns") {
             extract_scalar(iter->second, "duration_turns", m_duration_turns);
         } else if (key == "vfx") {
+            // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
             extract_scalar(iter->second, "vfx", m_vfx);
         } else if (key == "sfx") {
+            // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
             extract_scalar(iter->second, "sfx", m_sfx);
         } else if (key == "icon") {
+            // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
             extract_scalar(iter->second, "icon", m_icon_path);
         } else if (key == "on_heal") {
             extract_effect_sequence(iter->second, "on_heal", m_heal_effects);
@@ -107,7 +119,7 @@ StatusEffect::StatusEffect(const YAML::Node& node)
         } else if (key == "on_update") {
             extract_effect_sequence(iter->second, "on_update", m_update_effects);
         } else {
-            LOG_ERROR(StatusEffect, "Invalid key: " + key + ", skipping: " + YAML::Dump(*iter));
+            LOG_ERROR(StatusEffect, "Invalid key: " + key + ", skipping: " + YAML::Dump(iter->second));
         }
     }
 }
@@ -120,7 +132,7 @@ void StatusEffect::extract_scalar(const YAML::Node& node, const std::string& val
     }
     try {
         value = node.as<int>();
-    } catch (const YAML::TypedBadConversion<std::string>& e) {
+    } catch (const YAML::TypedBadConversion<int>& e) {
         LOG_ERROR(StatusEffect, "Value in \"" + value_key + "\" is not an int, skipping: " + YAML::Dump(node));
         return;
     }
@@ -161,24 +173,24 @@ void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::st
                 break;
             case EffectType::CLEAR:
                 effect.RegisterCallback([this](float value) {
-                    StatusEffect::clear_callback();
+                    clear_callback();
                 });
                 break;
             case EffectType::DAMAGE:
             case EffectType::DAMAGE_PERCENT:
                 effect.RegisterCallback([this](float value) {
-                    StatusEffect::damage_callback(value);
+                    damage_callback(value);
                 });
                 break;
             case EffectType::HEAL:
             case EffectType::HEAL_PERCENT:
                 effect.RegisterCallback([this](float value) {
-                    StatusEffect::heal_callback(value);
+                    heal_callback(value);
                 });
                 break;
             case EffectType::MULTIPLY:
                 effect.RegisterCallback([this](float value) {
-                    StatusEffect::augment_callback(value);
+                    augment_callback(value);
                 });
                 break;
         }
@@ -200,12 +212,18 @@ void StatusEffect::on_update() {
 ////////////////////////////////////////////////////////////
 // These can be called asynchronously outside of the update loop calls
 void StatusEffect::on_heal(const float amt) {
+    if (!m_is_active) {
+        return;
+    }
     for (auto & effect : m_heal_effects ) {
         effect.process_effect(amt);
     }
 }
 
 void StatusEffect::on_damage(const float amt) {
+    if (!m_is_active) {
+        return;
+    }
     for (auto & effect : m_damage_effects ) {
         effect.process_effect(amt);
     }
@@ -218,24 +236,25 @@ void StatusEffect::Inactive_OnExit() {
 }
 
 void StatusEffect::Active_OnEnter() {
+    m_is_active = true;
     m_current_tick = 0;
 }
 
-void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {
-    if (m_update_rate_turns >= 0 &&
-        m_update_rate_turns % m_current_tick == 0) {
+void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {    
+    if (m_duration_turns >= 0 &&
+        m_current_tick >= m_duration_turns) {
+        clear_status_effect();
+    } else if (m_update_rate_turns > 0 &&
+               m_current_tick % m_update_rate_turns == 0) {
         for (auto & effect : m_update_effects ) {
             effect.process_effect(0.f);
         }
-    }
-    if (m_duration_turns >= 0 &&
-        m_current_tick > m_duration_turns) {
-        clear_status_effect();
     }
     ++m_current_tick;
 }
 
 void StatusEffect::Active_OnExit() {
+    m_is_active = false;
     // TODO: stop start vfx and sfx?  
 }
 
