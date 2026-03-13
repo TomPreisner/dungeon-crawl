@@ -1,0 +1,43 @@
+TestData_Create:
+  - effect: NONE
+    amount: 2.0
+  - effect: FOO_BAR
+    amount: 2.0
+  - effect: foo_BAR
+  - effect: CLEAR
+    amount: 2.0
+  - effect: cLeAr
+  - effect: DAMAGE
+    amount: 4.1
+  - effect: DAMAGE_PERCENT
+    amount: 0.3
+  - effect: HEAL
+    amount: 2.1
+  - effect: HEAL_PERCENT
+    amount: 1.2
+  - effect: MULTIPLY
+    amount: 2.0
+  - effect: multiply
+    amount: 3.0
+  - effect: MULTIPLY
+    amount: -7.0
+  - effect: MULTIPLY
+    amount: 5
+  - effect: MULTIPLY
+    amount: double
+
+TestData_Process:
+  - effect: NONE
+    amount: 1.2
+  - effect: CLEAR
+    amount: 1.2
+  - effect: DAMAGE
+    amount: 4.1
+  - effect: DAMAGE_PERCENT
+    amount: 0.3
+  - effect: HEAL
+    amount: 2.1
+  - effect: HEAL_PERCENT
+    amount: 1.2
+  - effect: MULTIPLY
+    amount: 3.0

@@ -21,6 +21,10 @@ pip.parse(
 use_repo(pip, "pip")
 
 # Choose the most recent version available at
+# https://registry.bazel.build/modules/boost.uuid
+bazel_dep(name = "boost.uuid", version = "1.89.0")
+
+# Choose the most recent version available at
 # https://registry.bazel.build/modules/googletest
 bazel_dep(name = "googletest", version = "1.17.0")
 

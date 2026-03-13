@@ -10,6 +10,10 @@ TEST(YamlTest, ReadYAMLFileTest) {
 
   EXPECT_TRUE(config.IsMap());
 
+  YAML::Node fake_node = config["fake_node"];
+  EXPECT_FALSE(fake_node);
+  EXPECT_FALSE(fake_node.IsDefined());
+
   /*
   app:
     name: "MyWebApp"
