@@ -15,6 +15,17 @@ cc_test(
 )
 
 cc_test(
+    name = "boost_uuid_test",
+    srcs = ["boost_uuid_test.cpp"],
+    deps = [
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@boost.uuid",
+    ],
+    size="small"
+)
+
+cc_test(
     name = "eigen_test",
     srcs = ["eigen_test.cpp"],
     deps = [
