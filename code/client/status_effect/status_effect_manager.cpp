@@ -22,20 +22,39 @@ bool StatusEffectManager::apply_status_effect(const std::string& status_id) {
 }
 
 void StatusEffectManager::clear_status_effect(const std::string& status_uuid) {
+    // Since the remove is light weight, the presence of the uuids is not validated 
+    //  before adding them, since the storage container is a list the find is more 
+    //  costly than an incorrect removal request.
     m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::REMOVE, "", status_uuid});
+}
+
+void StatusEffectManager::clear_all_status_effects() {
+    m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::REMOVE_ALL, "", ""});
 }
 
 void StatusEffectManager::update_manager() {
     // On the start of the update process all the pending actions
     // then call the update on the resulting list of m_status_effects
-    for (const auto & action : m_pending_status_effect_actions) {
-        switch(action.type) {
-        case StatusEffectAction::APPLY:
-            add_status_effect(action.status_id);
-            break;
-        case StatusEffectAction::REMOVE:
-            remove_status_effect(action.status_uuid);
-            break;
+    {
+        bool exit_loop = false;
+        for (const auto & action : m_pending_status_effect_actions) {
+            switch(action.type) {
+            case StatusEffectAction::APPLY:
+                add_status_effect(action.status_id);
+                break;
+            case StatusEffectAction::REMOVE:
+                remove_status_effect(action.status_uuid);
+                break;
+            case StatusEffectAction::REMOVE_ALL:
+                // Remove all is a wipe, so processing any other status effect on the wipe
+                //  would appear as a bug.
+                remove_all_status_effects();
+                exit_loop = true;
+                break;
+            }
+            if (exit_loop) {
+                break;
+            }
         }
     }
     m_pending_status_effect_actions.clear();
@@ -69,6 +88,10 @@ void StatusEffectManager::remove_status_effect(const std::string& status_uuid) {
         }
     }
     LOG_WARN(StatusEffectManager, "Unable to erase status effect with uuid: " + status_uuid);
+}
+
+void StatusEffectManager::remove_all_status_effects() {
+    m_status_effects.clear();
 }
 
 } // namespace Status
