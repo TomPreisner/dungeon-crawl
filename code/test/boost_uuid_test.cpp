@@ -4,7 +4,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-TEST(BostUUIDTest, GeneratorTest) {
+TEST(BoostUUIDTest, GeneratorTest) {
   // Use the boost uuid library to create a uuid to uniquely identify this status effect instance
   boost::uuids::random_generator r_gen;
   boost::uuids::uuid id = r_gen();
