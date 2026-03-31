@@ -23,7 +23,7 @@ protected:
 } // namespace Module
 
 
-/*
+/*  TODO: remove comment
 Turn this into a DamageTypeModule_Common.  From there there will be a resist amount, resist percent, and an apply.
 The unit tests for the module factory should have a yaml file to instantiate all of the registered modules. if any 
 modules are registered and NOT in the yaml the test should fail.

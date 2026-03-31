@@ -16,6 +16,7 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
         return false;
     }
 
+    // TODO: make this a sequence of damage_types not a scalar, then OR the types together
     const YAML::Node& damage_type_node = node["damage_type"];
     std::string damage_type;
     try {

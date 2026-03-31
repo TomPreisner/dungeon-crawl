@@ -7,7 +7,7 @@ cc_library(
         "//code/client/damage/proto:damage_cc_proto",   
         "//code/client/health/proto:heal_cc_proto",        
     ],
-    # the visibility is intentionally limited to avoid the diamond inheritance problem
+    visibility = ["//visibility:public"],
 )
 
 cc_library(
