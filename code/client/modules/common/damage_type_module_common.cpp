@@ -16,21 +16,27 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
         return false;
     }
 
-    // TODO: make this a sequence of damage_types not a scalar, then OR the types together
     const YAML::Node& damage_type_node = node["damage_type"];
-    std::string damage_type;
-    try {
-        damage_type = damage_type_node.as<std::string>();
-    } catch (const YAML::TypedBadConversion<std::string>& e) {
-        LOG_ERROR(DamageTypeModule_Common, "Value in \"damage_type\" is not a string, skipping: " + YAML::Dump(damage_type_node));
+    if (!damage_type_node.IsSequence()) {
+        LOG_ERROR(DamageTypeModule_Common, "\"damage_type\" is not a sequence, skipping: " + YAML::Dump(damage_type_node));
         return false;
     }
-    Damage::DamageType value;
-    if (Damage::DamageType_Parse(damage_type, &value)) {
-        m_damage_type = value;
-    } else {
-        LOG_ERROR(DamageTypeModule_Common, "Invalid damage type: " + damage_type)
-        return false;
+    
+    for (int i = 0; i < damage_type_node.size(); ++i) {
+        std::string damage_type;
+        try {
+            damage_type = damage_type_node[i].as<std::string>();
+        } catch (const YAML::TypedBadConversion<std::string>& e) {
+            LOG_ERROR(DamageTypeModule_Common, "A value in \"damage_type\" is not a string, skipping: " + YAML::Dump(damage_type_node));
+            return false;
+        }
+        Damage::DamageType value;
+        if (Damage::DamageType_Parse(damage_type, &value)) {
+            m_damage_type = m_damage_type.value() | value;
+        } else {
+            LOG_ERROR(DamageTypeModule_Common, "Invalid damage type: " + damage_type)
+            return false;
+        }
     }
     
     const YAML::Node& amount_node = node["amount"];

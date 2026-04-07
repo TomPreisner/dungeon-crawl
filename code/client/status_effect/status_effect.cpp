@@ -36,6 +36,20 @@ StatusEffectType convert_to_status_effect_type(std::string str) {
     return StatusEffectType::NONE;
 }
 
+std::optional<StatusEffectType> StatusEffect::convert_to_type(const YAML::Node& node) {
+    StatusEffectType type;
+    if (!node.IsScalar()) {
+        return std::nullopt;
+    }
+    try {
+        type = convert_to_status_effect_type(node.as<std::string>());
+    } catch (const YAML::TypedBadConversion<std::string>& e) {
+        return std::nullopt;
+    }
+
+    return type;    
+}
+
 StatusEffect::StatusEffect() {
     std::map<StatusState, core::State> stateMap = {
     { StatusState::INACTIVE,
@@ -89,14 +103,11 @@ StatusEffect::StatusEffect(const YAML::Node& node)
         }
 
         if (key == "type") {
-            if (!iter->second.IsScalar()) {
-                LOG_ERROR(StatusEffect, "Key \"type\" is not a scalar, skipping: " + YAML::Dump(iter->second));
-                continue;
-            }
-            try {
-                m_status_type = convert_to_status_effect_type(iter->second.as<std::string>());
-            } catch (const YAML::TypedBadConversion<std::string>& e) {
-                LOG_ERROR(StatusEffect, "Value in \"type\" is not a string, skipping: " + YAML::Dump(iter->second));
+            std::optional<StatusEffectType> type = convert_to_type(iter->second);
+            if (type.has_value()) {
+                m_status_type = type.value();
+            } else {
+                LOG_ERROR(StatusEffect, "Failed to convert \"type\", skipping: " + YAML::Dump(iter->second));
                 m_status_type = StatusEffectType::NONE;
             }
         } else if (key == "update_rate_turns") {

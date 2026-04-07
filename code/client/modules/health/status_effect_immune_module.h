@@ -4,14 +4,14 @@
 /********************************************************************/
 #pragma once
 
-#include "code/client/modules/common/damage_type_module_common.h"
+#include "code/client/modules/common/status_effect_module_common.h"
 #include "code/client/modules/health/health_module.h"
 
 namespace Module {
 
-class DamageTypeResist_Module : public DamageTypeModule_Common, public HealthModule {
+class StatusEffectImmune_Module : public StatusEffectModule_Common, public HealthModule {
 public:
-    explicit DamageTypeResist_Module(const std::string& name) : DamageTypeModule_Common(name) {}
+    explicit StatusEffectImmune_Module(const std::string& name) : StatusEffectModule_Common(name) {}
 
     virtual bool init_module(const YAML::Node& node) override;
 
@@ -19,7 +19,7 @@ public:
     virtual void process_damage(Damage& incoming) override;
     
 protected:
-    std::optional<float> m_partial_effect_amount;
+    std::optional<float> m_percent_chance_amount;
 };
 
 } // namespace Module

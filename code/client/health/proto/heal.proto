@@ -5,7 +5,7 @@ syntax = "proto3";
 // [START messages]
 message Heal {
   enum HealType {
-    PHYSICAL = 0;
+    POTION = 0;
     MAGIC = 1;
     HOLY = 2;
   }

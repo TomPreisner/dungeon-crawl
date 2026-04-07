@@ -22,3 +22,16 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "status_effect_apply_module",
+    srcs = ["status_effect_apply_module.cpp"],
+    hdrs = ["status_effect_apply_module.h"],
+    deps = [
+        "@yaml-cpp",
+        ":damage_module",
+        "//code/client/modules/common:status_effect_module_common",
+        "//code/core:log_manager",
+    ],
+    visibility = ["//visibility:public"],
+)

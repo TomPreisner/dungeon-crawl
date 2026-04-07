@@ -19,3 +19,29 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "heal_type_module_common",
+    srcs = ["heal_type_module_common.cpp"],
+    hdrs = ["heal_type_module_common.h"],
+    deps = [
+        "@yaml-cpp",
+        ":base_module",
+        "//code/client/health/proto:heal_cc_proto",
+        "//code/core:log_manager",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "status_effect_module_common",
+    srcs = ["status_effect_module_common.cpp"],
+    hdrs = ["status_effect_module_common.h"],
+    deps = [
+        "@yaml-cpp",
+        ":base_module",
+        "//code/client/status_effect:status_effect",
+        "//code/core:log_manager",
+    ],
+    visibility = ["//visibility:public"],
+)
