@@ -1,0 +1,22 @@
+TestData_StatusName:
+  status_name: Venom_V1
+
+TestData_StatusName_DoesntExist:
+  status_name: Freeze_V1
+
+TestData_StatusType:
+  status_type: POISON
+
+TestData_StatusTypeInvalid:
+  status_type: FOOBAR
+
+TestData_TooManyFields:
+  status_name: Ignite_V1
+  status_type: FIRE
+
+TestData_NoFields:
+
+TestData_NoValidFields:
+  statusNameField: Ignite_V1
+  statusAmount: FIRE
+  Value: 3.5

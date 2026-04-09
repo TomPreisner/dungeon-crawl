@@ -2,7 +2,7 @@
 /*                      Copyright 2026                              */
 /*           Created and Maintained by Thomas Preisner              */
 /********************************************************************/
-#include "code/client/modules/common/damage_type_module_common.h"
+#include "damage_type_module_common.h"
 
 #include "code/client/damage/proto/damage.pb.h"
 
@@ -17,8 +17,13 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
     }
 
     const YAML::Node& damage_type_node = node["damage_type"];
+    if (!damage_type_node) {
+        LOG_ERROR(DamageTypeModule_Common, "\"damage_type\" is not present, skipping:\n" + YAML::Dump(node));
+        return false;
+    }
+
     if (!damage_type_node.IsSequence()) {
-        LOG_ERROR(DamageTypeModule_Common, "\"damage_type\" is not a sequence, skipping: " + YAML::Dump(damage_type_node));
+        LOG_ERROR(DamageTypeModule_Common, "\"damage_type\" is not a sequence, skipping:\n" + YAML::Dump(damage_type_node));
         return false;
     }
     
@@ -27,23 +32,34 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
         try {
             damage_type = damage_type_node[i].as<std::string>();
         } catch (const YAML::TypedBadConversion<std::string>& e) {
-            LOG_ERROR(DamageTypeModule_Common, "A value in \"damage_type\" is not a string, skipping: " + YAML::Dump(damage_type_node));
+            LOG_ERROR(DamageTypeModule_Common, "A value in \"damage_type\" is not a string, skipping:\n" + YAML::Dump(damage_type_node));
             return false;
         }
         Damage::DamageType value;
         if (Damage::DamageType_Parse(damage_type, &value)) {
-            m_damage_type = m_damage_type.value() | value;
+            if (m_damage_type.has_value()) {
+                m_damage_type = m_damage_type.value() | value;
+            } else {
+                m_damage_type = value;
+            }
         } else {
             LOG_ERROR(DamageTypeModule_Common, "Invalid damage type: " + damage_type)
             return false;
         }
     }
-    
+
     const YAML::Node& amount_node = node["amount"];
+    if (!amount_node) {
+        LOG_ERROR(DamageTypeModule_Common, "\"amount\" is not present, skipping:\n" + YAML::Dump(node));
+        m_damage_type = std::nullopt; //< clear the damage type
+        return false;
+    }
+
     try {
         m_amount = amount_node.as<float>();
     } catch (const YAML::TypedBadConversion<float>& e) {
-        LOG_ERROR(DamageTypeModule_Common, "Value in \"amount\" is not a float, skipping: " + YAML::Dump(amount_node));
+        LOG_ERROR(DamageTypeModule_Common, "Value in \"amount\" is not a float, skipping:\n" + YAML::Dump(amount_node));
+        m_damage_type = std::nullopt; //< clear the damage type
         return false;
     }
 

@@ -41,6 +41,7 @@ cc_library(
         "@yaml-cpp",
         ":base_module",
         "//code/client/status_effect:status_effect",
+        "//code/client/status_effect:status_effect_library",
         "//code/core:log_manager",
     ],
     visibility = ["//visibility:public"],

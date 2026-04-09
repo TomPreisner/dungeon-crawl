@@ -47,6 +47,10 @@ std::optional<StatusEffectType> StatusEffect::convert_to_type(const YAML::Node& 
         return std::nullopt;
     }
 
+    if (StatusEffectType::NONE == type) {
+        return std::nullopt;
+    }
+
     return type;    
 }
 
