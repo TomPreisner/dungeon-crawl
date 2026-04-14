@@ -1,0 +1,24 @@
+TestData_StatusType:
+  status_type: FIRE
+
+TestData_StatusType_Invalid:
+  status_type: FOOBAR
+
+TestData_StatusType_50_Percent:
+  status_type: POISON
+  percent_chance: 0.5
+
+TestData_StatusType_Negative_Percent:
+  status_type: FIRE
+  percent_chance: -0.5
+  
+TestData_StatusType_TooMuch_Percent:
+  status_type: BLEED
+  percent_chance: 12.5
+
+TestData_StatusType_Zero_Percent:
+  status_type: POISON
+  percent_chance: 0
+
+TestData_StatusName:
+  status_name: Ignite_V1

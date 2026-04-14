@@ -10,14 +10,38 @@
 namespace Module {
 CREATE_LOGGER(DamageTypeResistPercent_Module);
 
+bool DamageTypeResistPercent_Module::init_module(const YAML::Node& node) {
+    if (!node.IsMap()) {
+        return false;
+    }
+
+    if (!DamageTypeResist_Module::init_module(node)) {
+        return false;
+    }
+    
+    if (m_amount.value() < 0.f || m_amount.value() > 1.f) {
+        LOG_ERROR(DamageTypeResistPercent_Module, "Invalid damage amount value: " + std::to_string(m_amount.value()))
+        m_damage_type = std::nullopt;
+        m_amount = std::nullopt;
+        m_partial_effect_amount = std::nullopt;
+        return false;
+    }
+    
+    if (m_partial_effect_amount.has_value() && 
+        (m_partial_effect_amount.value() < 0.f || m_partial_effect_amount.value() > 1.f)) {
+        LOG_ERROR(DamageTypeResistPercent_Module, "Invalid damage partial effect amount value: " + std::to_string(m_partial_effect_amount.value()))
+        m_damage_type = std::nullopt;
+        m_amount = std::nullopt;
+        m_partial_effect_amount = std::nullopt;
+        return false;
+    }
+
+    return true;
+}
 
 void DamageTypeResistPercent_Module::process_damage(Damage& incoming) {
-    if (!m_damage_type.has_value()) {        
-        LOG_ERROR(DamageTypeResistPercent_Module, "Invalid damage type in " + get_module_name())
-        return; //< do nothing
-    }
-    if (!m_amount.has_value()) {        
-        LOG_ERROR(DamageTypeResistPercent_Module, "Invalid damage amount in " + get_module_name())
+    if (!m_damage_type.has_value() || !m_amount.has_value()) {        
+        LOG_ERROR(DamageTypeResistPercent_Module, "Invalid values in " + get_module_name())
         return; //< do nothing
     }
 

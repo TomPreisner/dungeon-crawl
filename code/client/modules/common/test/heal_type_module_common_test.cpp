@@ -18,7 +18,7 @@ public:
 
 std::string k_yaml_file = "code\\client\\modules\\common\\test\\data\\test_heal_type_module_common.yaml";
 
-TEST(HealTypeModule_Common, Test_HealTypeModuleCreation) {
+TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_Simple) {
     YAML::Node modules = YAML::LoadFile(k_yaml_file);
 
     EXPECT_TRUE(modules.IsMap());
@@ -33,6 +33,12 @@ TEST(HealTypeModule_Common, Test_HealTypeModuleCreation) {
     EXPECT_EQ(test_case_simple.test_get_heal_type().value(), Heal::POTION);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
+}
+
+TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_NoHeal) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_no_heal = modules["TestData_NoHeal"];
     EXPECT_TRUE(test_no_heal);
@@ -42,6 +48,12 @@ TEST(HealTypeModule_Common, Test_HealTypeModuleCreation) {
     EXPECT_FALSE(test_case_no_heal.init_module(test_no_heal));
     EXPECT_FALSE(test_case_no_heal.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_no_heal.test_get_amount().has_value());
+}
+
+TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_HealNotString) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_heal_not_string = modules["TestData_HealNotString"];
     EXPECT_TRUE(test_heal_not_string);
@@ -51,6 +63,12 @@ TEST(HealTypeModule_Common, Test_HealTypeModuleCreation) {
     EXPECT_FALSE(test_case_heal_not_string.init_module(test_heal_not_string));
     EXPECT_FALSE(test_case_heal_not_string.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_heal_not_string.test_get_amount().has_value());
+}
+
+TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_HealInvalidType) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_heal_invalid = modules["TestData_HealInvalidType"];
     EXPECT_TRUE(test_heal_invalid);
@@ -60,6 +78,12 @@ TEST(HealTypeModule_Common, Test_HealTypeModuleCreation) {
     EXPECT_FALSE(test_case_heal_invalid.init_module(test_heal_invalid));
     EXPECT_FALSE(test_case_heal_invalid.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_heal_invalid.test_get_amount().has_value());
+}
+
+TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_NoAmount) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_no_amount = modules["TestData_NoAmount"];
     EXPECT_TRUE(test_no_amount);
@@ -69,6 +93,12 @@ TEST(HealTypeModule_Common, Test_HealTypeModuleCreation) {
     EXPECT_FALSE(test_case_no_amount.init_module(test_no_amount));
     EXPECT_FALSE(test_case_no_amount.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_no_amount.test_get_amount().has_value());
+}
+
+TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_AmountNotFloat) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_amount_not_float = modules["TestData_AmountNotFloat"];
     EXPECT_TRUE(test_amount_not_float);

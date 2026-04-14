@@ -19,6 +19,8 @@ public:
     virtual void process_damage(Damage& incoming) override;
     
 protected:
+    virtual void clear_values() override;
+
     std::optional<float> m_percent_chance_amount;
 };
 

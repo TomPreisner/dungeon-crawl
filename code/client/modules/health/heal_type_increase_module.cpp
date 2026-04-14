@@ -10,6 +10,20 @@
 namespace Module {
 CREATE_LOGGER(HealTypeIncrease_Module);
 
+bool HealTypeIncrease_Module::init_module(const YAML::Node& node) {
+    if (!HealTypeModule_Common::init_module(node)) {
+        return false;
+    }
+
+    if (!m_amount.has_value() || m_amount.value() < 0.f) {
+        LOG_ERROR(HealTypeIncrease_Module, "amount is invalid: " + std::to_string(m_amount.value_or(-0.001f)));
+        clear_values();
+        return false;
+    }
+
+    return true;
+}
+
 void HealTypeIncrease_Module::process_heal(Heal& incoming) {
     if (!m_heal_type.has_value()) {        
         LOG_ERROR(HealTypeIncrease_Module, "Invalid heal type in " + get_module_name())

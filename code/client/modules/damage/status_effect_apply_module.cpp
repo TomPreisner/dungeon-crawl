@@ -11,14 +11,17 @@ namespace Module {
 CREATE_LOGGER(StatusEffectApply_Module);
 
 bool StatusEffectApply_Module::init_module(const YAML::Node& node) {
-    if (StatusEffectModule_Common::init_module(node)) {
-        if (!m_status_effect_name.has_value()) {
-            LOG_ERROR(StatusEffectApply_Module, "Invalid status effect name in " + get_module_name() + ". This module wil not function.")
-            return false;
-        }
-        return true;
+    if (!StatusEffectModule_Common::init_module(node)) {
+        return false;
     }
-    return false;
+    
+    if (!m_status_effect_name.has_value()) {
+        LOG_ERROR(StatusEffectApply_Module, "Invalid status effect name in " + get_module_name() + ". This module will not function.")
+        clear_values();
+        return false;
+    }
+
+    return true;
 }
 
 void StatusEffectApply_Module::apply_damage(Damage& outgoing) {

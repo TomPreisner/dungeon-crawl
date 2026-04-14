@@ -16,6 +16,8 @@ public:
     virtual bool init_module(const YAML::Node& node) override;
 
 protected:
+    virtual void clear_values() override;
+
     std::optional<int32_t> m_damage_type;   //< this is a bit field
     std::optional<float> m_amount;
 };

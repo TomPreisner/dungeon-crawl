@@ -1,0 +1,8 @@
+TestData_StatusName:
+  status_name: Ignite_V1
+
+TestData_StatusName_DoesntExist:
+  status_name: Confuse_V1
+
+TestData_StatusType:
+  status_type: FIRE

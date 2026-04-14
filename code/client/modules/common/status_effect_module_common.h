@@ -17,6 +17,8 @@ public:
     virtual bool init_module(const YAML::Node& node) override;
 
 protected:
+    virtual void clear_values() override;
+
     std::optional<std::string> m_status_effect_name;
     std::optional<Status::StatusEffectType> m_status_effect_type;
 };

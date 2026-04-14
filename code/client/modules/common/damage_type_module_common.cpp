@@ -13,17 +13,20 @@ CREATE_LOGGER(DamageTypeModule_Common);
 
 bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
     if (!node.IsMap()) {
+        clear_values();
         return false;
     }
 
     const YAML::Node& damage_type_node = node["damage_type"];
     if (!damage_type_node) {
         LOG_ERROR(DamageTypeModule_Common, "\"damage_type\" is not present, skipping:\n" + YAML::Dump(node));
+        clear_values();
         return false;
     }
 
     if (!damage_type_node.IsSequence()) {
         LOG_ERROR(DamageTypeModule_Common, "\"damage_type\" is not a sequence, skipping:\n" + YAML::Dump(damage_type_node));
+        clear_values();
         return false;
     }
     
@@ -33,6 +36,7 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
             damage_type = damage_type_node[i].as<std::string>();
         } catch (const YAML::TypedBadConversion<std::string>& e) {
             LOG_ERROR(DamageTypeModule_Common, "A value in \"damage_type\" is not a string, skipping:\n" + YAML::Dump(damage_type_node));
+            clear_values();
             return false;
         }
         Damage::DamageType value;
@@ -44,6 +48,7 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
             }
         } else {
             LOG_ERROR(DamageTypeModule_Common, "Invalid damage type: " + damage_type)
+            clear_values();
             return false;
         }
     }
@@ -51,7 +56,7 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
     const YAML::Node& amount_node = node["amount"];
     if (!amount_node) {
         LOG_ERROR(DamageTypeModule_Common, "\"amount\" is not present, skipping:\n" + YAML::Dump(node));
-        m_damage_type = std::nullopt; //< clear the damage type
+        clear_values();
         return false;
     }
 
@@ -59,10 +64,16 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
         m_amount = amount_node.as<float>();
     } catch (const YAML::TypedBadConversion<float>& e) {
         LOG_ERROR(DamageTypeModule_Common, "Value in \"amount\" is not a float, skipping:\n" + YAML::Dump(amount_node));
-        m_damage_type = std::nullopt; //< clear the damage type
+        clear_values();
         return false;
     }
 
     return true;
 }
+
+void DamageTypeModule_Common::clear_values() {
+    m_damage_type = std::nullopt;
+    m_amount = std::nullopt;
+}
+
 } // namespace Module

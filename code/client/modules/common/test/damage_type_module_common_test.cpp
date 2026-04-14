@@ -18,7 +18,7 @@ public:
 
 std::string k_yaml_file = "code\\client\\modules\\common\\test\\data\\test_damage_type_module_common.yaml";
 
-TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_Simple) {
     YAML::Node modules = YAML::LoadFile(k_yaml_file);
 
     EXPECT_TRUE(modules.IsMap());
@@ -33,6 +33,12 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
     EXPECT_EQ(test_case_simple.test_get_damage_type().value() & Damage::PHYSICAL, Damage::PHYSICAL);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
+}
+
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_MultipleDamage) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_multi_damage = modules["TestData_MultipleDamage"];
     EXPECT_TRUE(test_multi_damage);
@@ -45,6 +51,12 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
     EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & Damage::FIRE, Damage::FIRE);
     EXPECT_TRUE(test_case_multi_damage.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_multi_damage.test_get_amount().value(), 1.4f);
+}
+
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_NoDamage) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_no_damage = modules["TestData_NoDamage"];
     EXPECT_TRUE(test_no_damage);
@@ -54,6 +66,12 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
     EXPECT_FALSE(test_case_no_damage.init_module(test_no_damage));
     EXPECT_FALSE(test_case_no_damage.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_no_damage.test_get_amount().has_value());
+}
+
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_DamageNotSequence) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_damage_not_seq = modules["TestData_DamageNotSequence"];
     EXPECT_TRUE(test_damage_not_seq);
@@ -63,6 +81,12 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
     EXPECT_FALSE(test_case_damage_not_seq.init_module(test_damage_not_seq));
     EXPECT_FALSE(test_case_damage_not_seq.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_damage_not_seq.test_get_amount().has_value());
+}
+
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_DamageInvalidType) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_damage_invalid = modules["TestData_DamageInvalidType"];
     EXPECT_TRUE(test_damage_invalid);
@@ -72,6 +96,12 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
     EXPECT_FALSE(test_case_damage_invalid.init_module(test_damage_invalid));
     EXPECT_FALSE(test_case_damage_invalid.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_damage_invalid.test_get_amount().has_value());
+}
+
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_NoAmount) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_no_amount = modules["TestData_NoAmount"];
     EXPECT_TRUE(test_no_amount);
@@ -81,6 +111,12 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation) {
     EXPECT_FALSE(test_case_no_amount.init_module(test_no_amount));
     EXPECT_FALSE(test_case_no_amount.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_no_amount.test_get_amount().has_value());
+}
+
+TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_AmountNotFloat) {
+    YAML::Node modules = YAML::LoadFile(k_yaml_file);
+
+    EXPECT_TRUE(modules.IsMap());
 
     YAML::Node test_amount_not_float = modules["TestData_AmountNotFloat"];
     EXPECT_TRUE(test_amount_not_float);

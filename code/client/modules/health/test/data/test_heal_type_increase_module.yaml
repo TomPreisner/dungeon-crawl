@@ -17,7 +17,6 @@ TestData_HealInvalidType:
 TestData_NoAmount:
   heal_type: MAGIC
 
-TestData_AmountNotFloat:
+TestData_NegativeAmount:
   heal_type: HOLY
-  amount: triple
-  
+  amount: -12.5

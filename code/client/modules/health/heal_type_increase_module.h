@@ -13,6 +13,8 @@ class HealTypeIncrease_Module : public HealTypeModule_Common, public HealthModul
 public:
     explicit HealTypeIncrease_Module(const std::string& name) : HealTypeModule_Common(name) {}
 
+    virtual bool init_module(const YAML::Node& node) override;
+
     virtual void process_heal(Heal& incoming) override;
     virtual void process_damage(Damage& incoming) override {}
 };

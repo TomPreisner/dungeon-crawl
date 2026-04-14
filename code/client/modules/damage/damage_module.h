@@ -14,9 +14,6 @@ public:
     virtual ~DamageModule() {}
 
     virtual void apply_damage(Damage& outgoing) = 0;
-
-private:
-    int8_t m_priority = 255;
 };
 
 } // namespace Module

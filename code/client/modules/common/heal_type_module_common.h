@@ -17,6 +17,8 @@ public:
     virtual bool init_module(const YAML::Node& node) override;
 
 protected:
+    virtual void clear_values() override;
+
     std::optional<Heal::HealType> m_heal_type;
     std::optional<float> m_amount;
 };

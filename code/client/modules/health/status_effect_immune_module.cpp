@@ -15,17 +15,26 @@ CREATE_LOGGER(StatusEffectImmune_Module);
 bool StatusEffectImmune_Module::init_module(const YAML::Node& node) {
     if (StatusEffectModule_Common::init_module(node)) {
         if (!m_status_effect_type.has_value()) {
-            LOG_ERROR(StatusEffectImmune_Module, "Invalid status effect type in " + get_module_name() + ". This module wil not function.")
+            LOG_ERROR(StatusEffectImmune_Module, "Invalid status effect type in " + get_module_name() + ". This module will not function.")
+            clear_values();
             return false;
         }
         
+        // An missing percent cchance means it is 100%
         const YAML::Node& percentchance_node = node["percent_chance"];
         if (percentchance_node) {
             try {
                 m_percent_chance_amount = percentchance_node.as<float>();
             } catch (const YAML::TypedBadConversion<float>& e) {
                 LOG_ERROR(StatusEffectImmune_Module, "Value in \"percent_chance\" is not a float, skipping: " + YAML::Dump(percentchance_node));
+                clear_values();
                 return false;
+            }
+            if (m_percent_chance_amount.value() <= 0.f || m_percent_chance_amount.value() > 1.f) {
+                LOG_ERROR(StatusEffectImmune_Module, "Value in \"percent_chance\" is invalid, value: " + std::to_string(m_percent_chance_amount.value()));
+                clear_values();
+                return false;
+
             }
         }
         return true;
@@ -49,7 +58,7 @@ void StatusEffectImmune_Module::process_damage(Damage& incoming) {
 
             auto effect = Status::StatusEffectLibrary::get_Instance()->get_status_effect(status_effect_name);
             if (!effect.has_value()) {
-                LOG_WARN(StatusEffectImmune_Module, "Incoming status effect not found in library: " +status_effect_name);
+                LOG_WARN(StatusEffectImmune_Module, "Incoming status effect not found in library: " + status_effect_name);
                 continue;
             }
 
@@ -66,5 +75,10 @@ void StatusEffectImmune_Module::process_damage(Damage& incoming) {
             }
         }
     }
+}
+
+void StatusEffectImmune_Module::clear_values() {
+    StatusEffectModule_Common::clear_values();
+    m_percent_chance_amount = std::nullopt;
 }
 } // namespace Module

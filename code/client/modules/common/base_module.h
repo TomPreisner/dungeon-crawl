@@ -19,6 +19,8 @@ public:
     virtual bool init_module(const YAML::Node& node) = 0;
 
 protected:
+    virtual void clear_values() = 0; // Don't clear the module name so it is easier to track down issues
+
     std::string m_module_name;
 };
 

@@ -13,6 +13,8 @@ class DamageTypeApply_Module : public DamageTypeModule_Common, public DamageModu
 public:
     explicit DamageTypeApply_Module(const std::string& name) : DamageTypeModule_Common(name) {}
 
+    virtual bool init_module(const YAML::Node& node) override;
+
     virtual void apply_damage(Damage& outgoing) override;
 };
 

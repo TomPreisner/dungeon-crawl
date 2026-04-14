@@ -16,9 +16,6 @@ public:
 
     virtual void process_heal(Heal& incoming) = 0;
     virtual void process_damage(Damage& incoming) = 0;
-
-private:
-    int8_t m_priority = 255;
 };
 
 } // namespace Module
