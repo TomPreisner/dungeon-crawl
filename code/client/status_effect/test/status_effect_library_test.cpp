@@ -53,6 +53,8 @@ TEST(StatusEffectLibrary, Test_StatusEffectLibraryInit) {
         auto effect = Status::StatusEffectLibrary::get_Instance()->get_status_effect("FooBar");
         EXPECT_FALSE(effect.has_value());
     }
+
+    Status::StatusEffectLibrary::get_Instance()->shutdown();
 }
 
 int main(int argc, char **argv) {

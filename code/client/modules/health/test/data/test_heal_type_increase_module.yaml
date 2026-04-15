@@ -1,0 +1,22 @@
+TestData_Simple:
+  heal_type: POTION
+  amount: 2.5
+
+TestData_NoHeal:
+  amount: 3.0
+
+TestData_HealNotString:
+  heal_type:
+    - MAGIC
+  amount: 1.8
+
+TestData_HealInvalidType:
+  heal_type: FOOBAR
+  amount: 12.75
+
+TestData_NoAmount:
+  heal_type: MAGIC
+
+TestData_NegativeAmount:
+  heal_type: HOLY
+  amount: -12.5

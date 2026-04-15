@@ -36,6 +36,7 @@ public:
     }
 
     void init_from_file(const std::string& filepath);
+    void shutdown();
 
     bool has_status_effect(const std::string& status_id);
     std::optional<const StatusEffect> get_status_effect(const std::string& status_id);

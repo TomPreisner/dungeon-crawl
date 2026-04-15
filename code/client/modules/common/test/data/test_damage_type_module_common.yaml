@@ -1,0 +1,31 @@
+TestData_Simple:
+  damage_type:
+    - PHYSICAL
+  amount: 2.5
+
+TestData_MultipleDamage:
+  damage_type:
+    - MAGIC
+    - FIRE
+  amount: 1.4
+
+TestData_NoDamage:
+  amount: 3.0
+
+TestData_DamageNotSequence:
+  damage_type: PHYSICAL
+  amount: 1.8
+
+TestData_DamageInvalidType:
+  damage_type:
+    - FOOBAR
+  amount: 12.75
+
+TestData_NoAmount:
+  damage_type:
+    - PHYSICAL
+
+TestData_AmountNotFloat:
+  damage_type:
+    - PHYSICAL
+  amount: triple

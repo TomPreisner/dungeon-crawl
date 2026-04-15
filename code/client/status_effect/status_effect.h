@@ -26,6 +26,8 @@ private:
     };
 
 public:
+    static std::optional<StatusEffectType> convert_to_type(const YAML::Node& node);
+
     StatusEffect(); // < needed for std container types
     explicit StatusEffect(const YAML::Node& node);
     virtual ~StatusEffect() {}

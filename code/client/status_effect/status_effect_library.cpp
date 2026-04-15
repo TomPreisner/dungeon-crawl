@@ -46,6 +46,10 @@ void StatusEffectLibrary::init_from_file(const std::string& filepath) {
     }
 }
 
+void StatusEffectLibrary::shutdown() {
+    m_status_library.clear();
+}
+
 bool StatusEffectLibrary::has_status_effect(const std::string& status_id) {
     return m_status_library.find(status_id) != m_status_library.end();
 }

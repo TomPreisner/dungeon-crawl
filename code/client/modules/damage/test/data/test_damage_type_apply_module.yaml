@@ -1,0 +1,22 @@
+TestData_Simple:
+  damage_type:
+    - PHYSICAL
+  amount: 2.5
+
+TestData_MultipleDamage:
+  damage_type:
+    - MAGIC
+    - FIRE
+  amount: 1.4
+
+TestData_NoDamage:
+  amount: 3.0
+
+TestData_NoAmount:
+  damage_type:
+    - PHYSICAL
+
+TestData_NegativeAmount:
+  damage_type:
+    - PHYSICAL
+  amount: -12.5

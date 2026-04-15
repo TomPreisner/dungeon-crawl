@@ -1,0 +1,19 @@
+// [START declaration]
+syntax = "proto3";
+// [END declaration]
+
+// [START messages]
+message Heal {
+  enum HealType {
+    POTION = 0;
+    MAGIC = 1;
+    HOLY = 2;
+  }
+
+  HealType type = 1;
+  float amount = 2;
+  repeated string status_effect = 3; // optional application of status effects
+
+  string heal_source_uuid = 4;  // where this healing is coming from
+}
+// [END messages]

@@ -86,6 +86,8 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     manager_test.update_manager();
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
     EXPECT_TRUE(manager_test.public_test_get_status_effects().empty());
+
+    Status::StatusEffectLibrary::get_Instance()->shutdown();
 }
 
 int main(int argc, char **argv) {
