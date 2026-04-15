@@ -42,8 +42,8 @@ bool DamageTypeResist_Module::init_module(const YAML::Node& node) {
 }
 
 void DamageTypeResist_Module::process_damage(Damage& incoming) {
-    if (!m_damage_type.has_value() || !m_amount.has_value()) {        
-        LOG_ERROR(DamageTypeResist_Module, "Invalid values in " + get_module_name())
+    if (!m_damage_type.has_value() || !m_amount.has_value()) {
+        LOG_WARN(DamageTypeResist_Module, "Invalid values in " + get_module_name());
         return; //< do nothing
     }
 

@@ -44,7 +44,7 @@ bool StatusEffectImmune_Module::init_module(const YAML::Node& node) {
 
 void StatusEffectImmune_Module::process_damage(Damage& incoming) {
     if (!m_status_effect_type.has_value()) {        
-        LOG_ERROR(StatusEffectImmune_Module, "Invalid status effect type in " + get_module_name())
+        LOG_WARN(StatusEffectImmune_Module, "Invalid status effect type in " + get_module_name())
         return; //< do nothing
     }
 

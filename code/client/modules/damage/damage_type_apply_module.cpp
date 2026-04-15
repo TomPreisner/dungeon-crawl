@@ -16,7 +16,7 @@ bool DamageTypeApply_Module::init_module(const YAML::Node& node) {
     }
 
     if (!m_amount.has_value() || m_amount.value() < 0.f) {
-        LOG_ERROR(DamageTypeApply_Module, "amount is invalid: " + std::to_string(m_amount.value_or(-0.001f)));
+        LOG_ERROR(DamageTypeApply_Module, "Amount is invalid: " + std::to_string(m_amount.value_or(-0.001f)));
         clear_values();
         return false;
     }
@@ -25,7 +25,7 @@ bool DamageTypeApply_Module::init_module(const YAML::Node& node) {
 
 void DamageTypeApply_Module::apply_damage(Damage& outgoing) {
     if (!m_damage_type.has_value() || !m_amount.has_value()) {        
-        LOG_ERROR(DamageTypeApply_Module, "Invalid values in " + get_module_name())
+        LOG_WARN(DamageTypeApply_Module, "Invalid values in " + get_module_name())
         return; //< do nothing
     }
 

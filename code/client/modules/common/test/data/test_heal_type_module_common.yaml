@@ -20,4 +20,3 @@ TestData_NoAmount:
 TestData_AmountNotFloat:
   heal_type: HOLY
   amount: triple
-  

@@ -25,12 +25,8 @@ bool HealTypeIncrease_Module::init_module(const YAML::Node& node) {
 }
 
 void HealTypeIncrease_Module::process_heal(Heal& incoming) {
-    if (!m_heal_type.has_value()) {        
-        LOG_ERROR(HealTypeIncrease_Module, "Invalid heal type in " + get_module_name())
-        return; //< do nothing
-    }
-    if (!m_amount.has_value()) {        
-        LOG_ERROR(HealTypeIncrease_Module, "Invalid heal amount in " + get_module_name())
+    if (!m_heal_type.has_value() || !m_amount.has_value()) {
+        LOG_WARN(HealTypeIncrease_Module, "Invalid values in " + get_module_name());
         return; //< do nothing
     }
 
