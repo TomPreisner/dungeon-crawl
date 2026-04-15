@@ -1,0 +1,39 @@
+TestData_Damage_Apply:
+  name: DamageApply
+  data:
+    damage_type:
+      - PHYSICAL
+    amount: 2.5
+
+TestData_Status_Effect_Apply:
+  name: StatusEffectApply
+  data:
+    status_name: Ignite_V1
+
+TestData_Damage_Resist_Amount:
+  name: DamageResistAmount
+  data:
+    damage_type:
+      - PHYSICAL
+    amount: 2.5
+    partial_effect_amount: 1.4
+
+TestData_Damage_Resist_Percent:
+  name: DamageResistPercent
+  data:
+    damage_type:
+      - POISON
+    amount: 0.8
+    partial_effect_amount: 0.4
+
+TestData_Heal_Increase_Amount:
+  name: HealIncreaseAmount
+  data:
+    heal_type: POTION
+    amount: 2.5
+
+TestData_Status_Effect_Immune:
+  name: StatusEffectImmune
+  data:
+    status_type: POISON
+    percent_chance: 0.5

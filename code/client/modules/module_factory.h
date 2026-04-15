@@ -41,17 +41,20 @@ public:
     // assignment data.
     std::shared_ptr<BaseModule> create_module(const std::string& name, const YAML::Node& data);
 
+    std::vector<std::string> list_modules() const;
+
 private:
-    std::map<std::string, std::function<std::shared_ptr<BaseModule>(const std::string&)>> m_module_registry;
+    typedef std::map<std::string, std::function<std::shared_ptr<BaseModule>(const std::string&)>> ModuleRegistry;
+    ModuleRegistry m_module_registry;
 
     template <typename T>
     static std::shared_ptr<BaseModule> create(const std::string& name) {
         return std::make_shared<T>(name);
     }
 
-    ModuleFactory();
+    inline ModuleFactory();
     ModuleFactory(const ModuleFactory&) = delete;
-    ModuleFactory& operator=(const ModuleFactory&) = delete;    
+    ModuleFactory& operator=(const ModuleFactory&) = delete;
 };
 } // namespace Module
 
