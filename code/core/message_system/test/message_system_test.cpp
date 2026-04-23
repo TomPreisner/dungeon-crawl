@@ -102,10 +102,7 @@ TEST(MessageSystem_Test, MessageSystem_MultipleSwitchboards) {
     EXPECT_EQ(person_calls[2], 4);
     EXPECT_EQ(address_calls[2], 2);
 }
-/*
-Add unit tests for random data not just protobufs
-threaded tests?
-*/
+
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

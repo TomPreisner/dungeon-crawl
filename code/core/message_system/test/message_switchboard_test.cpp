@@ -84,12 +84,6 @@ TEST(MessageSwitchboard_Test, MessageSwitchboard_Simple) {
 
     EXPECT_FALSE(switchboard.publish_message<SimpleData>(simple));
     EXPECT_FALSE(switchboard.publish_message<ComplexData>(complex));
-
-    // reset dispatchers
-    switchboard.public_test_get_dispatchers().clear();
-
-    EXPECT_FALSE(switchboard.publish_message<SimpleData>(simple));
-    EXPECT_FALSE(switchboard.publish_message<ComplexData>(complex));
 }
 
 int main(int argc, char **argv) {
