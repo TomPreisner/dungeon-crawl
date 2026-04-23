@@ -9,11 +9,16 @@
 class MessageSwitchboardTest : public core::MessageSwitchboard {
 public:
     std::map<std::string, std::shared_ptr<core::MessageDispatchBase>>& public_test_get_dispatchers() { return test_get_dispatchers(); }
+    
+    template<typename T>
+    bool public_test_dispatcher_callback(
+          std::function<void(std::shared_ptr<core::MessageDispatchBase>)> callback) 
+      { return test_dispatcher_callback<T>(callback); }
 };
 
 TEST(MessageSwitchboard_Test, MessageSwitchboard_Simple) {
-    int simple_pub = 0, complex_pub = 0;
-    int simple_sub = 0, complex_sub = 0;
+    int simple_count = 0;
+    int complex_count = 0;
 
     MessageSwitchboardTest switchboard;
     EXPECT_EQ(switchboard.public_test_get_dispatchers().size(), 0);
@@ -38,11 +43,12 @@ TEST(MessageSwitchboard_Test, MessageSwitchboard_Simple) {
     EXPECT_FALSE(switchboard.publish_message<SimpleData>(simple));
     EXPECT_FALSE(switchboard.publish_message<ComplexData>(complex));
 
-    // Add a publisher callback, make sure a dispatcher is allocated
-    EXPECT_TRUE(switchboard.register_publisher<SimpleData>([&simple_pub](std::shared_ptr<core::MessageDispatchBase>) {
-      ++simple_pub;
+    // Add a callback, make sure a dispatcher is allocated
+    EXPECT_TRUE(switchboard.public_test_dispatcher_callback<SimpleData>([&simple_count](std::shared_ptr<core::MessageDispatchBase>) {
+      ++simple_count;
     }));
-    EXPECT_EQ(simple_pub, 1);
+    EXPECT_EQ(simple_count, 1);
+    EXPECT_EQ(complex_count, 0);
 
     EXPECT_EQ(switchboard.public_test_get_dispatchers().size(), 1);
     EXPECT_TRUE(switchboard.public_test_get_dispatchers().find(core::MessageDispatch<SimpleData>::get_dispatch_id()) != 
@@ -53,11 +59,12 @@ TEST(MessageSwitchboard_Test, MessageSwitchboard_Simple) {
     EXPECT_TRUE(switchboard.publish_message<SimpleData>(simple));
     EXPECT_FALSE(switchboard.publish_message<ComplexData>(complex));
 
-    // Add a publisher on the other message, make sure there are two now
-    EXPECT_TRUE(switchboard.register_publisher<ComplexData>([&complex_pub](std::shared_ptr<core::MessageDispatchBase>) {
-      ++complex_pub;
+    // Add a callback on the other message, make sure there are two now
+    EXPECT_TRUE(switchboard.public_test_dispatcher_callback<ComplexData>([&complex_count](std::shared_ptr<core::MessageDispatchBase>) {
+      ++complex_count;
     }));
-    EXPECT_EQ(complex_pub, 1);
+    EXPECT_EQ(simple_count, 1);
+    EXPECT_EQ(complex_count, 1);
 
     EXPECT_EQ(switchboard.public_test_get_dispatchers().size(), 2);
     EXPECT_TRUE(switchboard.public_test_get_dispatchers().find(core::MessageDispatch<SimpleData>::get_dispatch_id()) != 
@@ -69,53 +76,14 @@ TEST(MessageSwitchboard_Test, MessageSwitchboard_Simple) {
     EXPECT_TRUE(switchboard.publish_message<ComplexData>(complex));
 
     // validate no cross pollution occurs
-    EXPECT_EQ(simple_pub, 1);
-    EXPECT_EQ(complex_pub, 1);
-    EXPECT_EQ(simple_sub, 0);
-    EXPECT_EQ(complex_sub, 0);
+    EXPECT_EQ(simple_count, 1);
+    EXPECT_EQ(complex_count, 1);
 
     // reset dispatchers
     switchboard.public_test_get_dispatchers().clear();
 
     EXPECT_FALSE(switchboard.publish_message<SimpleData>(simple));
     EXPECT_FALSE(switchboard.publish_message<ComplexData>(complex));
-
-    //// subscribers
-    // Add a subscriber callback, make sure a dispatcher is allocated
-    EXPECT_TRUE(switchboard.register_subscriber<ComplexData>([&complex_sub](std::shared_ptr<core::MessageDispatchBase>) {
-      ++complex_sub;
-    }));
-    EXPECT_EQ(complex_sub, 1);
-    
-    EXPECT_EQ(switchboard.public_test_get_dispatchers().size(), 1);
-    EXPECT_TRUE(switchboard.public_test_get_dispatchers().find(core::MessageDispatch<SimpleData>::get_dispatch_id()) == 
-                switchboard.public_test_get_dispatchers().end());
-    EXPECT_TRUE(switchboard.public_test_get_dispatchers().find(core::MessageDispatch<ComplexData>::get_dispatch_id()) != 
-                switchboard.public_test_get_dispatchers().end());
-
-    EXPECT_FALSE(switchboard.publish_message<SimpleData>(simple));
-    EXPECT_TRUE(switchboard.publish_message<ComplexData>(complex));
-
-    // Add a subscriber on the other message, make sure there are two now
-    EXPECT_TRUE(switchboard.register_subscriber<SimpleData>([&simple_sub](std::shared_ptr<core::MessageDispatchBase>) {
-      ++simple_sub;
-    }));
-    EXPECT_EQ(simple_sub, 1);
-
-    EXPECT_EQ(switchboard.public_test_get_dispatchers().size(), 2);
-    EXPECT_TRUE(switchboard.public_test_get_dispatchers().find(core::MessageDispatch<SimpleData>::get_dispatch_id()) != 
-                switchboard.public_test_get_dispatchers().end());
-    EXPECT_TRUE(switchboard.public_test_get_dispatchers().find(core::MessageDispatch<ComplexData>::get_dispatch_id()) != 
-                switchboard.public_test_get_dispatchers().end());
-
-    EXPECT_TRUE(switchboard.publish_message<SimpleData>(simple));
-    EXPECT_TRUE(switchboard.publish_message<ComplexData>(complex));
-
-    // validate no cross pollution occurs
-    EXPECT_EQ(simple_pub, 1);
-    EXPECT_EQ(complex_pub, 1);
-    EXPECT_EQ(simple_sub, 1);
-    EXPECT_EQ(complex_sub, 1);
 
     // reset dispatchers
     switchboard.public_test_get_dispatchers().clear();

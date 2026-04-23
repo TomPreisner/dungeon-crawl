@@ -14,21 +14,26 @@
 #include "code/core/message_system/message_dispatch.h"
 
 namespace core {
+
+class MessagePubSubBase;
+
 ///////////////////////////////////////////////////////////////////////
 class MessageSwitchboard {
 public:
     template<typename T> 
     bool publish_message(const T& message);
 
-    template<typename T>
-    bool register_publisher(std::function<void(std::shared_ptr<MessageDispatchBase>)> register_callback);
-    template<typename T>
-    bool register_subscriber(std::function<void(std::shared_ptr<MessageDispatchBase>)> register_callback);
-
 protected:
+    // only meant for unit testing
     std::map<std::string, std::shared_ptr<MessageDispatchBase>>& test_get_dispatchers() { return m_dispatchers; }
 
+    template<typename T>
+    bool test_dispatcher_callback(std::function<void(std::shared_ptr<MessageDispatchBase>)> callback) { return dispatcher_callback<T>(callback); }
+
 private:
+    // This friend class allows for the access to the dispatcher allocation to not be a public function call
+    friend class MessagePubSubBase;
+
     template<typename T>
     bool dispatcher_callback(std::function<void(std::shared_ptr<MessageDispatchBase>)> callback);
 
@@ -56,18 +61,6 @@ bool MessageSwitchboard::publish_message(const T& message) {
 
     dispatch->publish_message(message);
     return true;
-}
-
-///////////////////////////////////////////////////////////////////////
-template<typename T>
-bool MessageSwitchboard::register_publisher(std::function<void(std::shared_ptr<MessageDispatchBase>)> register_callback) {
-    return dispatcher_callback<T>(register_callback);
-}
-
-///////////////////////////////////////////////////////////////////////
-template<typename T>
-bool MessageSwitchboard::register_subscriber(std::function<void(std::shared_ptr<MessageDispatchBase>)> register_callback) {
-    return dispatcher_callback<T>(register_callback);
 }
 
 ///////////////////////////////////////////////////////////////////////

@@ -22,6 +22,7 @@ cc_library(
 
 cc_library(
     name = "message_system",
+    srcs = ["message_pub_sub_base.h"], # visibility hidden to limit inheritence
     hdrs = [
         "message_publisher.h",
         "message_subscriber.h",
@@ -29,7 +30,6 @@ cc_library(
     ],
     deps = [
         ":message_dispatch",
-        "//code/core:log_manager",
     ],
     visibility = ["//visibility:public"],
 )

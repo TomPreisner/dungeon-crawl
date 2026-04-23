@@ -9,12 +9,13 @@
 #include <string>
 
 #include "code/core/message_system/message_dispatch_base.h"
+#include "code/core/message_system/message_pub_sub_base.h"
 #include "code/core/message_system/message_switchboard.h"
 
 namespace core {
 
 template<typename T>
-class MessageSubscriber {
+class MessageSubscriber : public MessagePubSubBase {
 public:
     explicit MessageSubscriber(MessageSwitchboard& switchboard);
     virtual ~MessageSubscriber();
@@ -27,7 +28,6 @@ protected:
     std::string test_get_uuid_token() const { return m_uuid_token; }
 
 private:
-    void assign_dispatcher(std::shared_ptr<MessageDispatchBase> dispatcher);
     std::weak_ptr<MessageDispatchBase> m_dispatcher;
     std::string m_uuid_token;
 };
@@ -36,19 +36,14 @@ private:
 
 template<typename T>
 MessageSubscriber<T>::MessageSubscriber(MessageSwitchboard& switchboard) {
-    switchboard.register_subscriber<T>([this](std::shared_ptr<MessageDispatchBase> dispatch) {
-        assign_dispatcher(dispatch);
+    request_dispatcher<T>(switchboard, [this](std::shared_ptr<MessageDispatchBase> dispatch) {
+        m_dispatcher = dispatch;
     });
 }
 
 template<typename T>
 MessageSubscriber<T>::~MessageSubscriber() {
     unregister();
-}
-
-template<typename T>
-void MessageSubscriber<T>::assign_dispatcher(std::shared_ptr<MessageDispatchBase> dispatcher) {
-    m_dispatcher = dispatcher;
 }
 
 template<typename T>

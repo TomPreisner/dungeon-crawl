@@ -9,12 +9,13 @@
 #include <string>
 
 #include "code/core/message_system/message_dispatch_base.h"
+#include "code/core/message_system/message_pub_sub_base.h"
 #include "code/core/message_system/message_switchboard.h"
 
 namespace core {
 
 template<typename T>
-class MessagePublisher {
+class MessagePublisher : public MessagePubSubBase {
 public:
     explicit MessagePublisher(MessageSwitchboard& switchboard);
     virtual ~MessagePublisher() = default;
@@ -25,7 +26,6 @@ protected:
     std::weak_ptr<MessageDispatchBase> test_get_dispatcher() const { return m_dispatcher; }
 
 private:
-    void assign_dispatcher(std::shared_ptr<MessageDispatchBase> dispatcher);
     std::weak_ptr<MessageDispatchBase> m_dispatcher;
 };
 
@@ -33,14 +33,9 @@ private:
 
 template<typename T>
 MessagePublisher<T>::MessagePublisher(MessageSwitchboard& switchboard) {
-    switchboard.register_publisher<T>([this](std::shared_ptr<MessageDispatchBase> dispatch) {
-        assign_dispatcher(dispatch);
+    request_dispatcher<T>(switchboard, [this](std::shared_ptr<MessageDispatchBase> dispatch) {
+        m_dispatcher = dispatch;
     });
-}
-
-template<typename T>
-void MessagePublisher<T>::assign_dispatcher(std::shared_ptr<MessageDispatchBase> dispatcher) {
-    m_dispatcher = dispatcher;
 }
 
 template<typename T>
