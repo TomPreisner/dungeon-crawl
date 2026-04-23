@@ -12,8 +12,12 @@ cc_library(
     deps = [
         "@boost.uuid",
         ":message_dispatch_base",
-    ]
-    # visibility hidden on purpose
+    ],
+    # visibility limited on purpose
+    visibility = [
+        "//code/core/message_system/test:__pkg__",
+        "//code/core/message_system/test/example:__pkg__",
+    ],
 )
 
 cc_library(

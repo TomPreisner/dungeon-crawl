@@ -21,6 +21,11 @@ public:
 
     bool register_callback(std::function<void(const T&)> callback);
     bool unregister();
+
+protected:
+    std::weak_ptr<MessageDispatchBase> test_get_dispatcher() const { return m_dispatcher; }
+    std::string test_get_uuid_token() const { return m_uuid_token; }
+
 private:
     void assign_dispatcher(std::shared_ptr<MessageDispatchBase> dispatcher);
     std::weak_ptr<MessageDispatchBase> m_dispatcher;

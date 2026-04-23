@@ -20,6 +20,10 @@ public:
     virtual ~MessagePublisher() = default;
 
     bool publish_message(const T& message);
+
+protected:
+    std::weak_ptr<MessageDispatchBase> test_get_dispatcher() const { return m_dispatcher; }
+
 private:
     void assign_dispatcher(std::shared_ptr<MessageDispatchBase> dispatcher);
     std::weak_ptr<MessageDispatchBase> m_dispatcher;

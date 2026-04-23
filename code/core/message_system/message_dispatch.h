@@ -39,8 +39,12 @@ public:
     void publish_message(const T& message);
 
     std::string subscribe_to_message(std::function<void(const T&)> callback); // return a uuid to the subscriber
-    void subscribe_to_message(const std::string& uuid_token, std::function<void(const T&)> callback); // return a uuid to the subscriber
+    void subscribe_to_message(const std::string& uuid_token, std::function<void(const T&)> callback);
     virtual bool unsubscribe(const std::string& uuid_token) override;
+    
+protected:
+    std::map<std::string, std::function<void(const T&)>> test_get_subscribers() const { return m_subscribers; }
+
 private:
     std::mutex m_lock;
     std::map<std::string, std::function<void(const T&)>> m_subscribers; // The string is the uuid_token
