@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include "code/client/damage/proto/damage.pb.h"
+#include "code/client/messages/proto/damage.pb.h"
 #include "code/client/modules/common/damage_type_module_common.h"
 
 // This Test class is just being used to expose some data to the 
@@ -30,7 +30,8 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_Simple) {
     EXPECT_EQ(test_case_simple.get_module_name(), "TestData_Simple");
     EXPECT_TRUE(test_case_simple.init_module(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_damage_type().has_value());
-    EXPECT_EQ(test_case_simple.test_get_damage_type().value() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_case_simple.test_get_damage_type().value() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
 }
@@ -47,8 +48,10 @@ TEST(DamageTypeModule_Common, Test_DamageTypeModuleCreation_MultipleDamage) {
     EXPECT_EQ(test_case_multi_damage.get_module_name(), "TestData_MultipleDamage");
     EXPECT_TRUE(test_case_multi_damage.init_module(test_multi_damage));
     EXPECT_TRUE(test_case_multi_damage.test_get_damage_type().has_value());
-    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & Damage::MAGIC, Damage::MAGIC);
-    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
+    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_TRUE(test_case_multi_damage.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_multi_damage.test_get_amount().value(), 1.4f);
 }

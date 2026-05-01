@@ -50,7 +50,7 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     manager_test.update_manager();
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 2);
     EXPECT_TRUE(manager_test.apply_status_effect("Venom_V1"));
-    EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().size(), 1);
+    EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 1);
     manager_test.update_manager();
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 3);
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
@@ -80,9 +80,9 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 3);
     manager_test.clear_all_status_effects();    //< clear all will clear pending adds this update frame
     EXPECT_TRUE(manager_test.apply_status_effect("Venom_V1"));
-    EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().size(), 2);
+    EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 2);
     EXPECT_TRUE(manager_test.apply_status_effect("DeepCut_V1"));
-    EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().size(), 3);
+    EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 3);
     manager_test.update_manager();
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
     EXPECT_TRUE(manager_test.public_test_get_status_effects().empty());

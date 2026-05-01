@@ -8,6 +8,11 @@
 
 #include "code/client/status_effect/status_effect.h"
 #include "yaml-cpp/yaml.h"
+#include "code/client/messages/health_messages.h"
+#include "code/client/messages/status_messages.h"
+#include "code/core/message_system/message_publisher.h"
+#include "code/core/message_system/message_subscriber.h"
+#include "code/core/message_system/message_switchboard.h"
 
 namespace Status {
 
@@ -32,6 +37,8 @@ public:
     StatusEffectManager() {}
     ~StatusEffectManager() {}
 
+    bool init_manager(const core::MessageSwitchboard& switchboard);
+
     bool apply_status_effect(const std::string& status_id);
     void clear_status_effect(const std::string& status_uuid);
     void clear_all_status_effects();
@@ -55,6 +62,12 @@ private:
     // regularly, so these are lists to allow for inser and removal easily
     std::list<StatusEffect> m_status_effects;
     std::list<StatusEffectAction> m_pending_status_effect_actions;
+    bool m_initialized = false;
+
+    std::shared_ptr<core::MessageSubscriber<Messages::ApplyStatus>> m_apply_status_subscriber;
+    std::shared_ptr<core::MessageSubscriber<Messages::ClearStatus>> m_clear_status_subscriber;
+    std::shared_ptr<core::MessagePublisher<Messages::ApplyDirectHeal>> m_heal_publisher;
+    std::shared_ptr<core::MessagePublisher<Messages::ApplyDirectDamage>> m_damage_publisher;
 };
 
 } // namespace Status

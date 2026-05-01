@@ -5,7 +5,7 @@ cc_library(
     hdrs = ["damage_module.h"],
     deps = [
         "@yaml-cpp",
-        "//code/client/damage/proto:damage_cc_proto",
+        "//code/client/messages/proto:damage_cc_proto",
     ],
     visibility = ["//visibility:public"],
 )

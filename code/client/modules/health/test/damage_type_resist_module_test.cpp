@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include "code/client/damage/proto/damage.pb.h"
-#include "code/client/health/proto/heal.pb.h"
+#include "code/client/messages/proto/damage.pb.h"
+#include "code/client/messages/proto/heal.pb.h"
 #include "code/client/modules/health/damage_type_resist_module.h"
 
 // This Test class is just being used to expose some data to the 
@@ -32,31 +32,34 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_Simple_Apply) {
     EXPECT_EQ(test_case_simple.get_module_name(), "TestData_Simple");
     EXPECT_TRUE(test_case_simple.init_module(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_damage_type().has_value());
-    EXPECT_EQ(test_case_simple.test_get_damage_type().value() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_case_simple.test_get_damage_type().value() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
     EXPECT_FALSE(test_case_simple.test_get_partial_effect_amount().has_value());
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_simple.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.7f);
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     test_case_simple.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
 
     // Healing should not be affected
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_simple.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -72,40 +75,46 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_SimplePartial_Apply) {
     EXPECT_EQ(test_case_simple_partial.get_module_name(), "TestData_Simple_Partial");
     EXPECT_TRUE(test_case_simple_partial.init_module(test_simple_partial));
     EXPECT_TRUE(test_case_simple_partial.test_get_damage_type().has_value());
-    EXPECT_EQ(test_case_simple_partial.test_get_damage_type().value() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_case_simple_partial.test_get_damage_type().value() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_TRUE(test_case_simple_partial.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple_partial.test_get_amount().value(), 1.4f);
     EXPECT_TRUE(test_case_simple_partial.test_get_partial_effect_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple_partial.test_get_partial_effect_amount().value(), 0.5f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL | Damage::POISON);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL
+                                | code::client::messages::Damage::POISON);
     test_output.set_amount(3.2f);
     test_case_simple_partial.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
-    EXPECT_EQ(test_output.damage_type() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_FLOAT_EQ(test_output.amount(), 2.7f);
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     test_case_simple_partial.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
 
-    Damage test_output_three;
-    test_output_three.set_damage_type(Damage::POISON);
+    code::client::messages::Damage test_output_three;
+    test_output_three.set_damage_type(code::client::messages::Damage::POISON);
     test_output_three.set_amount(3.2f);
     test_case_simple_partial.process_damage(test_output_three);
-    EXPECT_EQ(test_output_three.damage_type() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_output_three.damage_type() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_FLOAT_EQ(test_output_three.amount(), 1.8f);
 
     // Healing should not be affected
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_simple_partial.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -121,57 +130,70 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_MultipleDamage_Apply) 
     EXPECT_EQ(test_case_multi_damage.get_module_name(), "TestData_MultipleDamage");
     EXPECT_TRUE(test_case_multi_damage.init_module(test_multi_damage));
     EXPECT_TRUE(test_case_multi_damage.test_get_damage_type().has_value());
-    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & Damage::MAGIC, Damage::MAGIC);
-    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
+    EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_TRUE(test_case_multi_damage.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_multi_damage.test_get_amount().value(), 1.4f);
     EXPECT_TRUE(test_case_multi_damage.test_get_partial_effect_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_multi_damage.test_get_partial_effect_amount().value(), 0.5f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::MAGIC | Damage::FIRE);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::MAGIC
+                                | code::client::messages::Damage::FIRE);
     test_output.set_amount(3.2f);
     test_case_multi_damage.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::MAGIC, Damage::MAGIC);
-    EXPECT_EQ(test_output.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output.amount(), 1.8f);
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::MAGIC);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::MAGIC);
     test_output_two.set_amount(3.2f);
     test_case_multi_damage.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::MAGIC, Damage::MAGIC);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 1.8f);
     
-    Damage test_output_three;
-    test_output_three.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_three;
+    test_output_three.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_three.set_amount(3.2f);
     test_case_multi_damage.process_damage(test_output_three);
-    EXPECT_EQ(test_output_three.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_three.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_three.amount(), 1.8f);
     
-    Damage test_output_four;
-    test_output_four.set_damage_type(Damage::MAGIC | Damage::FIRE | Damage::POISON);
+    code::client::messages::Damage test_output_four;
+    test_output_four.set_damage_type(code::client::messages::Damage::MAGIC
+                                    | code::client::messages::Damage::FIRE
+                                    | code::client::messages::Damage::POISON);
     test_output_four.set_amount(3.2f);
     test_case_multi_damage.process_damage(test_output_four);
-    EXPECT_EQ(test_output_four.damage_type() & Damage::MAGIC, Damage::MAGIC);
-    EXPECT_EQ(test_output_four.damage_type() & Damage::FIRE, Damage::FIRE);
-    EXPECT_EQ(test_output_four.damage_type() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_output_four.damage_type() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
+    EXPECT_EQ(test_output_four.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
+    EXPECT_EQ(test_output_four.damage_type() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_FLOAT_EQ(test_output_four.amount(), 2.7f);
     
-    Damage test_output_five;
-    test_output_five.set_damage_type(Damage::POISON);
+    code::client::messages::Damage test_output_five;
+    test_output_five.set_damage_type(code::client::messages::Damage::POISON);
     test_output_five.set_amount(3.2f);
     test_case_multi_damage.process_damage(test_output_five);
-    EXPECT_EQ(test_output_five.damage_type() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_output_five.damage_type() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_FLOAT_EQ(test_output_five.amount(), 3.2f);
 
     // Healing should not be affected
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_multi_damage.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -179,7 +201,7 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_MultipleDamage_BadPart
     YAML::Node modules = YAML::LoadFile(k_yaml_file);
 
     EXPECT_TRUE(modules.IsMap());
-    
+
     YAML::Node test_multi_damage_partial = modules["TestData_MultipleDamage_BadPartial"];
     EXPECT_TRUE(test_multi_damage_partial);
     EXPECT_TRUE(test_multi_damage_partial.IsMap());
@@ -189,51 +211,62 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_MultipleDamage_BadPart
     EXPECT_FALSE(test_case_multi_damage_partial.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_multi_damage_partial.test_get_amount().has_value());
     EXPECT_FALSE(test_case_multi_damage_partial.test_get_partial_effect_amount().has_value());
-    
-    Damage test_output;
-    test_output.set_damage_type(Damage::MAGIC | Damage::FIRE);
+
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::MAGIC
+                                | code::client::messages::Damage::FIRE);
     test_output.set_amount(3.2f);
     test_case_multi_damage_partial.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::MAGIC, Damage::MAGIC);
-    EXPECT_EQ(test_output.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::MAGIC);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::MAGIC);
     test_output_two.set_amount(3.2f);
     test_case_multi_damage_partial.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::MAGIC, Damage::MAGIC);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
-    
-    Damage test_output_three;
-    test_output_three.set_damage_type(Damage::FIRE);
+
+    code::client::messages::Damage test_output_three;
+    test_output_three.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_three.set_amount(3.2f);
     test_case_multi_damage_partial.process_damage(test_output_three);
-    EXPECT_EQ(test_output_three.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_three.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_three.amount(), 3.2f);
-    
-    Damage test_output_four;
-    test_output_four.set_damage_type(Damage::MAGIC | Damage::FIRE | Damage::POISON);
+
+    code::client::messages::Damage test_output_four;
+    test_output_four.set_damage_type(code::client::messages::Damage::MAGIC
+                                    | code::client::messages::Damage::FIRE
+                                    | code::client::messages::Damage::POISON);
     test_output_four.set_amount(3.2f);
     test_case_multi_damage_partial.process_damage(test_output_four);
-    EXPECT_EQ(test_output_four.damage_type() & Damage::MAGIC, Damage::MAGIC);
-    EXPECT_EQ(test_output_four.damage_type() & Damage::FIRE, Damage::FIRE);
-    EXPECT_EQ(test_output_four.damage_type() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_output_four.damage_type() & code::client::messages::Damage::MAGIC,
+                code::client::messages::Damage::MAGIC);
+    EXPECT_EQ(test_output_four.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
+    EXPECT_EQ(test_output_four.damage_type() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_FLOAT_EQ(test_output_four.amount(), 3.2f);
-    
-    Damage test_output_five;
-    test_output_five.set_damage_type(Damage::POISON);
+
+    code::client::messages::Damage test_output_five;
+    test_output_five.set_damage_type(code::client::messages::Damage::POISON);
     test_output_five.set_amount(3.2f);
     test_case_multi_damage_partial.process_damage(test_output_five);
-    EXPECT_EQ(test_output_five.damage_type() & Damage::POISON, Damage::POISON);
+    EXPECT_EQ(test_output_five.damage_type() & code::client::messages::Damage::POISON,
+                code::client::messages::Damage::POISON);
     EXPECT_FLOAT_EQ(test_output_five.amount(), 3.2f);
 
     // Healing should not be affected
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_multi_damage_partial.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -253,18 +286,18 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_NoDamage_Apply) {
     EXPECT_FALSE(test_case_no_damage.test_get_partial_effect_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
-    test_output.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::FIRE);
     test_output.set_amount(3.2f);
     test_case_no_damage.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::FIRE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_damage.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -284,18 +317,18 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_No_Amount_Apply) {
     EXPECT_FALSE(test_case_no_amount.test_get_partial_effect_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
-    test_output.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::FIRE);
     test_output.set_amount(3.2f);
     test_case_no_amount.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::FIRE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -315,18 +348,18 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_Negative_Amount_Apply)
     EXPECT_FALSE(test_case_negative_amount.test_get_partial_effect_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
-    test_output.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::FIRE);
     test_output.set_amount(3.2f);
     test_case_negative_amount.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::FIRE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_negative_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -346,18 +379,18 @@ TEST(DamageTypeResist_Module, Test_DamageTypeResistModule_PartialLargerThanAmoun
     EXPECT_FALSE(test_case_partial_larger_than_amount.test_get_partial_effect_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
-    test_output.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::FIRE);
     test_output.set_amount(3.2f);
     test_case_partial_larger_than_amount.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::FIRE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_partial_larger_than_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 

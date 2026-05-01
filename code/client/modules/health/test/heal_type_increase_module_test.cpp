@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include "code/client/damage/proto/damage.pb.h"
-#include "code/client/health/proto/heal.pb.h"
+#include "code/client/messages/proto/damage.pb.h"
+#include "code/client/messages/proto/heal.pb.h"
 #include "code/client/modules/health/heal_type_increase_module.h"
 
 // This Test class is just being used to expose some data to the 
@@ -12,8 +12,8 @@
 class HealTypeIncrease_Module_Test : public Module::HealTypeIncrease_Module {
 public:
     explicit HealTypeIncrease_Module_Test(const std::string& name) : HealTypeIncrease_Module(name) {}
-    
-    std::optional<Heal::HealType> test_get_heal_type() { return m_heal_type; }
+
+    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() { return m_heal_type; }
     std::optional<float> test_get_amount() { return m_amount; }
 };
 
@@ -31,30 +31,31 @@ TEST(HealTypeIncrease_Module, Test_HealTypeIncreaseModule_Simple_Apply) {
     EXPECT_EQ(test_case_simple.get_module_name(), "TestData_Simple");
     EXPECT_TRUE(test_case_simple.init_module(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_heal_type().has_value());
-    EXPECT_EQ(test_case_simple.test_get_heal_type().value(), Heal::POTION);
+    EXPECT_EQ(test_case_simple.test_get_heal_type().value(), code::client::messages::Heal::POTION);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_simple.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 5.7f);
 
-    Heal test_heal_two;
-    test_heal_two.set_type(Heal::MAGIC);
+    code::client::messages::Heal test_heal_two;
+    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_simple.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     // Damage should not be affected
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_simple.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 }
 
@@ -73,25 +74,26 @@ TEST(HealTypeIncrease_Module, Test_HealTypeIncreaseModule_NoHeal_Apply) {
     EXPECT_FALSE(test_case_no_heal.test_get_amount().has_value());
 
     // Nothing happens
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_heal.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
-    Heal test_heal_two;
-    test_heal_two.set_type(Heal::MAGIC);
+    code::client::messages::Heal test_heal_two;
+    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_no_heal.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_no_heal.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 }
 
@@ -110,25 +112,26 @@ TEST(HealTypeIncrease_Module, Test_HealTypeIncreaseModule_HealNotString_Apply) {
     EXPECT_FALSE(test_case_heal_not_string.test_get_amount().has_value());
 
     // Nothing happens
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_heal_not_string.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
-    Heal test_heal_two;
-    test_heal_two.set_type(Heal::MAGIC);
+    code::client::messages::Heal test_heal_two;
+    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_heal_not_string.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_heal_not_string.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 }
 
@@ -147,25 +150,26 @@ TEST(HealTypeIncrease_Module, Test_HealTypeIncreaseModule_HealInvalidType_Apply)
     EXPECT_FALSE(test_case_heal_invalid_type.test_get_amount().has_value());
 
     // Nothing happens
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_heal_invalid_type.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
-    Heal test_heal_two;
-    test_heal_two.set_type(Heal::MAGIC);
+    code::client::messages::Heal test_heal_two;
+    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_heal_invalid_type.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_heal_invalid_type.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 }
 
@@ -184,25 +188,26 @@ TEST(HealTypeIncrease_Module, Test_HealTypeIncreaseModule_No_Amount_Apply) {
     EXPECT_FALSE(test_case_no_amount.test_get_amount().has_value());
 
     // Nothing happens
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
-    Heal test_heal_two;
-    test_heal_two.set_type(Heal::MAGIC);
+    code::client::messages::Heal test_heal_two;
+    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_no_amount.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_no_amount.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 }
 
@@ -221,25 +226,26 @@ TEST(HealTypeIncrease_Module, Test_HealTypeIncreaseModule_Negative_Amount_Apply)
     EXPECT_FALSE(test_case_negative_amount.test_get_amount().has_value());
 
     // Nothing happens
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_negative_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
-    Heal test_heal_two;
-    test_heal_two.set_type(Heal::MAGIC);
+    code::client::messages::Heal test_heal_two;
+    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_negative_amount.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
-    Damage test_output;
-    test_output.set_damage_type(Damage::PHYSICAL);
+    code::client::messages::Damage test_output;
+    test_output.set_damage_type(code::client::messages::Damage::PHYSICAL);
     test_output.set_amount(3.2f);
     test_case_negative_amount.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type() & Damage::PHYSICAL, Damage::PHYSICAL);
+    EXPECT_EQ(test_output.damage_type() & code::client::messages::Damage::PHYSICAL,
+                code::client::messages::Damage::PHYSICAL);
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 }
 

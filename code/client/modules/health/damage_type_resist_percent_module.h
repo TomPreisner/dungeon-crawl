@@ -14,7 +14,7 @@ public:
 
     virtual bool init_module(const YAML::Node& node) override;
 
-    virtual void process_damage(Damage& incoming) override;
+    virtual void process_damage(code::client::messages::Damage& incoming) override;
 };
 
 } // namespace Module

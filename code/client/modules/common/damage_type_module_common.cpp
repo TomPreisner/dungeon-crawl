@@ -4,7 +4,7 @@
 /********************************************************************/
 #include "damage_type_module_common.h"
 
-#include "code/client/damage/proto/damage.pb.h"
+#include "code/client/messages/proto/damage.pb.h"
 
 #include "code/core/log_manager.h"
 
@@ -39,8 +39,8 @@ bool DamageTypeModule_Common::init_module(const YAML::Node& node) {
             clear_values();
             return false;
         }
-        Damage::DamageType value;
-        if (Damage::DamageType_Parse(damage_type, &value)) {
+        code::client::messages::Damage::DamageType value;
+        if (code::client::messages::Damage::DamageType_Parse(damage_type, &value)) {
             if (m_damage_type.has_value()) {
                 m_damage_type = m_damage_type.value() | value;
             } else {

@@ -4,16 +4,16 @@
 /********************************************************************/
 #pragma once
 
-#include "code/client/messages/proto/damage.pb.h"
+#include <string>
 
-namespace Module {
+namespace Messages {
 
-class DamageModule {
-public:
-    DamageModule() = default;
-    virtual ~DamageModule() {}
-
-    virtual void apply_damage(code::client::messages::Damage& outgoing) {}
+struct ApplyStatus {
+    std::string status_effect_name;
 };
 
-} // namespace Module
+struct ClearStatus {
+    std::string status_effect_name;
+};
+
+} // namespace Messages

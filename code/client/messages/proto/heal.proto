@@ -1,5 +1,6 @@
 // [START declaration]
 syntax = "proto3";
+package code.client.messages;
 // [END declaration]
 
 // [START messages]

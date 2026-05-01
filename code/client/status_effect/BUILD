@@ -45,7 +45,10 @@ cc_library(
         "@yaml-cpp",
         ":status_effect",
         ":status_effect_library",
+        "//code/client/messages:health_messages",
+        "//code/client/messages:status_messages",
         "//code/core:log_manager",
+        "//code/core/message_system:message_system",
     ],
     visibility = ["//visibility:public"],
 )

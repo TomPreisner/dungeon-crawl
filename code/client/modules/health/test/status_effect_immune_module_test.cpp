@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include "code/client/damage/proto/damage.pb.h"
-#include "code/client/health/proto/heal.pb.h"
+#include "code/client/messages/proto/damage.pb.h"
+#include "code/client/messages/proto/heal.pb.h"
 #include "code/client/status_effect/status_effect.h"
 #include "code/client/status_effect/status_effect_library.h"
 #include "code/client/modules/health/status_effect_immune_module.h"
@@ -41,30 +41,31 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType) {
     EXPECT_EQ(test_case_statusType.test_get_status_effect_type().value(), Status::StatusEffectType::FIRE);
     EXPECT_FALSE(test_case_statusType.test_get_percent_chance_amount().has_value());
 
-    Damage test_output;
+    code::client::messages::Damage test_output;
     std::string* value = test_output.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Ignite_V1";
     test_case_statusType.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     value = test_output_two.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_statusType.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 1);
     EXPECT_EQ(test_output_two.status_effect(0), "Venom_V1");
     
-    Damage test_output_three;
-    test_output_three.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_three;
+    test_output_three.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_three.set_amount(3.2f);
     value = test_output_three.add_status_effect();
     ASSERT_TRUE(value != nullptr);
@@ -76,7 +77,8 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType) {
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_statusType.process_damage(test_output_three);
-    EXPECT_EQ(test_output_three.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_three.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_three.amount(), 3.2f);
     EXPECT_EQ(test_output_three.status_effect_size(), 3);
     EXPECT_EQ(test_output_three.status_effect(0), "");
@@ -84,11 +86,11 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType) {
     EXPECT_EQ(test_output_three.status_effect(2), "Venom_V1");
     
     // Healing should not be affected
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -112,18 +114,18 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_Invalid
     EXPECT_FALSE(test_case_statusType_Invalid.test_get_percent_chance_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
+    code::client::messages::Damage test_output;
     std::string* value = test_output.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Ignite_V1";
     test_case_statusType_Invalid.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     value = test_output_two.add_status_effect();
     ASSERT_TRUE(value != nullptr);
@@ -135,18 +137,19 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_Invalid
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_statusType_Invalid.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 3);
     EXPECT_EQ(test_output_two.status_effect(0), "Ignite_V1");
     EXPECT_EQ(test_output_two.status_effect(1), "Foobar_V7");
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_Invalid.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -179,7 +182,7 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_50_Perc
     for (int i = 0; i < 3; ++i) {
         int times_removed = 0;
         for (int j = 0; j < 100; ++j) {
-            Damage test_output;
+            code::client::messages::Damage test_output;
             std::string* value = test_output.add_status_effect();
             ASSERT_TRUE(value != nullptr);
             *value = "Ignite_V1";
@@ -187,7 +190,7 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_50_Perc
             ASSERT_TRUE(value != nullptr);
             *value = "Venom_V1";
             test_case_statusType_50.process_damage(test_output);
-            EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+            EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
             EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
             EXPECT_EQ(test_output.status_effect_size(), 2);
             EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
@@ -205,11 +208,11 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_50_Perc
     EXPECT_TRUE(passed);
 
     // Healing should not be affected
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_50.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -233,18 +236,18 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_Negativ
     EXPECT_FALSE(test_case_statusType_NegativePercent.test_get_percent_chance_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
+    code::client::messages::Damage test_output;
     std::string* value = test_output.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Ignite_V1";
     test_case_statusType_NegativePercent.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     value = test_output_two.add_status_effect();
     ASSERT_TRUE(value != nullptr);
@@ -256,18 +259,19 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_Negativ
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_statusType_NegativePercent.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 3);
     EXPECT_EQ(test_output_two.status_effect(0), "Ignite_V1");
     EXPECT_EQ(test_output_two.status_effect(1), "Foobar_V7");
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_NegativePercent.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -291,18 +295,18 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_TooMuch
     EXPECT_FALSE(test_case_statusType_TooMuchPercent.test_get_percent_chance_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
+    code::client::messages::Damage test_output;
     std::string* value = test_output.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Ignite_V1";
     test_case_statusType_TooMuchPercent.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     value = test_output_two.add_status_effect();
     ASSERT_TRUE(value != nullptr);
@@ -314,18 +318,19 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_TooMuch
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_statusType_TooMuchPercent.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 3);
     EXPECT_EQ(test_output_two.status_effect(0), "Ignite_V1");
     EXPECT_EQ(test_output_two.status_effect(1), "Foobar_V7");
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_TooMuchPercent.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -349,18 +354,18 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_ZeroPer
     EXPECT_FALSE(test_case_statusType_ZeroPercent.test_get_percent_chance_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
+    code::client::messages::Damage test_output;
     std::string* value = test_output.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Ignite_V1";
     test_case_statusType_ZeroPercent.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     value = test_output_two.add_status_effect();
     ASSERT_TRUE(value != nullptr);
@@ -372,18 +377,19 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_ZeroPer
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_statusType_ZeroPercent.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 3);
     EXPECT_EQ(test_output_two.status_effect(0), "Ignite_V1");
     EXPECT_EQ(test_output_two.status_effect(1), "Foobar_V7");
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_ZeroPercent.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -407,18 +413,18 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_StatusN
     EXPECT_FALSE(test_case_StatusName.test_get_percent_chance_amount().has_value());
 
     // Nothing happens
-    Damage test_output;
+    code::client::messages::Damage test_output;
     std::string* value = test_output.add_status_effect();
     ASSERT_TRUE(value != nullptr);
     *value = "Ignite_V1";
     test_case_StatusName.process_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     value = test_output_two.add_status_effect();
     ASSERT_TRUE(value != nullptr);
@@ -430,18 +436,19 @@ TEST(StatusEffectImmune_Module, Test_StatusEffectImmuneModule_StatusType_StatusN
     ASSERT_TRUE(value != nullptr);
     *value = "Venom_V1";
     test_case_StatusName.process_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 3);
     EXPECT_EQ(test_output_two.status_effect(0), "Ignite_V1");
     EXPECT_EQ(test_output_two.status_effect(1), "Foobar_V7");
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
-    Heal test_heal;
-    test_heal.set_type(Heal::POTION);
+    code::client::messages::Heal test_heal;
+    test_heal.set_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_StatusName.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), Heal::POTION);
+    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
