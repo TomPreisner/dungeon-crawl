@@ -24,7 +24,7 @@ bool HealTypeIncrease_Module::init_module(const YAML::Node& node) {
     return true;
 }
 
-void HealTypeIncrease_Module::process_heal(Heal& incoming) {
+void HealTypeIncrease_Module::process_heal(code::client::messages::Heal& incoming) {
     if (!m_heal_type.has_value() || !m_amount.has_value()) {
         LOG_WARN(HealTypeIncrease_Module, "Invalid values in " + get_module_name());
         return; //< do nothing

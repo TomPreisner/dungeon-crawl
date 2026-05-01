@@ -23,7 +23,7 @@ bool DamageTypeApply_Module::init_module(const YAML::Node& node) {
     return true;
 }
 
-void DamageTypeApply_Module::apply_damage(Damage& outgoing) {
+void DamageTypeApply_Module::apply_damage(code::client::messages::Damage& outgoing) {
     if (!m_damage_type.has_value() || !m_amount.has_value()) {        
         LOG_WARN(DamageTypeApply_Module, "Invalid values in " + get_module_name())
         return; //< do nothing

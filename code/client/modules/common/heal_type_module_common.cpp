@@ -30,8 +30,8 @@ bool HealTypeModule_Common::init_module(const YAML::Node& node) {
         clear_values();
         return false;
     }
-    Heal::HealType value;
-    if (Heal::HealType_Parse(heal_type, &value)) {
+    code::client::messages::Heal::HealType value;
+    if (code::client::messages::Heal::HealType_Parse(heal_type, &value)) {
         m_heal_type = value;
     } else {
         LOG_ERROR(HealTypeModule_Common, "Invalid heal type: " + heal_type)

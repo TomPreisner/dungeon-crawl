@@ -7,7 +7,7 @@ cc_test(
         "@googletest//:gtest",
         "@googletest//:gtest_main",
         "@yaml-cpp",
-        "//code/client/damage/proto:damage_cc_proto",
+        "//code/client/messages/proto:damage_cc_proto",
         "//code/client/modules/damage:damage_type_apply_module",
     ],
     data = ["//code/client/modules/damage/test/data:test_damage_type_apply_module_yaml"],

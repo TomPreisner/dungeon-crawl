@@ -37,25 +37,26 @@ TEST(StatusEffectApply_Module, Test_StatusEffectApplyModule_Apply_StatusName) {
     EXPECT_EQ(test_case_statusName.test_get_status_effect_name().value(), "Ignite_V1");
     EXPECT_FALSE(test_case_statusName.test_get_status_effect_type().has_value());
 
-    Damage test_output;
+    code::client::messages::Damage test_output;
     test_case_statusName.apply_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 1);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
     
     test_case_statusName.apply_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 2);
     EXPECT_EQ(test_output.status_effect(0), "Ignite_V1");
     EXPECT_EQ(test_output.status_effect(1), "Ignite_V1");
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     test_case_statusName.apply_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 1);
     EXPECT_EQ(test_output_two.status_effect(0), "Ignite_V1");
@@ -79,17 +80,18 @@ TEST(StatusEffectApply_Module, Test_StatusEffectApplyModule_Apply_StatusName_Doe
     EXPECT_FALSE(test_case_statusName_doesntExist.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusName_doesntExist.test_get_status_effect_type().has_value());
 
-    Damage test_output;
+    code::client::messages::Damage test_output;
     test_case_statusName_doesntExist.apply_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 0);
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     test_case_statusName_doesntExist.apply_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 0);
 
@@ -112,17 +114,18 @@ TEST(StatusEffectApply_Module, Test_StatusEffectApplyModule_Apply_StatusType) {
     EXPECT_FALSE(test_case_statusType.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusType.test_get_status_effect_type().has_value());
 
-    Damage test_output;
+    code::client::messages::Damage test_output;
     test_case_statusType.apply_damage(test_output);
-    EXPECT_EQ(test_output.damage_type(), Damage::NONE);
+    EXPECT_EQ(test_output.damage_type(), code::client::messages::Damage::NONE);
     EXPECT_FLOAT_EQ(test_output.amount(), 0.0f);
     EXPECT_EQ(test_output.status_effect_size(), 0);
 
-    Damage test_output_two;
-    test_output_two.set_damage_type(Damage::FIRE);
+    code::client::messages::Damage test_output_two;
+    test_output_two.set_damage_type(code::client::messages::Damage::FIRE);
     test_output_two.set_amount(3.2f);
     test_case_statusType.apply_damage(test_output_two);
-    EXPECT_EQ(test_output_two.damage_type() & Damage::FIRE, Damage::FIRE);
+    EXPECT_EQ(test_output_two.damage_type() & code::client::messages::Damage::FIRE,
+                code::client::messages::Damage::FIRE);
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
     EXPECT_EQ(test_output_two.status_effect_size(), 0);
 

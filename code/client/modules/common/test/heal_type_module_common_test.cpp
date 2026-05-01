@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include "code/client/health/proto/heal.pb.h"
+#include "code/client/messages/proto/heal.pb.h"
 #include "code/client/modules/common/heal_type_module_common.h"
 
 // This Test class is just being used to expose some data to the 
@@ -12,7 +12,7 @@ class HealTypeModule_Common_Test : public Module::HealTypeModule_Common {
 public:
     explicit HealTypeModule_Common_Test(const std::string& name) : HealTypeModule_Common(name) {}
     
-    std::optional<Heal::HealType> test_get_heal_type() { return m_heal_type; }
+    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() { return m_heal_type; }
     std::optional<float> test_get_amount() { return m_amount; }
 };
 
@@ -30,7 +30,7 @@ TEST(HealTypeModule_Common, Test_HealTypeModuleCreation_Simple) {
     EXPECT_EQ(test_case_simple.get_module_name(), "TestData_Simple");
     EXPECT_TRUE(test_case_simple.init_module(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_heal_type().has_value());
-    EXPECT_EQ(test_case_simple.test_get_heal_type().value(), Heal::POTION);
+    EXPECT_EQ(test_case_simple.test_get_heal_type().value(), code::client::messages::Heal::POTION);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
 }

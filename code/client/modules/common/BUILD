@@ -14,7 +14,7 @@ cc_library(
     deps = [
         "@yaml-cpp",
         ":base_module",
-        "//code/client/damage/proto:damage_cc_proto",
+        "//code/client/messages/proto:damage_cc_proto",
         "//code/core:log_manager",
     ],
     visibility = ["//visibility:public"],
@@ -27,7 +27,7 @@ cc_library(
     deps = [
         "@yaml-cpp",
         ":base_module",
-        "//code/client/health/proto:heal_cc_proto",
+        "//code/client/messages/proto:heal_cc_proto",
         "//code/core:log_manager",
     ],
     visibility = ["//visibility:public"],

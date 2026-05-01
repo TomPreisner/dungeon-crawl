@@ -2,6 +2,17 @@ load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@protobuf//bazel:cc_proto_library.bzl", "cc_proto_library")
 
 proto_library(
+    name = "damage_proto",
+    srcs = ["damage.proto"],
+)
+
+cc_proto_library(
+    name = "damage_cc_proto",
+    deps = [":damage_proto"],
+    visibility = ["//visibility:public"],
+)
+
+proto_library(
     name = "heal_proto",
     srcs = ["heal.proto"],
 )

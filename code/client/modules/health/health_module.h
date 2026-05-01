@@ -4,8 +4,8 @@
 /********************************************************************/
 #pragma once
 
-#include "code/client/damage/proto/damage.pb.h"
-#include "code/client/health/proto/heal.pb.h"
+#include "code/client/messages/proto/damage.pb.h"
+#include "code/client/messages/proto/heal.pb.h"
 
 namespace Module {
 
@@ -14,8 +14,8 @@ public:
     HealthModule() = default;
     virtual ~HealthModule() {}
 
-    virtual void process_heal(Heal& incoming) = 0;
-    virtual void process_damage(Damage& incoming) = 0;
+    virtual void process_heal(code::client::messages::Heal& incoming) {}
+    virtual void process_damage(code::client::messages::Damage& incoming) {}
 };
 
 } // namespace Module

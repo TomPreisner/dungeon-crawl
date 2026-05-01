@@ -4,8 +4,8 @@ cc_library(
     name = "health_module",
     hdrs = ["health_module.h"],
     deps = [
-        "//code/client/damage/proto:damage_cc_proto",   
-        "//code/client/health/proto:heal_cc_proto",        
+        "//code/client/messages/proto:damage_cc_proto",   
+        "//code/client/messages/proto:heal_cc_proto",        
     ],
     visibility = ["//visibility:public"],
 )

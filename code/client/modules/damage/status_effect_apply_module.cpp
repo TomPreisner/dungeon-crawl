@@ -24,7 +24,7 @@ bool StatusEffectApply_Module::init_module(const YAML::Node& node) {
     return true;
 }
 
-void StatusEffectApply_Module::apply_damage(Damage& outgoing) {
+void StatusEffectApply_Module::apply_damage(code::client::messages::Damage& outgoing) {
     if (!m_status_effect_name.has_value()) {
         LOG_WARN(StatusEffectApply_Module, "Invalid status effect name in " + get_module_name())
         return; //< do nothing

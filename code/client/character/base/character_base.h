@@ -7,9 +7,11 @@
 //      for the enemies, player characters, and non-player characters.
 
 #include <chrono>
+#include <memory>
 
 #include "behaviortree_cpp/bt_factory.h"
 #include "code/client/object/object_dynamic.h"
+//#include "code/core/message_system/message_switchboard.h"
 
 enum class CharacterType {
     ENEMY,
@@ -43,4 +45,7 @@ private:
     int m_armor_amt;
 
     BT::Tree m_behavior_tree;
+//    core::MessageSwitchboard m_switchboard;
+//    std::shared_ptr<HealthManager> m_health_manager;
+//    std::shared_ptr<Status::StatusEffectManager> m_status_manager;
 };

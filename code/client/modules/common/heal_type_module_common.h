@@ -6,7 +6,7 @@
 
 #include <optional>
 #include "code/client/modules/common/base_module.h"
-#include "code/client/health/proto/heal.pb.h"
+#include "code/client/messages/proto/heal.pb.h"
 
 namespace Module {
     
@@ -19,7 +19,7 @@ public:
 protected:
     virtual void clear_values() override;
 
-    std::optional<Heal::HealType> m_heal_type;
+    std::optional<code::client::messages::Heal::HealType> m_heal_type;
     std::optional<float> m_amount;
 };
 
