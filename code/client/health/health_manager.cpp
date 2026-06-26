@@ -25,10 +25,15 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
         return false;
     }
 
+    if (m_initialized) {
+        LOG_ERROR(HealthManager, "HealthManager is already initialize, can't do so again. init failed:\n" + YAML::Dump(node));
+        return false;
+    }
+
     ////////////////////////////////////////////////////////
     const YAML::Node& total_health = node["total_health"];
     if (!total_health) {
-        LOG_ERROR(HealthManager, "\"total_health\" is present, init failed:\n" + YAML::Dump(node));
+        LOG_ERROR(HealthManager, "\"total_health\" is not present, init failed:\n" + YAML::Dump(node));
         return false;
     }
 
@@ -36,6 +41,13 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
         m_total_health = total_health.as<float>();
     } catch (const YAML::TypedBadConversion<float>& e) {
         LOG_ERROR(HealthManager, "Value in \"total_health\" is not a float, init failed:\n" + YAML::Dump(total_health));
+        return false;
+    }
+
+    // The total health can't be zero or less
+    if (m_total_health <= 0.f) {
+        LOG_ERROR(HealthManager, "Value in \"total_health\" is <= 0.f, init failed:\n" + YAML::Dump(total_health));
+        m_total_health = 0.f;
         return false;
     }
 
@@ -51,6 +63,12 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
     } else {
         LOG_INFO(HealthManager, "No \"health\" is present in the init data. Using the total_health by default");
         m_health = m_total_health;
+    }
+
+    // The health can't be less than zero (it can be zero i.e. dead)
+    if (m_health < 0.f) {
+        LOG_ERROR(HealthManager, "Value in \"health\" is less than zero, init failed:\n" + YAML::Dump(total_health));
+        return false;
     }
 
     ////////////////////////////////////////////////////////
@@ -70,7 +88,7 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
             try {
                 module_name = module["name"].as<std::string>();
             } catch (const YAML::TypedBadConversion<std::string>& e) {
-                LOG_ERROR(HealthManager, "Value in default_module \"module_name\" is not a float, init failed:\n" + YAML::Dump(module));
+                LOG_ERROR(HealthManager, "Value in default_module \"module_name\" is not a string, init failed:\n" + YAML::Dump(module));
                 continue;
             }
             if (!add_module(m_uuid_string, module_name, module["data"])) {
@@ -130,7 +148,6 @@ void HealthManager::update_manager(const std::chrono::milliseconds& dt) {
 
 bool HealthManager::add_module(const std::string& uuid_owner, const std::string& module_name, const YAML::Node& data) {
     if (uuid_owner.empty()) {
-        LOG_ERROR(HealthManager, "Invalid uuid_owner defined: \"" + uuid_owner + "\" for module: \"" + module_name + "\" data:\n" + YAML::Dump(data));
         return false;
     }
 
@@ -138,23 +155,13 @@ bool HealthManager::add_module(const std::string& uuid_owner, const std::string&
         LOG_INFO(HealthManager, "Adding modules for new uuid: " + uuid_owner);
     }
 
-    std::shared_ptr<Module::BaseModule> module = Module::ModuleFactory::get_Instance()->create_module(module_name, data);
+    std::shared_ptr<Module::BaseDescriptor> module = Module::ModuleFactory::get_Instance()->create_module(module_name, data);
     if (module.get() == nullptr) {
         LOG_ERROR(HealthManager, "Failed to create module: " + module_name + " for: " + uuid_owner + "  data:\n" + YAML::Dump(data));
         return false;
     }
 
-    Module::HealthModule* health_module_ptr = dynamic_cast<Module::HealthModule*>(module.get());
-    if (health_module_ptr == nullptr) {
-        LOG_ERROR(HealthManager, "Requested module is not a health module: " + module_name + "  data:\n" + YAML::Dump(data));
-        return false;
-    }
-    // A deep copy of the module to take ownership based on a second class
-    //  The previous shared pointer can NOT be moved into this one, and once this function terminates
-    //  that allocated object will be deleted. So this needs to be a deep copy into new instance
-    //  because if the pointer is used, it will lead to data corruption
-    std::shared_ptr<Module::HealthModule> health_module = std::make_shared<Module::HealthModule>(*health_module_ptr);
-
+    std::shared_ptr<Module::HealthModule> health_module = std::make_shared<Module::HealthModule>(module);
     m_health_module[uuid_owner].emplace_back(health_module);
     return true;
 }
@@ -176,7 +183,7 @@ bool HealthManager::remove_module(const std::string& uuid_owner, const std::stri
     bool found = false;
     for (auto iter = mod_list.begin(); iter != mod_list.end();) {
         std::string iter_name = "";
-        Module::BaseModule* base_module = dynamic_cast<Module::BaseModule*>(iter->get());
+        Module::BaseDescriptor* base_module = dynamic_cast<Module::BaseDescriptor*>(iter->get());
         if (base_module != nullptr) {
             iter_name = base_module->get_module_name();
         }

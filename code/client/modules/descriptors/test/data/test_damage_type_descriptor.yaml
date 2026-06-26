@@ -1,0 +1,90 @@
+TestData_Simple:
+  damage_type:
+    - PHYSICAL
+  amount: 2.5
+  
+TestData_Simple_Partial:
+  damage_type:
+    - POISON
+  amount: 1.4
+  partial_effect_amount: 0.5
+
+TestData_SimplePercent:
+  damage_type:
+    - PHYSICAL
+  amount: 0.8
+
+TestData_SimplePercent_Partial:
+  damage_type:
+    - POISON
+  amount: 0.8
+  partial_effect_amount: 0.4
+
+TestData_MultipleDamage:
+  damage_type:
+    - MAGIC
+    - FIRE
+  amount: 1.4
+  partial_effect_amount: 0.5
+
+TestData_MultipleDamage_BadPartial:
+  damage_type:
+    - MAGIC
+    - FIRE
+  amount: 1.4
+  partial_effect_amount: half  
+
+TestData_MultipleDamagePercent:
+  damage_type:
+    - MAGIC
+    - FIRE
+  amount: 0.8
+  partial_effect_amount: 0.3
+
+TestData_MultipleDamagePercent_BadPartial:
+  damage_type:
+    - MAGIC
+    - FIRE
+  amount: 0.8
+  partial_effect_amount: half  
+
+TestData_NoDamage:
+  amount: 3.0
+
+TestData_NoAmount:
+  damage_type:
+    - PHYSICAL
+
+TestData_NegativeAmount:
+  damage_type:
+    - PHYSICAL
+  amount: -12.5
+
+TestData_PartialLargerThanAmount:
+  damage_type:
+    - PHYSICAL
+  amount: 3.8
+  partial_effect_amount: 7.4
+
+TestData_PercentTooLarge:
+  damage_type:
+    - PHYSICAL
+  amount: 12.5
+
+TestData_PercentPartialNegative:
+  damage_type:
+    - PHYSICAL
+  amount: 0.8
+  partial_effect_amount: -0.5
+
+TestData_PercentPartialLargerThanAmount:
+  damage_type:
+    - PHYSICAL
+  amount: 0.8
+  partial_effect_amount: 1.4
+
+TestData_PercentPartialTooLarge:
+  damage_type:
+    - PHYSICAL
+  amount: 0.8
+  partial_effect_amount: 1.4

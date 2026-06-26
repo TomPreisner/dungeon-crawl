@@ -10,8 +10,10 @@
 #include <memory>
 
 #include "behaviortree_cpp/bt_factory.h"
+#include "code/client/health/health_manager.h"
 #include "code/client/object/object_dynamic.h"
-//#include "code/core/message_system/message_switchboard.h"
+#include "code/client/status_effect/status_effect_manager.h"
+#include "code/core/message_system/message_switchboard.h"
 
 enum class CharacterType {
     ENEMY,
@@ -21,13 +23,6 @@ enum class CharacterType {
 };
 
 class CharacterBase : public ObjectDynamic {
-private:
-    class CharacterBasePasskey {
-     private:
-        CharacterBasePasskey() = default;
-        ~CharacterBasePasskey() = default;
-    };
-
 public:
     CharacterType get_type() const { return m_type; }
     
@@ -35,17 +30,15 @@ public:
     virtual void on_damage(const int amt) = 0;
 
 protected:
-    CharacterBase(CharacterType type) : m_type(type) {}
+    CharacterBase(CharacterType type);
     
     virtual void on_update(const std::chrono::milliseconds& dt) override;
 
 private:
     CharacterType m_type;
-    int m_health_amt;
-    int m_armor_amt;
 
     BT::Tree m_behavior_tree;
-//    core::MessageSwitchboard m_switchboard;
-//    std::shared_ptr<HealthManager> m_health_manager;
-//    std::shared_ptr<Status::StatusEffectManager> m_status_manager;
+    core::MessageSwitchboard m_switchboard;
+    std::shared_ptr<HealthManager> m_health_manager;
+    std::shared_ptr<Status::StatusEffectManager> m_status_manager;
 };

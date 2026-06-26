@@ -13,7 +13,7 @@
 #include "code/client/messages/status_messages.h"
 #include "code/client/messages/proto/damage.pb.h"
 #include "code/client/messages/proto/heal.pb.h"
-#include "code/client/modules/health/health_module.h"
+#include "code/client/modules/health/health_module_base.h"
 #include "code/core/message_system/message_publisher.h"
 #include "code/core/message_system/message_subscriber.h"
 #include "code/core/message_system/message_switchboard.h"
@@ -45,8 +45,12 @@ public:
     void apply_damage(std::list<code::client::messages::Damage>& incoming_list);
     void apply_damage(const code::client::messages::Damage& incoming);
 
-private:
+protected:
     typedef std::map<std::string, std::list<std::shared_ptr<Module::HealthModule>>> HealthModuleMap;
+    virtual const HealthModuleMap& test_get_health_modules() const { return m_health_module; }
+    virtual const std::string& test_get_uuid_string() const { return m_uuid_string; }
+
+private:
     HealthModuleMap m_health_module;
     bool m_initialized = false;
 

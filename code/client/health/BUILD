@@ -13,7 +13,6 @@ cc_library(
         "//code/client/messages/proto:heal_cc_proto",
         "//code/client/modules/common:base_module",
         "//code/client/modules/health:health_module",
-        "//code/client/modules:module_factory",
         "//code/core:log_manager",
         "//code/core/message_system:message_system",
     ],

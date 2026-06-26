@@ -32,6 +32,7 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     // Initialize the status efect library because it is needed for the status effect manager's operation
     Status::StatusEffectLibrary::get_Instance()->init_from_file(k_yaml_file);
 
+    const std::chrono::milliseconds update_rate(500); // 0.5 seconds
     StatusEffectManager_Test manager_test;
     EXPECT_TRUE(manager_test.public_test_get_status_effects().empty());
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
@@ -40,18 +41,18 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
     EXPECT_FALSE(manager_test.apply_status_effect("FooBar"));
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
-    manager_test.update_manager();
+    manager_test.update_manager(update_rate);
     EXPECT_TRUE(manager_test.public_test_get_status_effects().empty());
 
     EXPECT_TRUE(manager_test.apply_status_effect("Ignite_V1"));
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 1);
     EXPECT_TRUE(manager_test.apply_status_effect("DeepCut_V1"));
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 2);
-    manager_test.update_manager();
+    manager_test.update_manager(update_rate);
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 2);
     EXPECT_TRUE(manager_test.apply_status_effect("Venom_V1"));
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 1);
-    manager_test.update_manager();
+    manager_test.update_manager(update_rate);
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 3);
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
     // The same status effect can be applied multiple times
@@ -59,7 +60,7 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 1);
     EXPECT_TRUE(manager_test.apply_status_effect("DeepCut_V1"));
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 2);
-    manager_test.update_manager();
+    manager_test.update_manager(update_rate);
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 5);
 
     int count = 0;
@@ -75,7 +76,7 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     manager_test.clear_status_effect("");
     manager_test.clear_status_effect("FooBar");
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 4);
-    manager_test.update_manager();
+    manager_test.update_manager(update_rate);
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
     EXPECT_EQ(manager_test.public_test_get_status_effects().size(), 3);
     manager_test.clear_all_status_effects();    //< clear all will clear pending adds this update frame
@@ -83,7 +84,7 @@ TEST(StatusEffectManager, Test_StatusEffectManager) {
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 2);
     EXPECT_TRUE(manager_test.apply_status_effect("DeepCut_V1"));
     EXPECT_EQ(manager_test.public_test_get_pending_status_effect_actions().size(), 3);
-    manager_test.update_manager();
+    manager_test.update_manager(update_rate);
     EXPECT_TRUE(manager_test.public_test_get_pending_status_effect_actions().empty());
     EXPECT_TRUE(manager_test.public_test_get_status_effects().empty());
 

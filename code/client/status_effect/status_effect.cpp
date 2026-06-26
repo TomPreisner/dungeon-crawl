@@ -51,7 +51,7 @@ std::optional<StatusEffectType> StatusEffect::convert_to_type(const YAML::Node& 
         return std::nullopt;
     }
 
-    return type;    
+    return type;
 }
 
 StatusEffect::StatusEffect() {
@@ -94,7 +94,7 @@ StatusEffect::StatusEffect(const YAML::Node& node)
         LOG_ERROR(StatusEffect, "Status Effect node is not a map, unable to initialize: " + YAML::Dump(node));
         return;
     }
-    
+
     const YAML::const_iterator itEnd = node.end();
     for (YAML::const_iterator iter = node.begin(); iter != itEnd; ++iter) {        
         std::string key;
@@ -114,10 +114,24 @@ StatusEffect::StatusEffect(const YAML::Node& node)
                 LOG_ERROR(StatusEffect, "Failed to convert \"type\", skipping: " + YAML::Dump(iter->second));
                 m_status_type = StatusEffectType::NONE;
             }
-        } else if (key == "update_rate_turns") {
-            extract_scalar(iter->second, "update_rate_turns", m_update_rate_turns);
-        } else if (key == "duration_turns") {
-            extract_scalar(iter->second, "duration_turns", m_duration_turns);
+        } else if (key == "update_rate_sec") {
+            float seconds = 0.f;
+            extract_scalar(iter->second, "update_rate_sec", seconds);
+            if (seconds >= 0) {
+                m_update_rate_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                        std::chrono::duration<float>(seconds));
+            } else {
+                LOG_ERROR(StatusEffect, "Invalid value for \"update_rate_sec\", skipping: " + YAML::Dump(iter->second));
+            }
+        } else if (key == "duration_sec") {
+            float seconds = 0.f;
+            extract_scalar(iter->second, "duration_sec", seconds);
+            if (seconds >= 0) {
+                m_duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                    std::chrono::duration<float>(seconds));
+            } else {
+                LOG_ERROR(StatusEffect, "Invalid value for \"duration_sec\", skipping: " + YAML::Dump(iter->second));
+            }
         } else if (key == "vfx") {
             // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
             extract_scalar(iter->second, "vfx", m_vfx);
@@ -139,39 +153,13 @@ StatusEffect::StatusEffect(const YAML::Node& node)
     }
 }
 
-void StatusEffect::extract_scalar(const YAML::Node& node, const std::string& value_key, int& value_out) {
-    int value = 0;
-    if (!node.IsScalar()) {
-        LOG_ERROR(StatusEffect, "Key \"" + value_key + "\" is not a scalar, skipping: " + YAML::Dump(node));
-        return;
-    }
-    try {
-        value = node.as<int>();
-    } catch (const YAML::TypedBadConversion<int>& e) {
-        LOG_ERROR(StatusEffect, "Value in \"" + value_key + "\" is not an int, skipping: " + YAML::Dump(node));
-        return;
-    }
-    value_out = value;
-}
-
-void StatusEffect::extract_scalar(const YAML::Node& node, const std::string& value_key, std::string& value_out) {
-    std::string value;
-    if (!node.IsScalar()) {
-        LOG_ERROR(StatusEffect, "Key \"" + value_key + "\" is not a scalar, skipping: " + YAML::Dump(node));
-        return;
-    }
-    try {
-        value = node.as<std::string>();
-    } catch (const YAML::TypedBadConversion<std::string>& e) {
-        LOG_ERROR(StatusEffect, "Value in \"" + value_key + "\" is not a string, skipping: " + YAML::Dump(node));
-        return;
-    }
-    value_out = value;
+void StatusEffect::assign_cleanup_callback(std::function<void(const std::string&)> clear_self_from_owner) {
+    m_clear_self = clear_self_from_owner;
 }
 
 void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::string& value_key, std::vector<Effect>& value_out) {
     if (!node.IsSequence()) {
-        LOG_ERROR(StatusEffect, "Key \"" + value_key + "\" is not a sequence, skipping: " + YAML::Dump(node));
+        log_error("Key \"" + value_key + "\" is not a sequence, skipping: " + YAML::Dump(node));
         return;
     }
 
@@ -214,14 +202,16 @@ void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::st
     }
 }
 
+void StatusEffect::log_error(const std::string& message) {
+    LOG_ERROR(StatusEffect, message);
+}
+
 ////////////////////////////////////////////////////////////
 // The meat of the Status Effect operation
 
 ////////////////////////////////////////////////////////////
-void StatusEffect::on_update() {
-    //< The tick rate is once per turn, so the tick rate doesn't matter
-    const std::chrono::milliseconds tick_rate(1);
-    m_state_machine.update_tick(tick_rate);
+void StatusEffect::on_update(const std::chrono::milliseconds& dt) {
+    m_state_machine.update_tick(dt);
 }
 
 ////////////////////////////////////////////////////////////
@@ -252,20 +242,22 @@ void StatusEffect::Inactive_OnExit() {
 
 void StatusEffect::Active_OnEnter() {
     m_is_active = true;
-    m_current_tick = 0;
+    m_current_tick_ms = std::chrono::milliseconds(0);
+    m_last_update_ms = std::chrono::milliseconds(0);
 }
 
-void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {    
-    if (m_duration_turns >= 0 &&
-        m_current_tick >= m_duration_turns) {
+void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {
+    m_current_tick_ms += dt;
+    if (m_duration_ms.count() >= 0 &&
+        m_current_tick_ms >= m_duration_ms) {
         clear_status_effect();
-    } else if (m_update_rate_turns > 0 &&
-               m_current_tick % m_update_rate_turns == 0) {
+    } else if (m_update_rate_ms.count() > 0 &&
+               (m_current_tick_ms - m_last_update_ms) >= m_update_rate_ms) {
+        m_last_update_ms = m_current_tick_ms;
         for (auto & effect : m_update_effects ) {
             effect.process_effect(0.f);
         }
     }
-    ++m_current_tick;
 }
 
 void StatusEffect::Active_OnExit() {
@@ -274,7 +266,11 @@ void StatusEffect::Active_OnExit() {
 }
 
 void StatusEffect::Ended_OnEnter() {  
-    // TODO: Request clear fom the status manager.
+    try {
+        m_clear_self(m_uuid_string);
+    } catch (const std::bad_function_call& ex) {
+        LOG_ERROR(StatusEffect, std::string("Failed to clear status effect with uuid: ") + std::string(ex.what()));
+    }
 }
 
 ////////////////////////////////////////////////////////////

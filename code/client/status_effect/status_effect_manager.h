@@ -4,6 +4,7 @@
 /********************************************************************/
 #pragma once
 
+#include <chrono>
 #include <list>
 
 #include "code/client/status_effect/status_effect.h"
@@ -37,13 +38,12 @@ public:
     StatusEffectManager() {}
     ~StatusEffectManager() {}
 
-    bool init_manager(const core::MessageSwitchboard& switchboard);
+    void init_manager(core::MessageSwitchboard& switchboard);
+    void update_manager(const std::chrono::milliseconds& dt);
 
     bool apply_status_effect(const std::string& status_id);
     void clear_status_effect(const std::string& status_uuid);
     void clear_all_status_effects();
-
-    void update_manager();
 
     void apply_heal_effects(const float amount)  {}     // TODO: Fill in
     void apply_damage_effects(const float amount) {}    // TODO: Fill in

@@ -11,6 +11,13 @@
 namespace Status {
 CREATE_LOGGER(StatusEffectManager);
 
+void StatusEffectManager::init_manager(core::MessageSwitchboard& switchboard) {
+    m_apply_status_subscriber = std::make_shared<core::MessageSubscriber<Messages::ApplyStatus>>(switchboard);
+    m_clear_status_subscriber = std::make_shared<core::MessageSubscriber<Messages::ClearStatus>>(switchboard);
+    m_heal_publisher = std::make_shared<core::MessagePublisher<Messages::ApplyDirectHeal>>(switchboard);
+    m_damage_publisher = std::make_shared<core::MessagePublisher<Messages::ApplyDirectDamage>>(switchboard);
+}
+
 bool StatusEffectManager::apply_status_effect(const std::string& status_id) {
     if (StatusEffectLibrary::get_Instance()->has_status_effect(status_id)) {
         m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::APPLY, status_id, ""});
@@ -32,7 +39,7 @@ void StatusEffectManager::clear_all_status_effects() {
     m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::REMOVE_ALL, "", ""});
 }
 
-void StatusEffectManager::update_manager() {
+void StatusEffectManager::update_manager(const std::chrono::milliseconds& dt) {
     // On the start of the update process all the pending actions
     // then call the update on the resulting list of m_status_effects
     {
@@ -61,7 +68,7 @@ void StatusEffectManager::update_manager() {
 
     // Loop through the Status Effects and update them
     for (auto & statusEffect : m_status_effects) {
-        statusEffect.on_update();
+        statusEffect.on_update(dt);
     }
 }
 
@@ -76,6 +83,9 @@ void StatusEffectManager::add_status_effect(const std::string& status_id) {
 
     LOG_DEBUG(StatusEffectManager, "Adding status: " + status_id + " uuid: " + status_effect->get_uuid());
     m_status_effects.emplace_back(status_effect.value());
+    m_status_effects.back().assign_cleanup_callback([this](const std::string& uuid) {
+        clear_status_effect(uuid); //< enqueue a removal request
+    });
 }
 
 void StatusEffectManager::remove_status_effect(const std::string& status_uuid) {

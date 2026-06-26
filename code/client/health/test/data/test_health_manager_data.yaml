@@ -1,0 +1,30 @@
+TestData_Health_Manager:
+  total_health: 100
+  health: 75.0
+  default_modules:
+    - StatusEffectImmune:
+        module:
+          status_type: POISON
+          percent_chance: 0.5
+    - DamageResistAmount:
+        module:
+          damage_type:
+            - PHYSICAL
+          amount: 2.5
+          partial_effect_amount: 1.4
+
+TestData_Health_Manager_Negative_Total:
+  total_health: -100
+  health: 75.0
+
+TestData_Health_Manager_Negative_Health:
+  total_health: 100
+  health: -75.0
+
+TestData_Health_Manager_Zero_Total:
+  total_health: 0
+  health: 75.0
+
+TestData_Health_Manager_Zero_Health:
+  total_health: 100
+  health: 0.0

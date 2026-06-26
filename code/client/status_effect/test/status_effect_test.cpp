@@ -11,11 +11,11 @@ class StatusEffect_Test : public Status::StatusEffect {
 public:
     explicit StatusEffect_Test(const YAML::Node& node) : StatusEffect(node) {}
     
-    const bool public_test_has_valid_update_rate_turns() const { return test_has_valid_update_rate_turns(); }
-    const int public_test_get_update_rate_turns() const { return test_get_update_rate_turns(); }
-    const bool public_test_has_valid_duration_turns() const { return test_has_valid_duration_turns(); }
-    const int public_test_get_duration_turns() const { return test_get_duration_turns(); }
-    const int public_test_get_current_tick() const { return test_get_current_tick(); }
+    const bool public_test_has_valid_update_rate_ms() const { return test_has_valid_update_rate_ms(); }
+    const std::chrono::milliseconds public_test_get_update_rate_ms() const { return test_get_update_rate_ms(); }
+    const bool public_test_has_valid_duration_ms() const { return test_has_valid_duration_ms(); }
+    const std::chrono::milliseconds public_test_get_duration_ms() const { return test_get_duration_ms(); }
+    const std::chrono::milliseconds public_test_get_current_tick_ms() const { return test_get_current_tick_ms(); }
     const std::vector<Status::Effect>& public_test_get_heal_effects() const { return test_get_heal_effects(); }
     const std::vector<Status::Effect>& public_test_get_damage_effects() const { return test_get_damage_effects(); }
     const std::vector<Status::Effect>& public_test_get_update_effects() const { return test_get_update_effects(); }
@@ -59,11 +59,11 @@ TEST(StatusEffect, Test_StatusEffectCreation) {
     EXPECT_EQ(golden_case.get_icon(), "flame_icon_small.png");
     EXPECT_EQ(golden_case.get_vfx(), "fire_effect.vfx");
     EXPECT_EQ(golden_case.get_sfx(), "fire_crackle.wav");
-    EXPECT_TRUE(golden_case.public_test_has_valid_update_rate_turns());
-    EXPECT_EQ(golden_case.public_test_get_update_rate_turns(), 1);
-    EXPECT_TRUE(golden_case.public_test_has_valid_update_rate_turns());
-    EXPECT_EQ(golden_case.public_test_get_duration_turns(), 10);
-    EXPECT_EQ(golden_case.public_test_get_current_tick(), -1);
+    EXPECT_TRUE(golden_case.public_test_has_valid_update_rate_ms());
+    EXPECT_EQ(golden_case.public_test_get_update_rate_ms().count(), 1000);
+    EXPECT_TRUE(golden_case.public_test_has_valid_duration_ms());
+    EXPECT_EQ(golden_case.public_test_get_duration_ms().count(), 10200);
+    EXPECT_EQ(golden_case.public_test_get_current_tick_ms().count(), -1);
     EXPECT_EQ(golden_case.public_test_get_heal_effects().size(), 1);
     EXPECT_EQ(golden_case.public_test_get_damage_effects().size(), 1);
     EXPECT_EQ(golden_case.public_test_get_update_effects().size(), 2);
@@ -77,11 +77,11 @@ TEST(StatusEffect, Test_StatusEffectCreation) {
     EXPECT_EQ(invalid_not_enum.get_icon(), "true"); //< yaml does the implicit type conversion
     EXPECT_EQ(invalid_not_enum.get_vfx(), "15");    //< yaml does the implicit type conversion
     EXPECT_EQ(invalid_not_enum.get_sfx(), "12");    //< yaml does the implicit type conversion
-    EXPECT_FALSE(invalid_not_enum.public_test_has_valid_update_rate_turns());
-    EXPECT_EQ(invalid_not_enum.public_test_get_update_rate_turns(), -1);
-    EXPECT_FALSE(invalid_not_enum.public_test_has_valid_update_rate_turns());
-    EXPECT_EQ(invalid_not_enum.public_test_get_duration_turns(), -1);
-    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick(), -1);
+    EXPECT_FALSE(invalid_not_enum.public_test_has_valid_update_rate_ms());
+    EXPECT_EQ(invalid_not_enum.public_test_get_update_rate_ms().count(), -1);
+    EXPECT_FALSE(invalid_not_enum.public_test_has_valid_duration_ms());
+    EXPECT_EQ(invalid_not_enum.public_test_get_duration_ms().count(), -1);
+    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick_ms().count(), -1);
     EXPECT_EQ(invalid_not_enum.public_test_get_heal_effects().size(), 1);
     EXPECT_TRUE(invalid_not_enum.public_test_get_damage_effects().empty());
     EXPECT_EQ(invalid_not_enum.public_test_get_update_effects().size(), 1);
@@ -95,11 +95,11 @@ TEST(StatusEffect, Test_StatusEffectCreation) {
     EXPECT_EQ(invalid_not_scalar.get_icon(), "");
     EXPECT_EQ(invalid_not_scalar.get_vfx(), "");
     EXPECT_EQ(invalid_not_scalar.get_sfx(), "");
-    EXPECT_FALSE(invalid_not_scalar.public_test_has_valid_update_rate_turns());
-    EXPECT_EQ(invalid_not_scalar.public_test_get_update_rate_turns(), -1);
-    EXPECT_FALSE(invalid_not_scalar.public_test_has_valid_update_rate_turns());
-    EXPECT_EQ(invalid_not_scalar.public_test_get_duration_turns(), -1);
-    EXPECT_EQ(invalid_not_scalar.public_test_get_current_tick(), -1);
+    EXPECT_FALSE(invalid_not_scalar.public_test_has_valid_update_rate_ms());
+    EXPECT_EQ(invalid_not_scalar.public_test_get_update_rate_ms().count(), -1);
+    EXPECT_FALSE(invalid_not_scalar.public_test_has_valid_duration_ms());
+    EXPECT_EQ(invalid_not_scalar.public_test_get_duration_ms().count(), -1);
+    EXPECT_EQ(invalid_not_scalar.public_test_get_current_tick_ms().count(), -1);
     EXPECT_EQ(invalid_not_scalar.public_test_get_heal_effects().size(), 4);
     EXPECT_TRUE(invalid_not_scalar.public_test_get_damage_effects().empty());
     EXPECT_TRUE(invalid_not_scalar.public_test_get_update_effects().empty());
@@ -108,6 +108,8 @@ TEST(StatusEffect, Test_StatusEffectCreation) {
 TEST(StatusEffect, Test_StatusEffectProcessing) {
     // A simple load of a yaml file and validate the contents
     YAML::Node config = YAML::LoadFile(k_yaml_file);
+
+    const std::chrono::milliseconds update_rate(500); // 0.5 seconds
 
     EXPECT_TRUE(config.IsMap());
 
@@ -124,32 +126,33 @@ TEST(StatusEffect, Test_StatusEffectProcessing) {
     EXPECT_EQ(golden_case.m_augment_callback_count, 0);
 
     EXPECT_NE(golden_case.get_uuid(), "");
-    golden_case.on_update();  //< update needs to be pumped once to prime the state machine
+    golden_case.on_update(update_rate);  //< update needs to be pumped once to prime the state machine
     golden_case.activate();
-    EXPECT_EQ(golden_case.public_test_get_current_tick(), -1);
+    EXPECT_EQ(golden_case.public_test_get_current_tick_ms().count(), -1);
 
-    golden_case.on_update();
-    EXPECT_EQ(golden_case.public_test_get_current_tick(), 0);
+    golden_case.on_update(update_rate);
+    EXPECT_EQ(golden_case.public_test_get_current_tick_ms().count(), 0);
 
     const float heal_amt = 4.f;
     const float damage_amt = 3.f;
     // intentionally update it more than the duration to force stop and termination
-    const int update_amount = golden_case.public_test_get_duration_turns() * 2;
+    const int update_amount = (golden_case.public_test_get_duration_ms().count() / update_rate.count()) * 2;
+    EXPECT_EQ(update_amount, 40);
     for (int i = 0; i < update_amount; ++i) {
-        golden_case.on_update();
+        golden_case.on_update(update_rate);
         if (i%3 == 0) {
-            golden_case.on_heal(heal_amt);
+            golden_case.on_heal(heal_amt); // this should hit 7 times at 0,3,6,9,12,15,18. Then stop when inactive
         }
         if (i%4 == 0) {
-            golden_case.on_damage(damage_amt);            
+            golden_case.on_damage(damage_amt); // this should hit 6 times at 0,4,8,12,16,20. Then stop when inactive
         }
     }
 
-    EXPECT_EQ(golden_case.public_test_get_current_tick(), 11);
+    EXPECT_EQ(golden_case.public_test_get_current_tick_ms().count(), 10500);
     EXPECT_EQ(golden_case.m_clear_callback_count, 0);
-    EXPECT_EQ(golden_case.m_heal_callback_count, 4 + 10);
+    EXPECT_EQ(golden_case.m_heal_callback_count, 7 + 10);
     EXPECT_EQ(golden_case.m_damage_callback_count, 10);
-    EXPECT_EQ(golden_case.m_augment_callback_count, 3);    
+    EXPECT_EQ(golden_case.m_augment_callback_count, 6);
 
     // This is similar but since the type is invalid, the callbacks are not processed and the state 
     YAML::Node invalid_not_enum_node = config["InvalidType_notEnum"];
@@ -168,29 +171,29 @@ TEST(StatusEffect, Test_StatusEffectProcessing) {
     EXPECT_EQ(invalid_not_enum.m_augment_callback_count, 0);
 
     EXPECT_NE(invalid_not_enum.get_uuid(), "");
-    invalid_not_enum.on_update(); //< update needs to be pumped once to prime the state machine
+    invalid_not_enum.on_update(update_rate); //< update needs to be pumped once to prime the state machine
     invalid_not_enum.activate();
-    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick(), -1);
+    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick_ms().count(), -1);
 
-    invalid_not_enum.on_update();
-    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick(), 0);
+    invalid_not_enum.on_update(update_rate);
+    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick_ms().count(), 0);
     
     // intentionally update it more than the duration to force stop and termination
     for (int i = 0; i < update_amount; ++i) {
-        invalid_not_enum.on_update();
+        invalid_not_enum.on_update(update_rate);
         if (i > 0 && i%3 == 0) {
             invalid_not_enum.on_heal(heal_amt);
         }
         if (i > 0 && i%4 == 0) {
-            invalid_not_enum.on_damage(damage_amt);            
+            invalid_not_enum.on_damage(damage_amt);
         }
     }
 
-    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick(), 4);
+    EXPECT_EQ(invalid_not_enum.public_test_get_current_tick_ms().count(), 2000);
     EXPECT_EQ(invalid_not_enum.m_clear_callback_count, 1);
     EXPECT_EQ(invalid_not_enum.m_heal_callback_count, 0);
     EXPECT_EQ(invalid_not_enum.m_damage_callback_count, 0);
-    EXPECT_EQ(invalid_not_enum.m_augment_callback_count, 0);    
+    EXPECT_EQ(invalid_not_enum.m_augment_callback_count, 0);
 }
 
 int main(int argc, char **argv) {

@@ -1,7 +1,7 @@
 GoldenCase:
   type: FIRE
-  update_rate_turns: 1
-  duration_turns: 10
+  update_rate_sec: 1
+  duration_sec: 10.2
   on_heal:
     - effect: HEAL
       amount: 2.0
@@ -19,8 +19,8 @@ GoldenCase:
 
 InvalidType_notEnum:
   type: FOOBAR
-  update_rate_turns: 1.1
-  duration_turns: 5.7
+  update_rate_sec: -1.1
+  duration_sec: -5.7
   on_heal:
     - effect: CLEAR
   on_update:
