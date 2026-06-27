@@ -2,12 +2,14 @@ TestData_Health_Manager:
   total_health: 100
   health: 75.0
   default_modules:
-    - StatusEffectImmune:
-        module:
+    - DefaultImmunity:
+        name: StatusEffectImmune
+        data:
           status_type: POISON
           percent_chance: 0.5
-    - DamageResistAmount:
-        module:
+    - DefaultResistance:
+        name: DamageResistAmount
+        data:
           damage_type:
             - PHYSICAL
           amount: 2.5

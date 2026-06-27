@@ -13,7 +13,7 @@
 #include "code/client/messages/status_messages.h"
 #include "code/client/messages/proto/damage.pb.h"
 #include "code/client/messages/proto/heal.pb.h"
-#include "code/client/modules/health/health_module_base.h"
+#include "code/client/modules/health/base_health_module.h"
 #include "code/core/message_system/message_publisher.h"
 #include "code/core/message_system/message_subscriber.h"
 #include "code/core/message_system/message_switchboard.h"

@@ -6,7 +6,7 @@
 #include <map>
 #include <memory>
 
-#include "code/client/modules/health/health_module_base.h"
+#include "code/client/modules/health/base_health_module.h"
 
 namespace Module {
 

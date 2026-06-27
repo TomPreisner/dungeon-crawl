@@ -5,8 +5,9 @@
 #include <string>
 #include <set>
 #include "code/client/health/health_manager.h"
-#include "code/client/modules/common/base_module.h"
-#include "code/client/modules/health/status_effect_immune_module.h"
+#include "code/client/modules/base/base_module.h"
+#include "code/client/modules/health/damage_type_resist_health_module.h"
+#include "code/client/modules/health/status_effect_immune_health_module.h"
 #include "code/core/message_system/message_switchboard.h"
 
 class HealthManagerTest : public HealthManager {
@@ -17,7 +18,7 @@ public:
 
 std::string k_yaml_file = "code\\client\\health\\test\\data\\test_health_manager_data.yaml";
 
-TEST(HealthManager, Test_HealthManager_Init) {
+TEST(HealthManager_Test, Test_HealthManager_Init) {
     core::MessageSwitchboard switchboard;
     std::shared_ptr<HealthManagerTest> health_manager;
 
@@ -45,7 +46,7 @@ TEST(HealthManager, Test_HealthManager_Init) {
     EXPECT_TRUE(health_manager->init_manager(switchboard, data_set["TestData_Health_Manager_Zero_Health"]));
 }
 
-TEST(HealthManager, Test_HealthManager_DefaultModules) {
+TEST(HealthManager_Test, Test_HealthManager_DefaultModules) {
     // Test that the default modules load properly
     core::MessageSwitchboard switchboard;
     std::shared_ptr<HealthManagerTest> health_manager;
@@ -64,18 +65,24 @@ TEST(HealthManager, Test_HealthManager_DefaultModules) {
 
     const auto end = iter->second.cend();
     for (auto curr = iter->second.begin(); curr != end; ++curr) {
-        Module::StatusEffectImmune_Module* base_module_ptr = dynamic_cast<Module::StatusEffectImmune_Module*>(curr->get());
-        EXPECT_EQ(std::string(typeid(curr->get()).name()), std::string("temp"));
+        Module::HealthModule* base_module_ptr = dynamic_cast<Module::HealthModule*>(curr->get());
         EXPECT_TRUE(base_module_ptr != nullptr);
         if (base_module_ptr != nullptr) {
             EXPECT_TRUE((base_module_ptr->get_module_name() == "StatusEffectImmune") ||
                         (base_module_ptr->get_module_name() == "DamageResistAmount"));
+
+            // Make sure that the casting to the derived types works and the vtables are maintained through creation
+            if (base_module_ptr->get_module_name() == "StatusEffectImmune") {
+                EXPECT_NE(dynamic_cast<Module::StatusEffectImmune_HealthModule*>(curr->get()), nullptr);
+            }
+            if (base_module_ptr->get_module_name() == "DamageResistAmount") {
+                EXPECT_NE(dynamic_cast<Module::DamageTypeResist_HealthModule*>(curr->get()), nullptr);
+            }
         }
     }
 }
 
-
-TEST(HealthManager, Test_HealthManager_AddRemoveModules) {
+TEST(HealthManager_Test, Test_HealthManager_AddRemoveModules) {
     // Test that the default modules load properly
     core::MessageSwitchboard switchboard;
     std::shared_ptr<HealthManagerTest> health_manager;

@@ -8,8 +8,9 @@ cc_test(
         "@googletest//:gtest_main",
         "@yaml-cpp",
         "//code/client/health:health_manager",
-        "//code/client/modules/common:base_module",
-        "//code/client/modules/health:status_effect_immune_module",
+        "//code/client/modules/base:base_module",
+        "//code/client/modules/health:damage_type_resist_health_module",
+        "//code/client/modules/health:status_effect_immune_health_module",
         "//code/core/message_system:message_system",
     ],
     data = [

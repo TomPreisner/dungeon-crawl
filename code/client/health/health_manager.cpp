@@ -7,8 +7,8 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include "code/client/modules/common/base_module.h"
-#include "code/client/modules/module_factory.h"
+#include "code/client/modules/base/base_module.h"
+#include "code/client/modules/factory/health_module_factory.h"
 #include "code/core/log_manager.h"
 
 CREATE_LOGGER(HealthManager);
@@ -26,7 +26,7 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
     }
 
     if (m_initialized) {
-        LOG_ERROR(HealthManager, "HealthManager is already initialize, can't do so again. init failed:\n" + YAML::Dump(node));
+        LOG_ERROR(HealthManager, "HealthManager is already initialized, can't do so again. init failed:\n" + YAML::Dump(node));
         return false;
     }
 
@@ -82,13 +82,24 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
         }
 
         for (int i = 0; i < default_modules.size(); ++i) {
-            const YAML::Node& module = default_modules[i];
+            if (!default_modules[i].IsMap()) {
+                LOG_ERROR(HealthManager, "Value in default_module \"module_name\" is not a map, init failed:\n" + YAML::Dump(default_modules[i]));
+                continue;
+            }
+            if (default_modules[i].size() != 1) {
+                LOG_ERROR(HealthManager, "Value in default_module \"module_name\" only supports one entry, init failed:\n" + YAML::Dump(default_modules[i]));
+                continue;
+            }
+            const YAML::Node& module = default_modules[i].begin()->second;
             // the manager is the owner
             std::string module_name = "";
             try {
                 module_name = module["name"].as<std::string>();
             } catch (const YAML::TypedBadConversion<std::string>& e) {
                 LOG_ERROR(HealthManager, "Value in default_module \"module_name\" is not a string, init failed:\n" + YAML::Dump(module));
+                continue;
+            } catch (const YAML::InvalidNode& e) {
+                LOG_ERROR(HealthManager, "Value in default_module \"name\" is missing, init failed:\n" + YAML::Dump(module));
                 continue;
             }
             if (!add_module(m_uuid_string, module_name, module["data"])) {
@@ -155,13 +166,7 @@ bool HealthManager::add_module(const std::string& uuid_owner, const std::string&
         LOG_INFO(HealthManager, "Adding modules for new uuid: " + uuid_owner);
     }
 
-    std::shared_ptr<Module::BaseDescriptor> module = Module::ModuleFactory::get_Instance()->create_module(module_name, data);
-    if (module.get() == nullptr) {
-        LOG_ERROR(HealthManager, "Failed to create module: " + module_name + " for: " + uuid_owner + "  data:\n" + YAML::Dump(data));
-        return false;
-    }
-
-    std::shared_ptr<Module::HealthModule> health_module = std::make_shared<Module::HealthModule>(module);
+    std::shared_ptr<Module::HealthModule> health_module = Module::HealthModuleFactory::get_Instance()->create_health_module(module_name, data);
     m_health_module[uuid_owner].emplace_back(health_module);
     return true;
 }
@@ -183,7 +188,7 @@ bool HealthManager::remove_module(const std::string& uuid_owner, const std::stri
     bool found = false;
     for (auto iter = mod_list.begin(); iter != mod_list.end();) {
         std::string iter_name = "";
-        Module::BaseDescriptor* base_module = dynamic_cast<Module::BaseDescriptor*>(iter->get());
+        Module::HealthModule* base_module = dynamic_cast<Module::HealthModule*>(iter->get());
         if (base_module != nullptr) {
             iter_name = base_module->get_module_name();
         }
