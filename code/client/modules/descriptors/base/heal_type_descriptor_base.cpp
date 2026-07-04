@@ -9,7 +9,7 @@
 namespace Module {
 CREATE_LOGGER(HealTypeDescriptor_Base);
 
-bool HealTypeDescriptor_Base::init_module(const YAML::Node& node) {
+bool HealTypeDescriptor_Base::init_descriptor(const YAML::Node& node) {
     if (!node.IsMap()) {
         clear_values();
         return false;

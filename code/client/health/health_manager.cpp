@@ -14,7 +14,7 @@
 CREATE_LOGGER(HealthManager);
 
 HealthManager::HealthManager() {
-    // Use the boost uuid library to create a uuid to uniquely identify this status effect instance
+    // Use the boost uuid library to create a uuid to uniquely identify this health manager instance
     boost::uuids::random_generator gen;
     boost::uuids::uuid id = gen();
     m_uuid_string = boost::uuids::to_string(id);
@@ -173,7 +173,7 @@ bool HealthManager::add_module(const std::string& uuid_owner, const std::string&
 
 bool HealthManager::remove_module(const std::string& uuid_owner, const std::string& module_name) {
     if (uuid_owner.empty() || module_name.empty()) {
-        LOG_ERROR(HealthManager, "Invalid data provided for remove uuid: \"" + uuid_owner + "\" for module: \"" + module_name + "\"");
+        LOG_ERROR(HealthManager, "Invalid data provided for remove module: \"" + module_name + "\" for uuid: \"" + uuid_owner + "\"");
         return false;
     }
 

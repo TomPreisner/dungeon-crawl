@@ -18,8 +18,8 @@ public:
         BaseModule(module_name, data) {}
     virtual ~HealthModule() {}
 
-    virtual void process_heal(code::client::messages::Heal& incoming) {}
-    virtual void process_damage(code::client::messages::Damage& incoming) {}
+    virtual void process_heal(code::client::messages::Heal& incoming) = 0;
+    virtual void process_damage(code::client::messages::Damage& incoming) = 0;
 };
 
 } // namespace Module

@@ -26,7 +26,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_Simple_Apply) {
     EXPECT_TRUE(test_simple);
     EXPECT_TRUE(test_simple.IsMap());
     HealTypeAmount_Descriptor_Test test_case_simple;
-    EXPECT_TRUE(test_case_simple.init_module(test_simple));
+    EXPECT_TRUE(test_case_simple.init_descriptor(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_heal_type().has_value());
     EXPECT_EQ(test_case_simple.test_get_heal_type().value(), code::client::messages::Heal::POTION);
     EXPECT_TRUE(test_case_simple.test_get_amount().has_value());
@@ -42,7 +42,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_NoHeal_Apply) {
     EXPECT_TRUE(test_no_heal);
     EXPECT_TRUE(test_no_heal.IsMap());
     HealTypeAmount_Descriptor_Test test_case_no_heal;
-    EXPECT_FALSE(test_case_no_heal.init_module(test_no_heal));
+    EXPECT_FALSE(test_case_no_heal.init_descriptor(test_no_heal));
     EXPECT_FALSE(test_case_no_heal.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_no_heal.test_get_amount().has_value());
 }
@@ -56,7 +56,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_HealNotString_Appl
     EXPECT_TRUE(test_heal_not_string);
     EXPECT_TRUE(test_heal_not_string.IsMap());
     HealTypeAmount_Descriptor_Test test_case_heal_not_string;
-    EXPECT_FALSE(test_case_heal_not_string.init_module(test_heal_not_string));
+    EXPECT_FALSE(test_case_heal_not_string.init_descriptor(test_heal_not_string));
     EXPECT_FALSE(test_case_heal_not_string.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_heal_not_string.test_get_amount().has_value());
 }
@@ -70,7 +70,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_HealInvalidType_Ap
     EXPECT_TRUE(test_heal_invalid_type);
     EXPECT_TRUE(test_heal_invalid_type.IsMap());
     HealTypeAmount_Descriptor_Test test_case_heal_invalid_type;
-    EXPECT_FALSE(test_case_heal_invalid_type.init_module(test_heal_invalid_type));
+    EXPECT_FALSE(test_case_heal_invalid_type.init_descriptor(test_heal_invalid_type));
     EXPECT_FALSE(test_case_heal_invalid_type.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_heal_invalid_type.test_get_amount().has_value());
 }
@@ -84,7 +84,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_No_Amount_Apply) {
     EXPECT_TRUE(test_no_amount);
     EXPECT_TRUE(test_no_amount.IsMap());
     HealTypeAmount_Descriptor_Test test_case_no_amount;
-    EXPECT_FALSE(test_case_no_amount.init_module(test_no_amount));
+    EXPECT_FALSE(test_case_no_amount.init_descriptor(test_no_amount));
     EXPECT_FALSE(test_case_no_amount.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_no_amount.test_get_amount().has_value());
 }
@@ -98,7 +98,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_Negative_Amount_Ap
     EXPECT_TRUE(test_negative_amount);
     EXPECT_TRUE(test_negative_amount.IsMap());
     HealTypeAmount_Descriptor_Test test_case_negative_amount;
-    EXPECT_FALSE(test_case_negative_amount.init_module(test_negative_amount));
+    EXPECT_FALSE(test_case_negative_amount.init_descriptor(test_negative_amount));
     EXPECT_FALSE(test_case_negative_amount.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_negative_amount.test_get_amount().has_value());
 }

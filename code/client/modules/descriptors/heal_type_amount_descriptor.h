@@ -12,7 +12,7 @@ class HealTypeAmount_Descriptor : public HealTypeDescriptor_Base {
 public:
     HealTypeAmount_Descriptor() : HealTypeDescriptor_Base() {}
 
-    virtual bool init_module(const YAML::Node& node) override;
+    virtual bool init_descriptor(const YAML::Node& node) override;
 };
 
 } // namespace Module

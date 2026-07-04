@@ -12,7 +12,7 @@ class DamageTypePercent_Descriptor : public DamageTypeAmount_Descriptor {
 public:
     DamageTypePercent_Descriptor() : DamageTypeAmount_Descriptor() {}
 
-    virtual bool init_module(const YAML::Node& node) override;
+    virtual bool init_descriptor(const YAML::Node& node) override;
 };
 
 } // namespace Module

@@ -10,7 +10,7 @@
 namespace Module {
 CREATE_LOGGER(StatusEffectDescriptor_Base);
 
-bool StatusEffectDescriptor_Base::init_module(const YAML::Node& node) {
+bool StatusEffectDescriptor_Base::init_descriptor(const YAML::Node& node) {
     if (!node.IsMap()) {
         clear_values();
         return false;

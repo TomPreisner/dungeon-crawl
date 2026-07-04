@@ -28,7 +28,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_Simple_Apply
     EXPECT_TRUE(test_simple);
     EXPECT_TRUE(test_simple.IsMap());
     DamageTypePercent_Descriptor_Test test_case_simple;
-    EXPECT_TRUE(test_case_simple.init_module(test_simple));
+    EXPECT_TRUE(test_case_simple.init_descriptor(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_damage_type().has_value());
     EXPECT_EQ(test_case_simple.test_get_damage_type().value() & code::client::messages::Damage::PHYSICAL,
                 code::client::messages::Damage::PHYSICAL);
@@ -46,7 +46,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_SimplePartia
     EXPECT_TRUE(test_simple_partial);
     EXPECT_TRUE(test_simple_partial.IsMap());
     DamageTypePercent_Descriptor_Test test_case_simple_partial;
-    EXPECT_TRUE(test_case_simple_partial.init_module(test_simple_partial));
+    EXPECT_TRUE(test_case_simple_partial.init_descriptor(test_simple_partial));
     EXPECT_TRUE(test_case_simple_partial.test_get_damage_type().has_value());
     EXPECT_EQ(test_case_simple_partial.test_get_damage_type().value() & code::client::messages::Damage::POISON,
                 code::client::messages::Damage::POISON);
@@ -65,7 +65,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_MultipleDama
     EXPECT_TRUE(test_multi_damage);
     EXPECT_TRUE(test_multi_damage.IsMap());
     DamageTypePercent_Descriptor_Test test_case_multi_damage;
-    EXPECT_TRUE(test_case_multi_damage.init_module(test_multi_damage));
+    EXPECT_TRUE(test_case_multi_damage.init_descriptor(test_multi_damage));
     EXPECT_TRUE(test_case_multi_damage.test_get_damage_type().has_value());
     EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & code::client::messages::Damage::MAGIC,
                 code::client::messages::Damage::MAGIC);
@@ -86,7 +86,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_MultipleDama
     EXPECT_TRUE(test_multi_damage_partial);
     EXPECT_TRUE(test_multi_damage_partial.IsMap());
     DamageTypePercent_Descriptor_Test test_case_multi_damage_partial;
-    EXPECT_FALSE(test_case_multi_damage_partial.init_module(test_multi_damage_partial));
+    EXPECT_FALSE(test_case_multi_damage_partial.init_descriptor(test_multi_damage_partial));
     EXPECT_FALSE(test_case_multi_damage_partial.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_multi_damage_partial.test_get_amount().has_value());
     EXPECT_FALSE(test_case_multi_damage_partial.test_get_partial_effect_amount().has_value());
@@ -101,7 +101,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_NoDamage_App
     EXPECT_TRUE(test_no_damage);
     EXPECT_TRUE(test_no_damage.IsMap());
     DamageTypePercent_Descriptor_Test test_case_no_damage;
-    EXPECT_FALSE(test_case_no_damage.init_module(test_no_damage));
+    EXPECT_FALSE(test_case_no_damage.init_descriptor(test_no_damage));
     EXPECT_FALSE(test_case_no_damage.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_no_damage.test_get_amount().has_value());
     EXPECT_FALSE(test_case_no_damage.test_get_partial_effect_amount().has_value());
@@ -116,7 +116,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_NoAmount_App
     EXPECT_TRUE(test_no_amount);
     EXPECT_TRUE(test_no_amount.IsMap());
     DamageTypePercent_Descriptor_Test test_case_no_amount;
-    EXPECT_FALSE(test_case_no_amount.init_module(test_no_amount));
+    EXPECT_FALSE(test_case_no_amount.init_descriptor(test_no_amount));
     EXPECT_FALSE(test_case_no_amount.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_no_amount.test_get_amount().has_value());
     EXPECT_FALSE(test_case_no_amount.test_get_partial_effect_amount().has_value());
@@ -131,7 +131,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_NegativeAmou
     EXPECT_TRUE(test_negative_amount);
     EXPECT_TRUE(test_negative_amount.IsMap());
     DamageTypePercent_Descriptor_Test test_case_negative_amount;
-    EXPECT_FALSE(test_case_negative_amount.init_module(test_negative_amount));
+    EXPECT_FALSE(test_case_negative_amount.init_descriptor(test_negative_amount));
     EXPECT_FALSE(test_case_negative_amount.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_negative_amount.test_get_amount().has_value());
     EXPECT_FALSE(test_case_negative_amount.test_get_partial_effect_amount().has_value());
@@ -146,7 +146,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_PercentTooLa
     EXPECT_TRUE(test_percent_too_large);
     EXPECT_TRUE(test_percent_too_large.IsMap());
     DamageTypePercent_Descriptor_Test test_case_percent_too_large;
-    EXPECT_FALSE(test_case_percent_too_large.init_module(test_percent_too_large));
+    EXPECT_FALSE(test_case_percent_too_large.init_descriptor(test_percent_too_large));
     EXPECT_FALSE(test_case_percent_too_large.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_percent_too_large.test_get_amount().has_value());
     EXPECT_FALSE(test_case_percent_too_large.test_get_partial_effect_amount().has_value());
@@ -161,7 +161,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_PercentParti
     EXPECT_TRUE(test_percent_partial_negative);
     EXPECT_TRUE(test_percent_partial_negative.IsMap());
     DamageTypePercent_Descriptor_Test test_case_percent_partial_negative;
-    EXPECT_FALSE(test_case_percent_partial_negative.init_module(test_percent_partial_negative));
+    EXPECT_FALSE(test_case_percent_partial_negative.init_descriptor(test_percent_partial_negative));
     EXPECT_FALSE(test_case_percent_partial_negative.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_percent_partial_negative.test_get_amount().has_value());
     EXPECT_FALSE(test_case_percent_partial_negative.test_get_partial_effect_amount().has_value());
@@ -176,7 +176,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_PercentParti
     EXPECT_TRUE(test_percent_partial_larger_than_amount);
     EXPECT_TRUE(test_percent_partial_larger_than_amount.IsMap());
     DamageTypePercent_Descriptor_Test test_case_percent_partial_larger_than_amount;
-    EXPECT_FALSE(test_case_percent_partial_larger_than_amount.init_module(test_percent_partial_larger_than_amount));
+    EXPECT_FALSE(test_case_percent_partial_larger_than_amount.init_descriptor(test_percent_partial_larger_than_amount));
     EXPECT_FALSE(test_case_percent_partial_larger_than_amount.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_percent_partial_larger_than_amount.test_get_amount().has_value());
     EXPECT_FALSE(test_case_percent_partial_larger_than_amount.test_get_partial_effect_amount().has_value());
@@ -191,7 +191,7 @@ TEST(DamageTypePercent_Descriptor, Test_DamageTypePercentDescriptor_PercentParti
     EXPECT_TRUE(test_percent_partial_too_large);
     EXPECT_TRUE(test_percent_partial_too_large.IsMap());
     DamageTypePercent_Descriptor_Test test_case_percent_partial_too_large;
-    EXPECT_FALSE(test_case_percent_partial_too_large.init_module(test_percent_partial_too_large));
+    EXPECT_FALSE(test_case_percent_partial_too_large.init_descriptor(test_percent_partial_too_large));
     EXPECT_FALSE(test_case_percent_partial_too_large.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_percent_partial_too_large.test_get_amount().has_value());
     EXPECT_FALSE(test_case_percent_partial_too_large.test_get_partial_effect_amount().has_value());

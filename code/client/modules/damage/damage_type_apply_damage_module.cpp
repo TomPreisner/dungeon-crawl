@@ -14,7 +14,7 @@ CREATE_LOGGER(DamageTypeApply_DamageModule);
 DamageTypeApply_DamageModule::DamageTypeApply_DamageModule(const std::string& damage_module_name, const YAML::Node& data) :
     DamageModule(damage_module_name, data) {
     auto damage_type_amount = std::make_shared<DamageTypeAmount_Descriptor>();
-    if (damage_type_amount->init_module(data)) {
+    if (damage_type_amount->init_descriptor(data)) {
         assign_descriptor(damage_type_amount);
     } else {
         LOG_ERROR(DamageTypeApply_DamageModule, "Failed to initialize module descriptor: \n" + YAML::Dump(data));

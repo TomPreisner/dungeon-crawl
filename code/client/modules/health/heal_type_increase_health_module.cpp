@@ -14,7 +14,7 @@ CREATE_LOGGER(HealTypeIncrease_HealthModule);
 HealTypeIncrease_HealthModule::HealTypeIncrease_HealthModule(const std::string& health_module_name, const YAML::Node& data) :
     HealthModule(health_module_name, data) {
     auto heal_type_amount = std::make_shared<HealTypeAmount_Descriptor>();
-    if (heal_type_amount->init_module(data)) {
+    if (heal_type_amount->init_descriptor(data)) {
         assign_descriptor(heal_type_amount);
     } else {
         LOG_ERROR(HealTypeIncrease_HealthModule, "Failed to initialize module descriptor: \n" + YAML::Dump(data));

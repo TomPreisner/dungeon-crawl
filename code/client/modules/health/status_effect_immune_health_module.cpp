@@ -16,7 +16,7 @@ CREATE_LOGGER(StatusEffectImmune_HealthModule);
 StatusEffectImmune_HealthModule::StatusEffectImmune_HealthModule(const std::string& health_module_name, const YAML::Node& data) :
     HealthModule(health_module_name, data) {
     auto status_effect_desc = std::make_shared<StatusEffect_Descriptor>();
-    if (status_effect_desc->init_module(data)) {
+    if (status_effect_desc->init_descriptor(data)) {
         assign_descriptor(status_effect_desc);
     } else {
         LOG_ERROR(StatusEffectImmune_HealthModule, "Failed to initialize module descriptor: \n" + YAML::Dump(data));

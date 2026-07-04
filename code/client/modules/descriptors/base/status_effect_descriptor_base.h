@@ -14,7 +14,7 @@ class StatusEffectDescriptor_Base : public BaseDescriptor {
 public:
     StatusEffectDescriptor_Base() : BaseDescriptor() {}
 
-    virtual bool init_module(const YAML::Node& node) override;
+    virtual bool init_descriptor(const YAML::Node& node) override;
 
     std::optional<std::string> get_status_effect_name() const { return m_status_effect_name; }
     std::optional<Status::StatusEffectType> get_status_effect_type() const { return m_status_effect_type; }

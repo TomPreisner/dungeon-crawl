@@ -10,8 +10,8 @@
 namespace Module {
 CREATE_LOGGER(DamageTypePercent_Descriptor);
 
-bool DamageTypePercent_Descriptor::init_module(const YAML::Node& node) {
-    if (!DamageTypeAmount_Descriptor::init_module(node)) {
+bool DamageTypePercent_Descriptor::init_descriptor(const YAML::Node& node) {
+    if (!DamageTypeAmount_Descriptor::init_descriptor(node)) {
         return false;
     }
     

@@ -13,7 +13,7 @@ class DamageTypeDescriptor_Base : public BaseDescriptor {
 public:
     DamageTypeDescriptor_Base() : BaseDescriptor() {}
 
-    virtual bool init_module(const YAML::Node& node) override;
+    virtual bool init_descriptor(const YAML::Node& node) override;
 
     std::optional<int32_t> get_damage_type() const { return m_damage_type; }
     std::optional<float> get_amount() const { return m_amount; }

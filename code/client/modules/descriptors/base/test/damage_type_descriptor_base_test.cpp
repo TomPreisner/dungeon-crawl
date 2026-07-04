@@ -27,7 +27,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_Simple) {
     EXPECT_TRUE(test_simple);
     EXPECT_TRUE(test_simple.IsMap());
     DamageTypeDescriptor_Base_Test test_case_simple;
-    EXPECT_TRUE(test_case_simple.init_module(test_simple));
+    EXPECT_TRUE(test_case_simple.init_descriptor(test_simple));
     EXPECT_TRUE(test_case_simple.test_get_damage_type().has_value());
     EXPECT_EQ(test_case_simple.test_get_damage_type().value() & code::client::messages::Damage::PHYSICAL,
                 code::client::messages::Damage::PHYSICAL);
@@ -44,7 +44,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_MultipleDamage
     EXPECT_TRUE(test_multi_damage);
     EXPECT_TRUE(test_multi_damage.IsMap());
     DamageTypeDescriptor_Base_Test test_case_multi_damage;
-    EXPECT_TRUE(test_case_multi_damage.init_module(test_multi_damage));
+    EXPECT_TRUE(test_case_multi_damage.init_descriptor(test_multi_damage));
     EXPECT_TRUE(test_case_multi_damage.test_get_damage_type().has_value());
     EXPECT_EQ(test_case_multi_damage.test_get_damage_type().value() & code::client::messages::Damage::MAGIC,
                 code::client::messages::Damage::MAGIC);
@@ -63,7 +63,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_NoDamage) {
     EXPECT_TRUE(test_no_damage);
     EXPECT_TRUE(test_no_damage.IsMap());
     DamageTypeDescriptor_Base_Test test_case_no_damage;
-    EXPECT_FALSE(test_case_no_damage.init_module(test_no_damage));
+    EXPECT_FALSE(test_case_no_damage.init_descriptor(test_no_damage));
     EXPECT_FALSE(test_case_no_damage.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_no_damage.test_get_amount().has_value());
 }
@@ -77,7 +77,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_DamageNotSeque
     EXPECT_TRUE(test_damage_not_seq);
     EXPECT_TRUE(test_damage_not_seq.IsMap());
     DamageTypeDescriptor_Base_Test test_case_damage_not_seq;
-    EXPECT_FALSE(test_case_damage_not_seq.init_module(test_damage_not_seq));
+    EXPECT_FALSE(test_case_damage_not_seq.init_descriptor(test_damage_not_seq));
     EXPECT_FALSE(test_case_damage_not_seq.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_damage_not_seq.test_get_amount().has_value());
 }
@@ -91,7 +91,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_DamageInvalidT
     EXPECT_TRUE(test_damage_invalid);
     EXPECT_TRUE(test_damage_invalid.IsMap());
     DamageTypeDescriptor_Base_Test test_case_damage_invalid;
-    EXPECT_FALSE(test_case_damage_invalid.init_module(test_damage_invalid));
+    EXPECT_FALSE(test_case_damage_invalid.init_descriptor(test_damage_invalid));
     EXPECT_FALSE(test_case_damage_invalid.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_damage_invalid.test_get_amount().has_value());
 }
@@ -105,7 +105,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_NoAmount) {
     EXPECT_TRUE(test_no_amount);
     EXPECT_TRUE(test_no_amount.IsMap());
     DamageTypeDescriptor_Base_Test test_case_no_amount;
-    EXPECT_FALSE(test_case_no_amount.init_module(test_no_amount));
+    EXPECT_FALSE(test_case_no_amount.init_descriptor(test_no_amount));
     EXPECT_FALSE(test_case_no_amount.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_no_amount.test_get_amount().has_value());
 }
@@ -119,7 +119,7 @@ TEST(DamageTypeDescriptor_Base, Test_DamageTypeDescriptorCreation_AmountNotFloat
     EXPECT_TRUE(test_amount_not_float);
     EXPECT_TRUE(test_amount_not_float.IsMap());
     DamageTypeDescriptor_Base_Test test_case_amount_not_float;
-    EXPECT_FALSE(test_case_amount_not_float.init_module(test_amount_not_float));
+    EXPECT_FALSE(test_case_amount_not_float.init_descriptor(test_amount_not_float));
     EXPECT_FALSE(test_case_amount_not_float.test_get_damage_type().has_value());
     EXPECT_FALSE(test_case_amount_not_float.test_get_amount().has_value());
 }

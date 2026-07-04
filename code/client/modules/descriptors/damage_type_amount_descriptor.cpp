@@ -10,8 +10,8 @@
 namespace Module {
 CREATE_LOGGER(DamageTypeAmount_Descriptor);
 
-bool DamageTypeAmount_Descriptor::init_module(const YAML::Node& node) {
-    if (!DamageTypeDescriptor_Base::init_module(node)) {
+bool DamageTypeAmount_Descriptor::init_descriptor(const YAML::Node& node) {
+    if (!DamageTypeDescriptor_Base::init_descriptor(node)) {
         return false;
     }
 

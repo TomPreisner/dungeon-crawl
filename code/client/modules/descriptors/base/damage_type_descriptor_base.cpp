@@ -11,7 +11,7 @@
 namespace Module {
 CREATE_LOGGER(DamageTypeDescriptor_Base);
 
-bool DamageTypeDescriptor_Base::init_module(const YAML::Node& node) {
+bool DamageTypeDescriptor_Base::init_descriptor(const YAML::Node& node) {
     if (!node.IsMap()) {
         clear_values();
         return false;

@@ -14,7 +14,7 @@ CREATE_LOGGER(DamageTypeResistPercent_HealthModule);
 DamageTypeResistPercent_HealthModule::DamageTypeResistPercent_HealthModule(const std::string& health_module_name, const YAML::Node& data) :
     HealthModule(health_module_name, data) {
     auto damage_type_percent = std::make_shared<DamageTypePercent_Descriptor>();
-    if (damage_type_percent->init_module(data)) {
+    if (damage_type_percent->init_descriptor(data)) {
         assign_descriptor(damage_type_percent);
     } else {
         LOG_ERROR(DamageTypeResistPercent_HealthModule, "Failed to initialize module descriptor: \n" + YAML::Dump(data));

@@ -12,7 +12,7 @@ class DamageTypeAmount_Descriptor : public DamageTypeDescriptor_Base {
 public:
     DamageTypeAmount_Descriptor() : DamageTypeDescriptor_Base() {}
 
-    virtual bool init_module(const YAML::Node& node) override;
+    virtual bool init_descriptor(const YAML::Node& node) override;
     
     std::optional<float> get_partial_effect_amount() const { return m_partial_effect_amount; }
 protected:

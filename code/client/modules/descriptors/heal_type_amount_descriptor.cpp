@@ -10,8 +10,8 @@
 namespace Module {
 CREATE_LOGGER(HealTypeAmount_Descriptor);
 
-bool HealTypeAmount_Descriptor::init_module(const YAML::Node& node) {
-    if (!HealTypeDescriptor_Base::init_module(node)) {
+bool HealTypeAmount_Descriptor::init_descriptor(const YAML::Node& node) {
+    if (!HealTypeDescriptor_Base::init_descriptor(node)) {
         return false;
     }
 

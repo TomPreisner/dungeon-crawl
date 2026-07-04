@@ -14,7 +14,7 @@ class HealTypeDescriptor_Base : public BaseDescriptor {
 public:
     HealTypeDescriptor_Base() : BaseDescriptor() {}
 
-    virtual bool init_module(const YAML::Node& node) override;
+    virtual bool init_descriptor(const YAML::Node& node) override;
 
     std::optional<code::client::messages::Heal::HealType> get_heal_type() const { return m_heal_type; }
     std::optional<float> get_amount() const { return m_amount; }

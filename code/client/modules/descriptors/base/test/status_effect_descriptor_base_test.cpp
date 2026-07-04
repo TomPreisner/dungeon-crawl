@@ -31,7 +31,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_StatusName
     EXPECT_TRUE(test_statusName);
     EXPECT_TRUE(test_statusName.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusName;
-    EXPECT_TRUE(test_case_statusName.init_module(test_statusName));
+    EXPECT_TRUE(test_case_statusName.init_descriptor(test_statusName));
     EXPECT_TRUE(test_case_statusName.test_get_status_effect_name().has_value());
     EXPECT_EQ(test_case_statusName.test_get_status_effect_name().value(), "Venom_V1");
     EXPECT_FALSE(test_case_statusName.test_get_status_effect_type().has_value());
@@ -50,7 +50,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_StatusName
     EXPECT_TRUE(test_statusName_doesntExist);
     EXPECT_TRUE(test_statusName_doesntExist.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusName_doesntExist;
-    EXPECT_FALSE(test_case_statusName_doesntExist.init_module(test_statusName_doesntExist));
+    EXPECT_FALSE(test_case_statusName_doesntExist.init_descriptor(test_statusName_doesntExist));
     EXPECT_FALSE(test_case_statusName_doesntExist.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusName_doesntExist.test_get_status_effect_type().has_value());
 
@@ -68,7 +68,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_StatusType
     EXPECT_TRUE(test_statusType);
     EXPECT_TRUE(test_statusType.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusType;
-    EXPECT_TRUE(test_case_statusType.init_module(test_statusType));
+    EXPECT_TRUE(test_case_statusType.init_descriptor(test_statusType));
     EXPECT_FALSE(test_case_statusType.test_get_status_effect_name().has_value());
     EXPECT_TRUE(test_case_statusType.test_get_status_effect_type().has_value());
     EXPECT_EQ(test_case_statusType.test_get_status_effect_type().value(), Status::StatusEffectType::POISON);
@@ -87,7 +87,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_StatusType
     EXPECT_TRUE(test_statusType_invalid);
     EXPECT_TRUE(test_statusType_invalid.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusType_invalid;
-    EXPECT_FALSE(test_case_statusType_invalid.init_module(test_statusType_invalid));
+    EXPECT_FALSE(test_case_statusType_invalid.init_descriptor(test_statusType_invalid));
     EXPECT_FALSE(test_case_statusType_invalid.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusType_invalid.test_get_status_effect_type().has_value());
 
@@ -105,7 +105,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_TooManyFie
     EXPECT_TRUE(test_statusTooMany);
     EXPECT_TRUE(test_statusTooMany.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusTooMany;
-    EXPECT_FALSE(test_case_statusTooMany.init_module(test_statusTooMany));
+    EXPECT_FALSE(test_case_statusTooMany.init_descriptor(test_statusTooMany));
     EXPECT_FALSE(test_case_statusTooMany.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusTooMany.test_get_status_effect_type().has_value());
 
@@ -123,7 +123,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_NoFields) 
     EXPECT_TRUE(test_statusNoFields);
     EXPECT_FALSE(test_statusNoFields.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusNoFields;
-    EXPECT_FALSE(test_case_statusNoFields.init_module(test_statusNoFields));
+    EXPECT_FALSE(test_case_statusNoFields.init_descriptor(test_statusNoFields));
     EXPECT_FALSE(test_case_statusNoFields.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusNoFields.test_get_status_effect_type().has_value());
 
@@ -141,7 +141,7 @@ TEST(StatusEffectDescriptor_Base, Test_StatusEffectDescriptorCreation_NoValidFie
     EXPECT_TRUE(test_statusNoValidFields);
     EXPECT_TRUE(test_statusNoValidFields.IsMap());
     StatusEffectDescriptor_Base_Test test_case_statusNoValidFields;
-    EXPECT_FALSE(test_case_statusNoValidFields.init_module(test_statusNoValidFields));
+    EXPECT_FALSE(test_case_statusNoValidFields.init_descriptor(test_statusNoValidFields));
     EXPECT_FALSE(test_case_statusNoValidFields.test_get_status_effect_name().has_value());
     EXPECT_FALSE(test_case_statusNoValidFields.test_get_status_effect_type().has_value());
 

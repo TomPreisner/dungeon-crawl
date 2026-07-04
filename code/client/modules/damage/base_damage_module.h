@@ -16,7 +16,7 @@ public:
         BaseModule(module_name, data) {}
     virtual ~DamageModule() {}
 
-    virtual void apply_damage(code::client::messages::Damage& outgoing) {}
+    virtual void apply_damage(code::client::messages::Damage& outgoing) = 0;
 };
 
 } // namespace Module

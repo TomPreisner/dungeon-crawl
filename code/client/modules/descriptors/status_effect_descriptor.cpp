@@ -12,12 +12,12 @@
 namespace Module {
 CREATE_LOGGER(StatusEffect_Descriptor);
 
-bool StatusEffect_Descriptor::init_module(const YAML::Node& node) {
-    if (!StatusEffectDescriptor_Base::init_module(node)) {
+bool StatusEffect_Descriptor::init_descriptor(const YAML::Node& node) {
+    if (!StatusEffectDescriptor_Base::init_descriptor(node)) {
          return false;  
     }
 
-    // An missing percent cchance means it is 100%
+    // A missing percent chance means it is 100%
     const YAML::Node& percentchance_node = node["percent_chance"];
     if (percentchance_node) {
         try {
