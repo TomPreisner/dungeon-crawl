@@ -17,7 +17,7 @@ public:
     const std::list<Status::StatusEffect>& public_test_get_status_effects() const {
         return test_get_status_effects(); 
     } 
-    const std::list<Status::StatusEffectManager::StatusEffectAction>& public_test_get_pending_status_effect_actions() const {
+    const std::queue<Status::StatusEffectManager::StatusEffectAction>& public_test_get_pending_status_effect_actions() const {
         return test_get_pending_status_effect_actions();
     } 
 };

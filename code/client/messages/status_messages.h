@@ -13,7 +13,7 @@ struct ApplyStatus {
 };
 
 struct ClearStatus {
-    std::string status_effect_name;
+    std::string status_owner_uuid;
 };
 
 } // namespace Messages

@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <list>
+#include <mutex>
 
 #include "code/client/status_effect/status_effect.h"
 #include "yaml-cpp/yaml.h"
@@ -51,7 +52,7 @@ public:
 protected:
     // Protected functions exposing functionality for unit tests only
     const std::list<StatusEffect>& test_get_status_effects() const { return m_status_effects; } 
-    const std::list<StatusEffectAction>& test_get_pending_status_effect_actions() const { return m_pending_status_effect_actions; } 
+    const std::queue<StatusEffectAction>& test_get_pending_status_effect_actions() const { return m_pending_status_effect_actions; } 
 
 private:
     void add_status_effect(const std::string& status_id);
@@ -61,7 +62,8 @@ private:
     //  These actions and status effects will be created and removed
     // regularly, so these are lists to allow for inser and removal easily
     std::list<StatusEffect> m_status_effects;
-    std::list<StatusEffectAction> m_pending_status_effect_actions;
+    std::queue<StatusEffectAction> m_pending_status_effect_actions;
+    std::mutex m_pending_status_effect_actions_lock;
     bool m_initialized = false;
 
     std::shared_ptr<core::MessageSubscriber<Messages::ApplyStatus>> m_apply_status_subscriber;

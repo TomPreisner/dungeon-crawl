@@ -7,6 +7,8 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <string>
+
 #include "code/client/modules/base/base_module.h"
 #include "code/client/modules/factory/health_module_factory.h"
 #include "code/core/log_manager.h"
@@ -110,9 +112,25 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
 
     // Create the publisher and subscribers
     m_apply_status_publisher = std::make_shared<core::MessagePublisher<Messages::ApplyStatus>>(switchboard);
-    m_clear_status_publisher = std::make_shared<core::MessagePublisher<Messages::ClearStatus>>(switchboard);
     m_heal_subscriber = std::make_shared<core::MessageSubscriber<Messages::ApplyDirectHeal>>(switchboard);
     m_damage_subscriber = std::make_shared<core::MessageSubscriber<Messages::ApplyDirectDamage>>(switchboard);
+
+    m_heal_subscriber->register_callback([this](const Messages::ApplyDirectHeal& heal_msg) {
+        if (heal_msg.amount > 0) {
+            std::scoped_lock lock(m_heal_queue_lock);
+            m_heal_queue.push(heal_msg);
+        } else {
+            LOG_WARN(HealthManager, "Unable to apply direct heal event of " + std::to_string(heal_msg.amount))
+        }
+    });
+    m_damage_subscriber->register_callback([this](const Messages::ApplyDirectDamage& damage_msg) {
+        if (damage_msg.amount > 0) {
+            std::scoped_lock lock(m_damage_queue_lock);
+            m_damage_queue.push(damage_msg);
+        } else {
+            LOG_WARN(HealthManager, "Unable to apply direct damage event of " + std::to_string(damage_msg.amount))
+        }
+    });
 
     ////////////////////////////////////////////////////////
     m_initialized = true;
@@ -232,6 +250,18 @@ void HealthManager::apply_heal(std::list<code::client::messages::Heal>& incoming
 }
 
 void HealthManager::apply_heal(const code::client::messages::Heal& incoming) {
+    // This heal application function works in the following manner:
+    //  - Get the incoming heal event. 
+    //  - Run it on all of the health modules, they will modify the heal amount 
+    //  and/or type that gets applied
+    //  - After all of the modules have updated the heal event accordingly, 
+    //  create a direct heal event that gets applied to the health manager 
+    //  at the beginning of the next update call. 
+    //
+    //  This allows the heal events to get processed asynchronously on the 
+    //  HealthManager but helps avoid race conditions around killing blows. 
+    //  (i.e. damage to kill applied on the same frame as the heal to survive)
+
     // Filter the incoming heal through all of the modules
     code::client::messages::Heal heal = incoming;
 
@@ -269,7 +299,19 @@ void HealthManager::apply_damage(std::list<code::client::messages::Damage>& inco
 }
 
 void HealthManager::apply_damage(const code::client::messages::Damage& incoming) {
-    // Filter the incoming heal through all of the modules
+    // This damage application function works in the following manner:
+    //  - Get the incoming damage event. 
+    //  - Run it on all of the damage modules, they will modify the damage amount 
+    //  and/or type that gets applied
+    //  - After all of the modules have updated the damage event accordingly, 
+    //  if the damage amount is still greater than 0, create a direct damage event 
+    //  that gets applied to the health manager at the beginning of the next update call. 
+    //
+    //  This allows the damage events to get processed asynchronously on the 
+    //  HealthManager but helps avoid race conditions around killing blows. 
+    //  (i.e. damage to kill applied on the same frame as the heal to survive)
+
+    // Filter the incoming damage through all of the modules
     code::client::messages::Damage damage = incoming;
 
     const auto end = m_health_module.cend();

@@ -60,7 +60,6 @@ private:
     std::string m_uuid_string;
 
     std::shared_ptr<core::MessagePublisher<Messages::ApplyStatus>> m_apply_status_publisher;
-    std::shared_ptr<core::MessagePublisher<Messages::ClearStatus>> m_clear_status_publisher;
     std::shared_ptr<core::MessageSubscriber<Messages::ApplyDirectHeal>> m_heal_subscriber;
     std::shared_ptr<core::MessageSubscriber<Messages::ApplyDirectDamage>> m_damage_subscriber;
 

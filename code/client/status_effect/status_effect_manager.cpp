@@ -16,11 +16,24 @@ void StatusEffectManager::init_manager(core::MessageSwitchboard& switchboard) {
     m_clear_status_subscriber = std::make_shared<core::MessageSubscriber<Messages::ClearStatus>>(switchboard);
     m_heal_publisher = std::make_shared<core::MessagePublisher<Messages::ApplyDirectHeal>>(switchboard);
     m_damage_publisher = std::make_shared<core::MessagePublisher<Messages::ApplyDirectDamage>>(switchboard);
+
+    m_apply_status_subscriber->register_callback([this](const Messages::ApplyStatus& apply_msg) {
+        apply_status_effect(apply_msg.status_effect_name);
+    });
+    m_clear_status_subscriber->register_callback([this](const Messages::ClearStatus& clear_msg) {
+        if (clear_msg.status_owner_uuid.empty()) {
+            LOG_INFO(StatusEffectManager, "Clear all Statuses requested")
+            clear_all_status_effects();
+        } else {
+            clear_status_effect(clear_msg.status_owner_uuid);
+        }
+    });
 }
 
 bool StatusEffectManager::apply_status_effect(const std::string& status_id) {
     if (StatusEffectLibrary::get_Instance()->has_status_effect(status_id)) {
-        m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::APPLY, status_id, ""});
+        std::scoped_lock lock(m_pending_status_effect_actions_lock);
+        m_pending_status_effect_actions.push(StatusEffectAction{StatusEffectAction::APPLY, status_id, ""});
         return true;
     }
     
@@ -32,19 +45,30 @@ void StatusEffectManager::clear_status_effect(const std::string& status_uuid) {
     // Since the remove is light weight, the presence of the uuids is not validated 
     //  before adding them, since the storage container is a list the find is more 
     //  costly than an incorrect removal request.
-    m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::REMOVE, "", status_uuid});
+    std::scoped_lock lock(m_pending_status_effect_actions_lock);
+    m_pending_status_effect_actions.push(StatusEffectAction{StatusEffectAction::REMOVE, "", status_uuid});
 }
 
 void StatusEffectManager::clear_all_status_effects() {
-    m_pending_status_effect_actions.emplace_back(StatusEffectAction{StatusEffectAction::REMOVE_ALL, "", ""});
+    std::scoped_lock lock(m_pending_status_effect_actions_lock);
+    m_pending_status_effect_actions.push(StatusEffectAction{StatusEffectAction::REMOVE_ALL, "", ""});
 }
 
 void StatusEffectManager::update_manager(const std::chrono::milliseconds& dt) {
     // On the start of the update process all the pending actions
     // then call the update on the resulting list of m_status_effects
+
+    std::queue<StatusEffectAction> pending_actions;
+    {
+        // lock the pending queue and move it to a local so we can process it without locking other threads
+        std::scoped_lock(m_pending_status_effect_actions_lock);
+        std::swap(m_pending_status_effect_actions, pending_actions);
+    }
+
     {
         bool exit_loop = false;
-        for (const auto & action : m_pending_status_effect_actions) {
+        while (!pending_actions.empty()) {
+            const StatusEffectAction& action = pending_actions.front();
             switch(action.type) {
             case StatusEffectAction::APPLY:
                 add_status_effect(action.status_id);
@@ -62,9 +86,9 @@ void StatusEffectManager::update_manager(const std::chrono::milliseconds& dt) {
             if (exit_loop) {
                 break;
             }
+            pending_actions.pop();
         }
     }
-    m_pending_status_effect_actions.clear();
 
     // Loop through the Status Effects and update them
     for (auto & statusEffect : m_status_effects) {
