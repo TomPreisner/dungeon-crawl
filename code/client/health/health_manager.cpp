@@ -180,12 +180,15 @@ bool HealthManager::add_module(const std::string& uuid_owner, const std::string&
         return false;
     }
 
-    if (m_health_module.find(uuid_owner) == m_health_module.end()) {
-        LOG_INFO(HealthManager, "Adding modules for new uuid: " + uuid_owner);
-    }
+    {
+        std::scoped_lock(m_health_module_lock);
+        if (m_health_module.find(uuid_owner) == m_health_module.end()) {
+            LOG_INFO(HealthManager, "Adding modules for new uuid: " + uuid_owner);
+        }
 
-    std::shared_ptr<Module::HealthModule> health_module = Module::HealthModuleFactory::get_Instance()->create_health_module(module_name, data);
-    m_health_module[uuid_owner].emplace_back(health_module);
+        std::shared_ptr<Module::HealthModule> health_module = Module::HealthModuleFactory::get_Instance()->create_health_module(module_name, data);
+        m_health_module[uuid_owner].emplace_back(health_module);
+    }
     return true;
 }
 
@@ -195,26 +198,29 @@ bool HealthManager::remove_module(const std::string& uuid_owner, const std::stri
         return false;
     }
 
-    // This is an info and early out as opposed to an error because it is technically done.
-    if (m_health_module.find(uuid_owner) == m_health_module.end()) {
-        LOG_INFO(HealthManager, "No modules registered for uuid: " + uuid_owner);
-        return true;
-    }
-
-    auto& mod_list = m_health_module[uuid_owner];
-
     bool found = false;
-    for (auto iter = mod_list.begin(); iter != mod_list.end();) {
-        std::string iter_name = "";
-        Module::HealthModule* base_module = dynamic_cast<Module::HealthModule*>(iter->get());
-        if (base_module != nullptr) {
-            iter_name = base_module->get_module_name();
+    {
+        std::scoped_lock(m_health_module_lock);
+        // This is an info and early out as opposed to an error because it is technically done.
+        if (m_health_module.find(uuid_owner) == m_health_module.end()) {
+            LOG_INFO(HealthManager, "No modules registered for uuid: " + uuid_owner);
+            return true;
         }
-        if (!iter_name.empty() && iter_name == module_name) {
-            iter = mod_list.erase(iter);
-            found = true;
-        } else {
-            ++iter;
+
+        auto& mod_list = m_health_module[uuid_owner];
+
+        for (auto iter = mod_list.begin(); iter != mod_list.end();) {
+            std::string iter_name = "";
+            Module::HealthModule* base_module = dynamic_cast<Module::HealthModule*>(iter->get());
+            if (base_module != nullptr) {
+                iter_name = base_module->get_module_name();
+            }
+            if (!iter_name.empty() && iter_name == module_name) {
+                iter = mod_list.erase(iter);
+                found = true;
+            } else {
+                ++iter;
+            }
         }
     }
 
@@ -231,14 +237,17 @@ bool HealthManager::remove_modules_from_owner(const std::string& uuid_owner) {
         return false;
     }
 
-    // This is an info and early out as opposed to an error because it is technically done.
-    const auto iter = m_health_module.find(uuid_owner);
-    if (iter == m_health_module.cend()) {
-        LOG_INFO(HealthManager, "No modules registered for uuid: " + uuid_owner);
-        return true;
-    }
+    {
+        std::scoped_lock(m_health_module_lock);
+        // This is an info and early out as opposed to an error because it is technically done.
+        const auto iter = m_health_module.find(uuid_owner);
+        if (iter == m_health_module.cend()) {
+            LOG_INFO(HealthManager, "No modules registered for uuid: " + uuid_owner);
+            return true;
+        }
 
-    m_health_module.erase(iter);
+        m_health_module.erase(iter);
+    }
     return true;
 }
 
@@ -265,11 +274,15 @@ void HealthManager::apply_heal(const code::client::messages::Heal& incoming) {
     // Filter the incoming heal through all of the modules
     code::client::messages::Heal heal = incoming;
 
-    const auto end = m_health_module.cend();
-    for (auto iter = m_health_module.begin(); iter != end; ++iter) {
-        const auto mod_end = iter->second.cend();
-        for (auto mod_iter = iter->second.begin(); mod_iter != mod_end; ++mod_iter) {
-            (*mod_iter)->process_heal(heal);
+    {
+        std::scoped_lock(m_health_module_lock);
+
+        const auto end = m_health_module.cend();
+        for (auto iter = m_health_module.begin(); iter != end; ++iter) {
+            const auto mod_end = iter->second.cend();
+            for (auto mod_iter = iter->second.begin(); mod_iter != mod_end; ++mod_iter) {
+                (*mod_iter)->process_heal(heal);
+            }
         }
     }
 
@@ -314,11 +327,15 @@ void HealthManager::apply_damage(const code::client::messages::Damage& incoming)
     // Filter the incoming damage through all of the modules
     code::client::messages::Damage damage = incoming;
 
-    const auto end = m_health_module.cend();
-    for (auto iter = m_health_module.begin(); iter != end; ++iter) {
-        const auto mod_end = iter->second.cend();
-        for (auto mod_iter = iter->second.begin(); mod_iter != mod_end; ++mod_iter) {
-            (*mod_iter)->process_damage(damage);
+    {
+        std::scoped_lock(m_health_module_lock);
+
+        const auto end = m_health_module.cend();
+        for (auto iter = m_health_module.begin(); iter != end; ++iter) {
+            const auto mod_end = iter->second.cend();
+            for (auto mod_iter = iter->second.begin(); mod_iter != mod_end; ++mod_iter) {
+                (*mod_iter)->process_damage(damage);
+            }
         }
     }
 

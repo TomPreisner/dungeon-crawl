@@ -65,6 +65,7 @@ void StatusEffectManager::update_manager(const std::chrono::milliseconds& dt) {
         std::swap(m_pending_status_effect_actions, pending_actions);
     }
 
+    std::scoped_lock(m_status_effects_lock);
     {
         bool exit_loop = false;
         while (!pending_actions.empty()) {
@@ -105,6 +106,7 @@ void StatusEffectManager::add_status_effect(const std::string& status_id) {
         return;
     }
 
+    std::scoped_lock(m_status_effects_lock);
     LOG_DEBUG(StatusEffectManager, "Adding status: " + status_id + " uuid: " + status_effect->get_uuid());
     m_status_effects.emplace_back(status_effect.value());
     m_status_effects.back().assign_cleanup_callback([this](const std::string& uuid) {
@@ -113,6 +115,7 @@ void StatusEffectManager::add_status_effect(const std::string& status_id) {
 }
 
 void StatusEffectManager::remove_status_effect(const std::string& status_uuid) {
+    std::scoped_lock(m_status_effects_lock);
     const auto & end = m_status_effects.end();
     for (std::list<StatusEffect>::iterator iter = m_status_effects.begin(); iter != end; ++iter) {
         if (status_uuid == iter->get_uuid()) {
@@ -125,6 +128,7 @@ void StatusEffectManager::remove_status_effect(const std::string& status_uuid) {
 }
 
 void StatusEffectManager::remove_all_status_effects() {
+    std::scoped_lock(m_status_effects_lock);
     m_status_effects.clear();
 }
 

@@ -52,6 +52,7 @@ protected:
 
 private:
     HealthModuleMap m_health_module;
+    std::mutex m_health_module_lock;
     bool m_initialized = false;
 
     float m_total_health = 0.f;

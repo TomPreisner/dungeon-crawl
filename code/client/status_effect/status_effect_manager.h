@@ -62,6 +62,7 @@ private:
     //  These actions and status effects will be created and removed
     // regularly, so these are lists to allow for inser and removal easily
     std::list<StatusEffect> m_status_effects;
+    std::mutex m_status_effects_lock;
     std::queue<StatusEffectAction> m_pending_status_effect_actions;
     std::mutex m_pending_status_effect_actions_lock;
     bool m_initialized = false;
