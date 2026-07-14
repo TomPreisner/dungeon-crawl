@@ -9,6 +9,8 @@
 #include <optional>
 #include <queue>
 
+#include <iostream>
+
 namespace core {
 
 struct State {
@@ -51,9 +53,10 @@ void StateMachine<T>::init(const T& initState, const StateMap& states) {
 
 template<typename T>
 bool StateMachine<T>::request_transition(const T& state) {
+    /* Last change in should take precedence
     if (m_next_state.has_value()) {
         return false;
-    }
+    }*/
 
     m_next_state = state;
     return true;
@@ -63,7 +66,13 @@ template<typename T>
 void StateMachine<T>::update_tick(const std::chrono::milliseconds& dt) {
     if (!m_next_state.has_value()) {
         if (m_curr_state.has_value()) {
-            m_state_map[m_curr_state.value()].onUpdate(dt);
+            if (m_state_map[m_curr_state.value()].onUpdate) {
+                try {
+                    m_state_map[m_curr_state.value()].onUpdate(dt);
+                } catch (const std::bad_function_call& ex) {
+                    std::cerr << "Failed to clear status effect: " << std::string(ex.what()) << std::endl;
+                }
+            }
         }
     } else {
         if (m_curr_state.has_value()) {

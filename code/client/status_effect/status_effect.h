@@ -5,9 +5,12 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
 #include "code/client/status_effect/effect.h"
-#include "yaml-cpp/yaml.h"
+#include "code/client/status_effect/status_effect_callback_interface.h"
+#include "code/client/messages/proto/heal.pb.h"
 #include "code/core/state_machine.h"
+#include "yaml-cpp/yaml.h"
 
 namespace Status {
 enum class StatusEffectType {
@@ -30,10 +33,12 @@ public:
 
     StatusEffect(); // < needed for std container types
     StatusEffect(const YAML::Node& node);
+    StatusEffect(const StatusEffect& other);
     virtual ~StatusEffect() {}
 
-    // not technically needed, but will not clean itself up and must be managed actively
-    virtual void assign_cleanup_callback(std::function<void(const std::string&)> clear_self_from_owner);
+    virtual void assign_callback_interface(std::shared_ptr<StatusEffectCallbackInterface> interface) {
+        m_callback_interface = interface;
+    }
 
     virtual void on_heal(const float amt);
     virtual void on_damage(const float amt);
@@ -48,12 +53,13 @@ public:
     virtual void clear_status_effect() { m_state_machine.request_transition(StatusState::ENDED); }
 
     virtual std::string get_uuid() const { return m_uuid_string; }
+    virtual bool is_active() const { return m_is_active; }
 
 protected:
     virtual void clear_callback() { clear_status_effect(); }
-    virtual void heal_callback(float amount) { /* TODO: HEAL CHARACTER */ }
-    virtual void damage_callback(float amount) { /* TODO: DAMAGE CHARACTER */ }
-    virtual void augment_callback(float amount) { /* TODO: AUGMENT VALUE CHARACTER */ }
+    virtual void heal_callback(float amount, const code::client::messages::Heal::HealType heal_type);
+    virtual void damage_callback(float amount, const int32_t damage_flags);
+    virtual void augment_callback(float amount);
 
 protected:
     // Protected functions exposing functionality for unit tests only
@@ -75,6 +81,9 @@ private:
 
     void log_error(const std::string& message);
 
+    void init_state_machine();
+    void register_effect(Effect& effect);
+
     // state functions
     void Inactive_OnExit();
     void Active_OnEnter();
@@ -83,7 +92,9 @@ private:
     void Ended_OnEnter();
 
     // member variables
-    std::function<void(const std::string&)> m_clear_self;
+    //  The interface is owned by a different object, it is just referenced here so it can be called on that object
+    std::weak_ptr<StatusEffectCallbackInterface> m_callback_interface;
+
     core::StateMachine<StatusState> m_state_machine;
 
     StatusEffectType m_status_type = StatusEffectType::NONE;

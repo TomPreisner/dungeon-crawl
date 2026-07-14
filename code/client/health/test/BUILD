@@ -11,10 +11,13 @@ cc_test(
         "//code/client/modules/base:base_module",
         "//code/client/modules/health:damage_type_resist_health_module",
         "//code/client/modules/health:status_effect_immune_health_module",
+        "//code/client/status_effect:status_effect_library",
         "//code/core/message_system:message_system",
     ],
     data = [
         "//code/client/health/test/data:test_health_manager_data_yaml",
+        "//code/client/health/test/data:test_health_modules_yaml",
+        "//code/client/health/test/data:test_status_effect_library_data_yaml",
     ],
     size="small"
 )

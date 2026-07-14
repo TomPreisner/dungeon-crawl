@@ -64,7 +64,7 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
         }
     } else {
         LOG_INFO(HealthManager, "No \"health\" is present in the init data. Using the total_health by default");
-        m_health = m_total_health;
+        m_health = m_total_health.load();
     }
 
     // The health can't be less than zero (it can be zero i.e. dead)
@@ -111,12 +111,14 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
     }
 
     // Create the publisher and subscribers
+    m_health_change_publisher = std::make_shared<core::MessagePublisher<Messages::OnHealthChange>>(switchboard);
+    m_death_publisher = std::make_shared<core::MessagePublisher<Messages::OnDeath>>(switchboard);
     m_apply_status_publisher = std::make_shared<core::MessagePublisher<Messages::ApplyStatus>>(switchboard);
     m_heal_subscriber = std::make_shared<core::MessageSubscriber<Messages::ApplyDirectHeal>>(switchboard);
     m_damage_subscriber = std::make_shared<core::MessageSubscriber<Messages::ApplyDirectDamage>>(switchboard);
 
     m_heal_subscriber->register_callback([this](const Messages::ApplyDirectHeal& heal_msg) {
-        if (heal_msg.amount > 0) {
+        if (heal_msg.amount > 0 && !is_dead()) {
             std::scoped_lock lock(m_heal_queue_lock);
             m_heal_queue.push(heal_msg);
         } else {
@@ -124,7 +126,7 @@ bool HealthManager::init_manager(core::MessageSwitchboard& switchboard, const YA
         }
     });
     m_damage_subscriber->register_callback([this](const Messages::ApplyDirectDamage& damage_msg) {
-        if (damage_msg.amount > 0) {
+        if (damage_msg.amount > 0 && !is_dead()) {
             std::scoped_lock lock(m_damage_queue_lock);
             m_damage_queue.push(damage_msg);
         } else {
@@ -154,10 +156,16 @@ void HealthManager::update_manager(const std::chrono::milliseconds& dt) {
         std::swap(m_damage_queue, damage_queue);
     }
 
+    // If dead, do nothing, but do wipe the queues
+    if (is_dead()) {
+        return;
+    }
+
+    const float prev_health = m_health;
     // now that both queues are swapped, we can process the queues without worrying about things changing during operations
     while (!heal_queue.empty()) {
         float heal_amount = std::max(0.f, heal_queue.front().amount);
-        m_health = std::min(m_health + heal_amount, m_total_health);
+        m_health = std::min(m_health + heal_amount, m_total_health.load());
         heal_queue.pop();
     }
 
@@ -172,11 +180,20 @@ void HealthManager::update_manager(const std::chrono::milliseconds& dt) {
         damage_queue.pop();
     }
 
-    //TODO: BROADCAST DEATH
+    if (m_health != prev_health) {
+        Messages::OnHealthChange healthChange = {m_health-prev_health, m_health, m_uuid_string};
+        m_health_change_publisher->publish_message(healthChange);
+    }
+
+    if (m_health <= 0.f) {
+        Messages::OnDeath death = {damage_queue.front().damage_source_uuid};
+        m_death_publisher->publish_message(death);
+        m_state = State::DEAD;
+    }
 }
 
 bool HealthManager::add_module(const std::string& uuid_owner, const std::string& module_name, const YAML::Node& data) {
-    if (uuid_owner.empty()) {
+    if (uuid_owner.empty() || is_dead()) {
         return false;
     }
 
@@ -222,10 +239,15 @@ bool HealthManager::remove_module(const std::string& uuid_owner, const std::stri
                 ++iter;
             }
         }
-    }
 
-    if (!found) {
-        LOG_INFO(HealthManager, "Unable to remove module: \"" + module_name + "\" for uuid: \"" + uuid_owner + "\"");
+        if (found) {
+            // if the owner no longer has modules, remove it to prevent empty entries lingering
+            if (mod_list.size() == 0) {
+                m_health_module.erase(uuid_owner);
+            }
+        } else {
+            LOG_INFO(HealthManager, "Unable to remove module: \"" + module_name + "\" for uuid: \"" + uuid_owner + "\"");
+        } 
     }
 
     return found;
@@ -271,6 +293,11 @@ void HealthManager::apply_heal(const code::client::messages::Heal& incoming) {
     //  HealthManager but helps avoid race conditions around killing blows. 
     //  (i.e. damage to kill applied on the same frame as the heal to survive)
 
+    // if dead drop it on the floor
+    if (is_dead()) {
+        return;
+    }
+
     // Filter the incoming heal through all of the modules
     code::client::messages::Heal heal = incoming;
 
@@ -289,7 +316,7 @@ void HealthManager::apply_heal(const code::client::messages::Heal& incoming) {
     // heal the health
     if (heal.amount() > 0.f) {
         //delay the actual heal result until the next update loop
-        Messages::ApplyDirectHeal direct_heal = {heal.amount(), heal.type()};
+        Messages::ApplyDirectHeal direct_heal = {heal.amount(), heal.type(), heal.heal_source_uuid()};
 
         std::scoped_lock lock(m_heal_queue_lock);
         m_heal_queue.push(direct_heal);
@@ -324,6 +351,11 @@ void HealthManager::apply_damage(const code::client::messages::Damage& incoming)
     //  HealthManager but helps avoid race conditions around killing blows. 
     //  (i.e. damage to kill applied on the same frame as the heal to survive)
 
+    // if dead drop it on the floor
+    if (is_dead()) {
+        return;
+    }
+
     // Filter the incoming damage through all of the modules
     code::client::messages::Damage damage = incoming;
 
@@ -342,7 +374,7 @@ void HealthManager::apply_damage(const code::client::messages::Damage& incoming)
     // damage the health
     if (damage.amount() > 0.f) {
         //delay the actual damage result until the next update loop
-        Messages::ApplyDirectDamage direct_damage = {damage.amount(), damage.damage_type()};
+        Messages::ApplyDirectDamage direct_damage = {damage.amount(), damage.damage_type(), damage.damage_source_uuid()};
 
         std::scoped_lock lock(m_damage_queue_lock);
         m_damage_queue.push(direct_damage);

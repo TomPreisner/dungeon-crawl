@@ -4,6 +4,7 @@
 /********************************************************************/
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <list>
 #include <memory>
@@ -28,6 +29,11 @@
 //  poison resistence strips the poison status effect from the incoming damage.
 class HealthManager {
 public:
+    enum class State{
+        ACTIVE,
+        DEAD
+    };
+
     HealthManager();
     virtual ~HealthManager() {}
 
@@ -45,6 +51,10 @@ public:
     void apply_damage(std::list<code::client::messages::Damage>& incoming_list);
     void apply_damage(const code::client::messages::Damage& incoming);
 
+    const float get_total_health() const { return m_total_health; }
+    const float get_health() const { return m_health; }
+
+    const bool is_dead() const { return m_state == State::DEAD; }
 protected:
     typedef std::map<std::string, std::list<std::shared_ptr<Module::HealthModule>>> HealthModuleMap;
     virtual const HealthModuleMap& test_get_health_modules() const { return m_health_module; }
@@ -55,11 +65,14 @@ private:
     std::mutex m_health_module_lock;
     bool m_initialized = false;
 
-    float m_total_health = 0.f;
-    float m_health = 0.f;
+    std::atomic<State> m_state = State::ACTIVE; //< make this atomic to avoid thread issues
+    std::atomic<float> m_total_health = 0.f;
+    std::atomic<float> m_health = 0.f;
 
     std::string m_uuid_string;
 
+    std::shared_ptr<core::MessagePublisher<Messages::OnHealthChange>> m_health_change_publisher;
+    std::shared_ptr<core::MessagePublisher<Messages::OnDeath>> m_death_publisher;
     std::shared_ptr<core::MessagePublisher<Messages::ApplyStatus>> m_apply_status_publisher;
     std::shared_ptr<core::MessageSubscriber<Messages::ApplyDirectHeal>> m_heal_subscriber;
     std::shared_ptr<core::MessageSubscriber<Messages::ApplyDirectDamage>> m_damage_subscriber;
