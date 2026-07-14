@@ -1,7 +1,7 @@
 Ignite_V1:
   type: FIRE
-  update_rate_turns: 1
-  duration_turns: 10
+  update_rate_sec: 1
+  duration_sec: 10
   on_heal:
     - effect: HEAL
       amount: 2.0
@@ -19,7 +19,7 @@ Ignite_V1:
 
 Venom_V1:
   type: POISON
-  update_rate_turns: 2
+  update_rate_sec: 2
   on_heal:
     - effect: CLEAR
   on_damage:

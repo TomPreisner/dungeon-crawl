@@ -1,0 +1,62 @@
+TestData_Health_Manager:
+  total_health: 100
+  health: 75.0
+  default_modules:
+    - DefaultImmunity:
+        name: StatusEffectImmune
+        data:
+          status_type: POISON
+          percent_chance: 0.5
+    - DefaultResistance:
+        name: DamageResistAmount
+        data:
+          damage_type:
+            - PHYSICAL
+          amount: 2.5
+          partial_effect_amount: 1.4
+
+TestData_Health_Manager_Negative_Total:
+  total_health: -100
+  health: 75.0
+
+TestData_Health_Manager_Negative_Health:
+  total_health: 100
+  health: -75.0
+
+TestData_Health_Manager_Zero_Total:
+  total_health: 0
+  health: 75.0
+
+TestData_Health_Manager_Zero_Health:
+  total_health: 100
+  health: 0.0
+
+TestData_Health_Manager_Apply_Heal:
+  total_health: 100
+  health: 50.0
+  default_modules:
+    - DefaultResistance:
+        name: HealIncreaseAmount
+        data:
+          heal_type: POTION
+          amount: 7.5
+          partial_effect_amount: 3.4
+
+TestData_Health_Manager_Apply_Damage:
+  total_health: 100
+  health: 55.0
+  default_modules:
+    - DefaultResistance:
+        name: DamageResistAmount
+        data:
+          damage_type:
+            - PHYSICAL
+          amount: 2.5
+          partial_effect_amount: 1.4
+    - DefaultFireResistance:
+        name: DamageResistPercent
+        data:
+          damage_type:
+            - FIRE
+          amount: 0.5
+          partial_effect_amount: 0.2

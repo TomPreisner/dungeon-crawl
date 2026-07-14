@@ -14,13 +14,18 @@ cc_library(
 cc_library(
     name = "status_effect",
     srcs = ["status_effect.cpp"],
-    hdrs = ["status_effect.h"],
+    hdrs = [
+        "status_effect.h",
+        "status_effect_callback_interface.h"
+    ],
     deps = [
         "@boost.uuid",
         "@yaml-cpp",
         ":effect",
         "//code/core:log_manager",
         "//code/core:state_machine",
+        "//code/client/messages/proto:damage_cc_proto",
+        "//code/client/messages/proto:heal_cc_proto",
     ],
     visibility = ["//visibility:public"],
 )
@@ -45,7 +50,10 @@ cc_library(
         "@yaml-cpp",
         ":status_effect",
         ":status_effect_library",
+        "//code/client/messages:health_messages",
+        "//code/client/messages:status_messages",
         "//code/core:log_manager",
+        "//code/core/message_system:message_system",
     ],
     visibility = ["//visibility:public"],
 )

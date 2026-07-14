@@ -1,0 +1,64 @@
+/********************************************************************/
+/*                      Copyright 2026                              */
+/*           Created and Maintained by Thomas Preisner              */
+/********************************************************************/
+#include "heal_type_descriptor_base.h"
+
+#include "code/core/log_manager.h"
+
+namespace Module {
+CREATE_LOGGER(HealTypeDescriptor_Base);
+
+bool HealTypeDescriptor_Base::init_descriptor(const YAML::Node& node) {
+    if (!node.IsMap()) {
+        clear_values();
+        return false;
+    }
+
+    const YAML::Node& heal_type_node = node["heal_type"];    
+    if (!heal_type_node) {
+        LOG_ERROR(HealTypeDescriptor_Base, "\"heal_type\" is not present, skipping:\n" + YAML::Dump(node));
+        clear_values();
+        return false;
+    }
+
+    std::string heal_type;
+    try {
+        heal_type = heal_type_node.as<std::string>();
+    } catch (const YAML::TypedBadConversion<std::string>& e) {
+        LOG_ERROR(HealTypeDescriptor_Base, "Value in \"heal_type\" is not a string, skipping:\n" + YAML::Dump(heal_type_node));
+        clear_values();
+        return false;
+    }
+    code::client::messages::Heal::HealType value;
+    if (code::client::messages::Heal::HealType_Parse(heal_type, &value)) {
+        m_heal_type = value;
+    } else {
+        LOG_ERROR(HealTypeDescriptor_Base, "Invalid heal type: " + heal_type)
+        clear_values();
+        return false;
+    }
+    
+    const YAML::Node& amount_node = node["amount"];
+    if (!amount_node) {
+        LOG_ERROR(HealTypeDescriptor_Base, "\"amount\" is not present, skipping:\n" + YAML::Dump(node));
+        clear_values();
+        return false;
+    }
+    try {
+        m_amount = amount_node.as<float>();
+    } catch (const YAML::TypedBadConversion<float>& e) {
+        LOG_ERROR(HealTypeDescriptor_Base, "Value in \"amount\" is not a float, skipping:\n" + YAML::Dump(amount_node));
+        clear_values();
+        return false;
+    }
+
+    return true;
+}
+
+void HealTypeDescriptor_Base::clear_values() {
+    m_heal_type = std::nullopt;
+    m_amount = std::nullopt;
+}
+
+} // namespace Module

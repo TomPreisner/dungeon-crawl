@@ -51,35 +51,11 @@ std::optional<StatusEffectType> StatusEffect::convert_to_type(const YAML::Node& 
         return std::nullopt;
     }
 
-    return type;    
+    return type;
 }
 
 StatusEffect::StatusEffect() {
-    std::map<StatusState, core::State> stateMap = {
-    { StatusState::INACTIVE,
-      {
-        core::State::StateNoOp,
-        core::State::StateUpdateNoOp,
-        [&]() { return Inactive_OnExit(); }
-      }
-    },
-    { StatusState::ACTIVE,
-      {
-        [&]() { return Active_OnEnter(); },
-        [&](const std::chrono::milliseconds& dt) { return Active_OnUpdate(dt); },
-        [&]() { return Active_OnExit(); }
-      }
-    },
-    { StatusState::ENDED,
-      {
-        [&]() { return Ended_OnEnter(); },
-        core::State::StateUpdateNoOp,
-        core::State::StateNoOp
-      }
-    }
-    };
-
-    m_state_machine.init(StatusState::INACTIVE, stateMap);
+    init_state_machine();
 
     // Use the boost uuid library to create a uuid to uniquely identify this status effect instance
     boost::uuids::random_generator gen;
@@ -94,7 +70,7 @@ StatusEffect::StatusEffect(const YAML::Node& node)
         LOG_ERROR(StatusEffect, "Status Effect node is not a map, unable to initialize: " + YAML::Dump(node));
         return;
     }
-    
+
     const YAML::const_iterator itEnd = node.end();
     for (YAML::const_iterator iter = node.begin(); iter != itEnd; ++iter) {        
         std::string key;
@@ -114,18 +90,32 @@ StatusEffect::StatusEffect(const YAML::Node& node)
                 LOG_ERROR(StatusEffect, "Failed to convert \"type\", skipping: " + YAML::Dump(iter->second));
                 m_status_type = StatusEffectType::NONE;
             }
-        } else if (key == "update_rate_turns") {
-            extract_scalar(iter->second, "update_rate_turns", m_update_rate_turns);
-        } else if (key == "duration_turns") {
-            extract_scalar(iter->second, "duration_turns", m_duration_turns);
+        } else if (key == "update_rate_sec") {
+            float seconds = 0.f;
+            extract_scalar(iter->second, "update_rate_sec", seconds);
+            if (seconds >= 0) {
+                m_update_rate_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                        std::chrono::duration<float>(seconds));
+            } else {
+                LOG_ERROR(StatusEffect, "Invalid value for \"update_rate_sec\", skipping: " + YAML::Dump(iter->second));
+            }
+        } else if (key == "duration_sec") {
+            float seconds = 0.f;
+            extract_scalar(iter->second, "duration_sec", seconds);
+            if (seconds >= 0) {
+                m_duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                                    std::chrono::duration<float>(seconds));
+            } else {
+                LOG_ERROR(StatusEffect, "Invalid value for \"duration_sec\", skipping: " + YAML::Dump(iter->second));
+            }
         } else if (key == "vfx") {
-            // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
+            // NOTE: TODO: YAML does an implicit type conversion here so more validation is needed
             extract_scalar(iter->second, "vfx", m_vfx);
         } else if (key == "sfx") {
-            // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
+            // NOTE: TODO: YAML does an implicit type conversion here so more validation is needed
             extract_scalar(iter->second, "sfx", m_sfx);
         } else if (key == "icon") {
-            // NOTE: TODO: YAML does an implcit type conversion here so more validation is needed
+            // NOTE: TODO: YAML does an implicit type conversion here so more validation is needed
             extract_scalar(iter->second, "icon", m_icon_path);
         } else if (key == "on_heal") {
             extract_effect_sequence(iter->second, "on_heal", m_heal_effects);
@@ -139,39 +129,78 @@ StatusEffect::StatusEffect(const YAML::Node& node)
     }
 }
 
-void StatusEffect::extract_scalar(const YAML::Node& node, const std::string& value_key, int& value_out) {
-    int value = 0;
-    if (!node.IsScalar()) {
-        LOG_ERROR(StatusEffect, "Key \"" + value_key + "\" is not a scalar, skipping: " + YAML::Dump(node));
-        return;
+StatusEffect::StatusEffect(const StatusEffect& other) {
+    // due to the function pointer linkages in the effects and the state machine
+    //  a copy constructor is needed to point those items to the new object
+
+    m_status_type = other.m_status_type;
+    m_update_rate_ms = other.m_update_rate_ms;
+    m_duration_ms = other.m_duration_ms;
+    // Intentionally disregard current tick and last update
+    //    m_current_tick_ms = std::chrono::milliseconds(-1);
+    //    m_last_update_ms = std::chrono::milliseconds(-1);
+
+    // The effect lists need to be copied, but all of the effects need to be
+    //  reregistered to the new Status Effect Object
+    m_heal_effects = other.m_heal_effects;
+    for (auto iter = m_heal_effects.begin(); iter != m_heal_effects.end(); ++iter) {
+        register_effect(*iter);
     }
-    try {
-        value = node.as<int>();
-    } catch (const YAML::TypedBadConversion<int>& e) {
-        LOG_ERROR(StatusEffect, "Value in \"" + value_key + "\" is not an int, skipping: " + YAML::Dump(node));
-        return;
+
+    m_damage_effects = other.m_damage_effects;
+    for (auto iter = m_damage_effects.begin(); iter != m_damage_effects.end(); ++iter) {
+        register_effect(*iter);
     }
-    value_out = value;
+    
+    m_update_effects = other.m_update_effects;
+    for (auto iter = m_update_effects.begin(); iter != m_update_effects.end(); ++iter) {
+        register_effect(*iter);
+    }
+
+    m_vfx = other.m_vfx;
+    m_sfx = other.m_sfx;
+    m_icon_path = other.m_icon_path;
+
+    // Use the boost uuid library to create a uuid to uniquely identify this status effect instance
+    boost::uuids::random_generator gen;
+    boost::uuids::uuid id = gen();
+    m_uuid_string = boost::uuids::to_string(id);
+
+    init_state_machine();
 }
 
-void StatusEffect::extract_scalar(const YAML::Node& node, const std::string& value_key, std::string& value_out) {
-    std::string value;
-    if (!node.IsScalar()) {
-        LOG_ERROR(StatusEffect, "Key \"" + value_key + "\" is not a scalar, skipping: " + YAML::Dump(node));
-        return;
+
+void StatusEffect::init_state_machine() {
+    std::map<StatusState, core::State> stateMap = {
+    { StatusState::INACTIVE,
+      {
+        core::State::StateNoOp,
+        core::State::StateUpdateNoOp,
+        [this]() { return Inactive_OnExit(); }
+      }
+    },
+    { StatusState::ACTIVE,
+      {
+        [this]() { return Active_OnEnter(); },
+        [this](const std::chrono::milliseconds& dt) { return Active_OnUpdate(dt); },
+        [this]() { return Active_OnExit(); }
+      }
+    },
+    { StatusState::ENDED,
+      {
+        [this]() { return Ended_OnEnter(); },
+        core::State::StateUpdateNoOp,
+        core::State::StateNoOp
+      }
     }
-    try {
-        value = node.as<std::string>();
-    } catch (const YAML::TypedBadConversion<std::string>& e) {
-        LOG_ERROR(StatusEffect, "Value in \"" + value_key + "\" is not a string, skipping: " + YAML::Dump(node));
-        return;
-    }
-    value_out = value;
+    };
+
+    m_state_machine.init(StatusState::INACTIVE, stateMap);
 }
 
 void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::string& value_key, std::vector<Effect>& value_out) {
     if (!node.IsSequence()) {
-        LOG_ERROR(StatusEffect, "Key \"" + value_key + "\" is not a sequence, skipping: " + YAML::Dump(node));
+        log_error("Key \"" + value_key + "\" is not a sequence, skipping: " + YAML::Dump(node));
         return;
     }
 
@@ -182,46 +211,50 @@ void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::st
     const YAML::const_iterator itEnd = node.end();
     for (YAML::const_iterator iter = node.begin(); iter != itEnd; ++iter) {
         Effect effect(*iter);
-
-        switch (effect.get_effect_type()) {
-            case EffectType::NONE:
-                break;
-            case EffectType::CLEAR:
-                effect.RegisterCallback([this](float value) {
-                    clear_callback();
-                });
-                break;
-            case EffectType::DAMAGE:
-            case EffectType::DAMAGE_PERCENT:
-                effect.RegisterCallback([this](float value) {
-                    damage_callback(value);
-                });
-                break;
-            case EffectType::HEAL:
-            case EffectType::HEAL_PERCENT:
-                effect.RegisterCallback([this](float value) {
-                    heal_callback(value);
-                });
-                break;
-            case EffectType::MULTIPLY:
-                effect.RegisterCallback([this](float value) {
-                    augment_callback(value);
-                });
-                break;
-        }
-
+        register_effect(effect);
         value_out.push_back(effect);
     }
+}
+
+void StatusEffect::register_effect(Effect& effect) {
+    switch (effect.get_effect_type()) {
+        case EffectType::NONE:
+            break;
+        case EffectType::CLEAR:
+            effect.RegisterCallback([this](float value) {
+                clear_callback();
+            });
+            break;
+        case EffectType::DAMAGE:
+        case EffectType::DAMAGE_PERCENT:
+            effect.RegisterCallback([this](float value) {
+                damage_callback(value, 0/*const int32_t damage_flags*/);//TODO FIX
+            });
+            break;
+        case EffectType::HEAL:
+        case EffectType::HEAL_PERCENT:
+            effect.RegisterCallback([this](float value) {
+                heal_callback(value, code::client::messages::Heal::POTION/*const code::client::messages::Heal::HealType heal_type*/);//TODO FIX
+            });
+            break;
+        case EffectType::MULTIPLY:
+            effect.RegisterCallback([this](float value) {
+                augment_callback(value);//here
+            });
+            break;
+    }
+}
+
+void StatusEffect::log_error(const std::string& message) {
+    LOG_ERROR(StatusEffect, message);
 }
 
 ////////////////////////////////////////////////////////////
 // The meat of the Status Effect operation
 
 ////////////////////////////////////////////////////////////
-void StatusEffect::on_update() {
-    //< The tick rate is once per turn, so the tick rate doesn't matter
-    const std::chrono::milliseconds tick_rate(1);
-    m_state_machine.update_tick(tick_rate);
+void StatusEffect::on_update(const std::chrono::milliseconds& dt) {
+    m_state_machine.update_tick(dt);
 }
 
 ////////////////////////////////////////////////////////////
@@ -244,6 +277,33 @@ void StatusEffect::on_damage(const float amt) {
     }
 }
 
+void StatusEffect::heal_callback(float amount, const code::client::messages::Heal::HealType heal_type) {
+    if (m_callback_interface.expired()) {
+        LOG_ERROR(StatusEffect, std::string("Failed to process heal callback effect with uuid: ") + m_uuid_string);
+    } else {
+        std::shared_ptr<StatusEffectCallbackInterface> callback_interface = m_callback_interface.lock();
+        callback_interface->heal_callback(m_uuid_string, amount, heal_type);
+    }
+}
+
+void StatusEffect::damage_callback(float amount, const int32_t damage_flags) {
+    if (m_callback_interface.expired()) {
+        LOG_ERROR(StatusEffect, std::string("Failed to process damage callback effect with uuid: ") + m_uuid_string);
+    } else {
+        std::shared_ptr<StatusEffectCallbackInterface> callback_interface = m_callback_interface.lock();
+        callback_interface->damage_callback(m_uuid_string, amount, damage_flags);
+    }
+}
+
+void StatusEffect::augment_callback(float amount) {
+    if (m_callback_interface.expired()) {
+        LOG_ERROR(StatusEffect, std::string("Failed to process augment callback effect with uuid: ") + m_uuid_string);
+    } else {
+        std::shared_ptr<StatusEffectCallbackInterface> callback_interface = m_callback_interface.lock();
+        callback_interface->augment_callback(m_uuid_string, amount);
+    }
+}
+
 ////////////////////////////////////////////////////////////
 // State Machine callbacks
 void StatusEffect::Inactive_OnExit() {
@@ -252,20 +312,22 @@ void StatusEffect::Inactive_OnExit() {
 
 void StatusEffect::Active_OnEnter() {
     m_is_active = true;
-    m_current_tick = 0;
+    m_current_tick_ms = std::chrono::milliseconds(0);
+    m_last_update_ms = std::chrono::milliseconds(0);
 }
 
-void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {    
-    if (m_duration_turns >= 0 &&
-        m_current_tick >= m_duration_turns) {
+void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {
+    m_current_tick_ms += dt;
+    if (m_duration_ms.count() >= 0 &&
+        m_current_tick_ms >= m_duration_ms) {
         clear_status_effect();
-    } else if (m_update_rate_turns > 0 &&
-               m_current_tick % m_update_rate_turns == 0) {
+    } else if (m_update_rate_ms.count() > 0 &&
+               (m_current_tick_ms - m_last_update_ms) >= m_update_rate_ms) {
+        m_last_update_ms = m_current_tick_ms;
         for (auto & effect : m_update_effects ) {
             effect.process_effect(0.f);
         }
     }
-    ++m_current_tick;
 }
 
 void StatusEffect::Active_OnExit() {
@@ -273,8 +335,13 @@ void StatusEffect::Active_OnExit() {
     // TODO: stop start vfx and sfx?  
 }
 
-void StatusEffect::Ended_OnEnter() {  
-    // TODO: Request clear fom the status manager.
+void StatusEffect::Ended_OnEnter() {
+    if (m_callback_interface.expired()) {
+        LOG_ERROR(StatusEffect, std::string("Failed to clear status effect with uuid: ") + m_uuid_string);
+    } else {
+        std::shared_ptr<StatusEffectCallbackInterface> callback_interface = m_callback_interface.lock();
+        callback_interface->cleanup_callback(m_uuid_string);
+    }
 }
 
 ////////////////////////////////////////////////////////////
