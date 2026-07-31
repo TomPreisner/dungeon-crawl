@@ -53,7 +53,7 @@ TEST(HealTypeDescriptor_Base, Test_HealTypeDescriptorCreation_HealNotString) {
 
     EXPECT_TRUE(modules.IsMap());
 
-    YAML::Node test_heal_not_string = modules["TestData_HealNotString"];
+    YAML::Node test_heal_not_string = modules["TestData_HealString"];
     EXPECT_TRUE(test_heal_not_string);
     EXPECT_TRUE(test_heal_not_string.IsMap());
     HealTypeDescriptor_Base_Test test_case_heal_not_string;

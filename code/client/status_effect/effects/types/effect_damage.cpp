@@ -87,9 +87,10 @@ float Effect_Damage::process_effect(const EffectData& data) {
     }
 
     const float effect_value = m_amount.value();
+    const int32_t flags = m_damage_type.value();
 
     if (m_callback) {
-        m_callback(effect_value);
+        m_callback(effect_value, flags);
     }
 
     return effect_value;

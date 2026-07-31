@@ -152,7 +152,7 @@ TEST(Effect_Heal_Multiply, Test_EffectProcess) {
     int timesCalled = 0;
     // HEAL
     Effect_Heal_Multiply_Test test = Effect_Heal_Multiply_Test(effect_node[0]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(effect_test_value * 2.1f, value);
     });
@@ -168,7 +168,7 @@ TEST(Effect_Heal_Multiply, Test_EffectProcess) {
 
     // HEAL_MULTIPLY
     test = Effect_Heal_Multiply_Test(effect_node[1]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(effect_test_value * 1.2f, value);
     });

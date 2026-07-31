@@ -152,7 +152,7 @@ TEST(Effect_Heal, Test_EffectProcess) {
     int timesCalled = 0;
     // HEAL
     Effect_Heal_Test test = Effect_Heal_Test(effect_node[0]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(2.1f, value);
     });
@@ -168,7 +168,7 @@ TEST(Effect_Heal, Test_EffectProcess) {
 
     // HEAL
     test = Effect_Heal_Test(effect_node[1]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(1.2f, value);
     });

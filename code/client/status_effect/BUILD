@@ -10,7 +10,8 @@ cc_library(
     deps = [
         "@boost.uuid",
         "@yaml-cpp",
-        "//code/client/status_effect/effects:effect",
+        "//code/client/status_effect/effects:effect_base",
+        "//code/client/status_effect/effects:effect_factory",
         "//code/core:log_manager",
         "//code/core:state_machine",
         "//code/client/messages/proto:damage_cc_proto",

@@ -16,9 +16,9 @@ public:
     const bool public_test_has_valid_duration_ms() const { return test_has_valid_duration_ms(); }
     const std::chrono::milliseconds public_test_get_duration_ms() const { return test_get_duration_ms(); }
     const std::chrono::milliseconds public_test_get_current_tick_ms() const { return test_get_current_tick_ms(); }
-    const std::vector<Status::Effect>& public_test_get_heal_effects() const { return test_get_heal_effects(); }
-    const std::vector<Status::Effect>& public_test_get_damage_effects() const { return test_get_damage_effects(); }
-    const std::vector<Status::Effect>& public_test_get_update_effects() const { return test_get_update_effects(); }
+    const Effect_List& public_test_get_heal_effects() const { return test_get_heal_effects(); }
+    const Effect_List& public_test_get_damage_effects() const { return test_get_damage_effects(); }
+    const Effect_List& public_test_get_update_effects() const { return test_get_update_effects(); }
 
     virtual void clear_callback() override {
         ++m_clear_callback_count;
@@ -109,7 +109,6 @@ struct ExpectedResult {
     int clear_call_count = 0;
     int heal_call_count = 0;
     int damage_call_count = 0;
-    int augment_call_count = 0;
 };
 
 void StatusEffectProcessingTest(StatusEffect_Test& statusEffect, const int update_amount, ExpectedResult result) {
@@ -120,7 +119,6 @@ void StatusEffectProcessingTest(StatusEffect_Test& statusEffect, const int updat
     EXPECT_EQ(statusEffect.m_clear_callback_count, 0);
     EXPECT_EQ(statusEffect.m_heal_callback_count, 0);
     EXPECT_EQ(statusEffect.m_damage_callback_count, 0);
-    EXPECT_EQ(statusEffect.m_augment_callback_count, 0);
 
     EXPECT_NE(statusEffect.get_uuid(), "");
     statusEffect.on_update(update_rate);  //< update needs to be pumped once to prime the state machine
@@ -135,10 +133,16 @@ void StatusEffectProcessingTest(StatusEffect_Test& statusEffect, const int updat
     for (int i = 0; i < update_amount; ++i) {
         statusEffect.on_update(update_rate);
         if (i > 0 && i%3 == 0) {
-            statusEffect.on_heal(heal_amt);
+            code::client::messages::Heal test_heal;
+            test_heal.set_heal_type(code::client::messages::Heal::POTION);
+            test_heal.set_amount(heal_amt);
+            statusEffect.on_heal(test_heal);
         }
         if (i > 0 && i%4 == 0) {
-            statusEffect.on_damage(damage_amt);
+            code::client::messages::Damage test_damage;
+            test_damage.set_damage_type(code::client::messages::Damage::POISON);
+            test_damage.set_amount(damage_amt);
+            statusEffect.on_damage(test_damage);
         }
     }
 
@@ -146,7 +150,6 @@ void StatusEffectProcessingTest(StatusEffect_Test& statusEffect, const int updat
     EXPECT_EQ(statusEffect.m_clear_callback_count, result.clear_call_count);
     EXPECT_EQ(statusEffect.m_heal_callback_count,result.heal_call_count);
     EXPECT_EQ(statusEffect.m_damage_callback_count, result.damage_call_count);
-    EXPECT_EQ(statusEffect.m_augment_callback_count, result.augment_call_count);
 }
 
 TEST(StatusEffect, Test_StatusEffectProcessing) {
@@ -165,8 +168,7 @@ TEST(StatusEffect, Test_StatusEffectProcessing) {
         10500,  // tick_count
         0,      // clear_call_count
         6 + 10, // heal_call_count
-        10,     // damage_call_count
-        5       // augment_call_count
+        15,     // damage_call_count
     });
 
     // This is similar but since the type is invalid, the callbacks are not processed
@@ -182,7 +184,6 @@ TEST(StatusEffect, Test_StatusEffectProcessing) {
         1,      // clear_call_count
         0,      // heal_call_count
         0,      // damage_call_count
-        0       // augment_call_count
     });
 }
 
@@ -208,8 +209,7 @@ TEST(StatusEffect, Test_StatusEffectProcessing_Copy) {
         10500,  // tick_count
         0,      // clear_call_count
         6 + 10, // heal_call_count
-        10,     // damage_call_count
-        5       // augment_call_count
+        15,     // damage_call_count
     });
 
     // This is similar but since the type is invalid, the callbacks are not processed
@@ -228,7 +228,6 @@ TEST(StatusEffect, Test_StatusEffectProcessing_Copy) {
         1,      // clear_call_count
         0,      // heal_call_count
         0,      // damage_call_count
-        0       // augment_call_count
     });
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////

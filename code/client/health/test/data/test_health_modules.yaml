@@ -23,5 +23,6 @@ FirePercentResistence:
 PotionHealBuff:
   name: HealIncreaseAmount
   data:
-    heal_type: POTION
+    heal_type:
+      - POTION
     amount: 2.5

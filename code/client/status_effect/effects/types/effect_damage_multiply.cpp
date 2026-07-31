@@ -50,7 +50,7 @@ float Effect_Damage_Multiply::process_effect(const EffectData_Damage_Type& data)
         effect_value = data.amount * m_amount.value();
 
         if (m_callback) {
-            m_callback(effect_value);
+            m_callback(effect_value, data.damage_type);
         }
     }
     return effect_value;

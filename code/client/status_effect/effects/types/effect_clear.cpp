@@ -5,6 +5,7 @@
 #include "code/client/status_effect/effects/types/effect_clear.h"
 
 #include <algorithm>
+#include <stdint.h>
 #include <string>
 
 #include "code/core/log_manager.h"
@@ -34,8 +35,9 @@ float Effect_Clear::process_effect(const EffectData& data) {
     }
 
     const float effect_value = 0.f;
+    const int32_t flags = 0;
     if (m_callback) {
-        m_callback(effect_value);
+        m_callback(effect_value, flags);
     }
 
     return effect_value;

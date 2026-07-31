@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <optional>
+#include <stdint.h>
 #include "yaml-cpp/yaml.h"
 
 #include "code/client/status_effect/effects/effect_type.h"
@@ -18,7 +19,7 @@ public:
     Effect_Base() = default;
     virtual ~Effect_Base() = default;
 
-    virtual void RegisterCallback(std::function<void(float)> callback) { m_callback = callback; }  //< Not great, I need some checks
+    virtual void RegisterCallback(std::function<void(float, int32_t)> callback) { m_callback = callback; }  //< Not great, I need some checks
     virtual const EffectType get_effect_type() const { return m_effect_type; }
     virtual float process_effect(const EffectData& data) = 0;
 
@@ -36,7 +37,7 @@ protected:
     bool m_is_valid = false;
     EffectType m_effect_type = EffectType::NONE;
     std::optional<float> m_amount;
-    std::function<void(float)> m_callback;
+    std::function<void(float, int32_t)> m_callback;
 };
 
 } // namespace Status

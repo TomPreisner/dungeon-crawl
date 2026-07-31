@@ -51,7 +51,7 @@ float Effect_Heal_Multiply::process_effect(const EffectData_Heal_Type& data) {
         effect_value = data.amount * m_amount.value();
 
         if (m_callback) {
-            m_callback(effect_value);
+            m_callback(effect_value, data.heal_type);
         }
     }
     return effect_value;

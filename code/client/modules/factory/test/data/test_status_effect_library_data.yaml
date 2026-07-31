@@ -5,14 +5,19 @@ Ignite_V1:
   on_heal:
     - effect: HEAL
       amount: 2.0
+      heal_type:
+        - MAGIC
   on_damage:
-    - effect: MULTIPLY
+    - effect: DAMAGE_MULTIPLY
       amount: 1.5
   on_update:
     - effect: DAMAGE
       amount: 2.0
     - effect: HEAL
       amount: 2.0
+      heal_type:
+        - MAGIC
+        - HOLY
   vfx: "fire_effect.vfx"
   sfx: "fire_crackle.wav"
   icon: "flame_icon_small.png"
@@ -23,7 +28,7 @@ Venom_V1:
   on_heal:
     - effect: CLEAR
   on_damage:
-    - effect: MULTIPLY
+    - effect: DAMAGE_MULTIPLY
       amount: 1.5
   on_update:
     - effect: DAMAGE

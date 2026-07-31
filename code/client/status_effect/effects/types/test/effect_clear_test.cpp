@@ -83,7 +83,7 @@ TEST(Effect_Clear, Test_EffectProcess) {
     int timesCalled = 0;
     // NONE
     Effect_Clear_Test test = Effect_Clear_Test(effect_node[0]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(0.f, value);
     });
@@ -97,7 +97,7 @@ TEST(Effect_Clear, Test_EffectProcess) {
 
     // CLEAR
     test = Effect_Clear_Test(effect_node[1]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(0.f, value);
     });
@@ -111,7 +111,7 @@ TEST(Effect_Clear, Test_EffectProcess) {
 
     // CLEAR -- no amount listed
     test = Effect_Clear_Test(effect_node[2]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(0.f, value);
     });

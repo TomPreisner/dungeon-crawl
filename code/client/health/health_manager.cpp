@@ -316,7 +316,7 @@ void HealthManager::apply_heal(const code::client::messages::Heal& incoming) {
     // heal the health
     if (heal.amount() > 0.f) {
         //delay the actual heal result until the next update loop
-        Messages::ApplyDirectHeal direct_heal = {heal.amount(), heal.type(), heal.heal_source_uuid()};
+        Messages::ApplyDirectHeal direct_heal = {heal.amount(), heal.heal_type(), heal.heal_source_uuid()};
 
         std::scoped_lock lock(m_heal_queue_lock);
         m_heal_queue.push(direct_heal);

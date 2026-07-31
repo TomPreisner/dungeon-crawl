@@ -172,7 +172,7 @@ TEST(Effect_Damage_Multiply, Test_EffectProcess) {
     int timesCalled = 0;
     // DAMAGE
     Effect_Damage_Multiply_Test test = Effect_Damage_Multiply_Test(effect_node[0]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(effect_test_value * 4.1f, value);
     });
@@ -188,7 +188,7 @@ TEST(Effect_Damage_Multiply, Test_EffectProcess) {
 
     // DAMAGE_PERCENT
     test = Effect_Damage_Multiply_Test(effect_node[1]);
-    test.RegisterCallback([&](float value) { 
+    test.RegisterCallback([&](float value, int32_t flags) { 
         ++timesCalled;
         EXPECT_FLOAT_EQ(effect_test_value * 0.3f, value);
     });
