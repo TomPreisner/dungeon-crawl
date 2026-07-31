@@ -8,8 +8,8 @@
 #include <optional>
 #include "yaml-cpp/yaml.h"
 
-#include "effect_type.h"
-#include "effect_data.h"
+#include "code/client/status_effect/effects/effect_type.h"
+#include "code/client/status_effect/effects/effect_data.h"
 
 namespace Status {
 

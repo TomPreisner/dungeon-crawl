@@ -5,12 +5,12 @@
 
 #include "effect_factory.h"
 
-#include "effect_clear.h"
-#include "effect_damage.h"
-#include "effect_damage_multiply.h"
-#include "effect_heal.h"
-#include "effect_heal_multiply.h"
-#include "effect_type.h"
+#include "code/client/status_effect/effects/types/effect_clear.h"
+#include "code/client/status_effect/effects/types/effect_damage.h"
+#include "code/client/status_effect/effects/types/effect_damage_multiply.h"
+#include "code/client/status_effect/effects/types/effect_heal.h"
+#include "code/client/status_effect/effects/types/effect_heal_multiply.h"
+#include "code/client/status_effect/effects/effect_type.h"
 #include "code/core/log_manager.h"
 
 namespace Status {

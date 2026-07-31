@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "code/client/status_effect/effects/effect_damage_multiply.h"
+#include "code/client/status_effect/effects/types/effect_damage_multiply.h"
 #include "code/client/messages/proto/damage.pb.h"
 
 // This Test class is just being used to expose some functions to the 
@@ -22,7 +22,7 @@ public:
     }
 };
 
-std::string k_yaml_file = "code\\client\\status_effect\\effects\\test\\data\\test_effect_damage_multiply_data.yaml";
+std::string k_yaml_file = "code\\client\\status_effect\\effects\\types\\test\\data\\test_damage_mult_data.yaml";
 
 TEST(Effect_Damage_Multiply, Test_EffectCreation) {
     // A simple load of a yaml file and validate the contents

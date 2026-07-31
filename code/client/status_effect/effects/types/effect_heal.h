@@ -8,8 +8,8 @@
 #include <optional>
 #include "yaml-cpp/yaml.h"
 
-#include "base_effect.h"
-#include "effect_data.h"
+#include "code/client/status_effect/effects/base_effect.h"
+#include "code/client/status_effect/effects/effect_data.h"
 
 namespace Status {
 class EffectFactory;  //< forward declare the friend class

@@ -2,7 +2,7 @@
 /*                      Copyright 2026                              */
 /*           Created and Maintained by Thomas Preisner              */
 /********************************************************************/
-#include "code/client/status_effect/effects/effect_damage.h"
+#include "code/client/status_effect/effects/types/effect_damage.h"
 
 #include <algorithm>
 #include <cassert>
