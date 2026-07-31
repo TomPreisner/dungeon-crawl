@@ -25,7 +25,7 @@ public:
         StatusEffect::clear_callback();
     }
     // There is nothing to callback into for the context of these tests, so eat the call
-    virtual void heal_callback(float amount, const code::client::messages::Heal::HealType heal_type) override {
+    virtual void heal_callback(float amount, const int32_t heal_type) override {
         ++m_heal_callback_count;
     }
     virtual void damage_callback(float amount, const int32_t damage_flags) override {

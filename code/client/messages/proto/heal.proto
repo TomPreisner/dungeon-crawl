@@ -6,12 +6,14 @@ package code.client.messages;
 // [START messages]
 message Heal {
   enum HealType {
-    POTION = 0;
-    MAGIC = 1;
-    HOLY = 2;
+    NONE = 0;
+    POTION = 1;   // 1 << 0
+    MAGIC = 2;    // 1 << 1
+    HOLY = 4;     // 1 << 2
+    ALL = 7;      // 111   Update as needed and must be last
   }
 
-  HealType type = 1;
+  int32 heal_type = 1;
   float amount = 2;
   repeated string status_effect = 3; // optional application of status effects
 

@@ -226,20 +226,15 @@ void StatusEffect::register_effect(Effect& effect) {
             });
             break;
         case EffectType::DAMAGE:
-        case EffectType::DAMAGE_PERCENT:
+        case EffectType::DAMAGE_MULTIPLY:
             effect.RegisterCallback([this](float value) {
                 damage_callback(value, 0/*const int32_t damage_flags*/);//TODO FIX
             });
             break;
         case EffectType::HEAL:
-        case EffectType::HEAL_PERCENT:
+        case EffectType::HEAL_MULTIPLY:
             effect.RegisterCallback([this](float value) {
-                heal_callback(value, code::client::messages::Heal::POTION/*const code::client::messages::Heal::HealType heal_type*/);//TODO FIX
-            });
-            break;
-        case EffectType::MULTIPLY:
-            effect.RegisterCallback([this](float value) {
-                augment_callback(value);//here
+                heal_callback(value, code::client::messages::Heal::POTION/*const int32_t heal_type*/);//TODO FIX
             });
             break;
     }
@@ -277,7 +272,7 @@ void StatusEffect::on_damage(const float amt) {
     }
 }
 
-void StatusEffect::heal_callback(float amount, const code::client::messages::Heal::HealType heal_type) {
+void StatusEffect::heal_callback(float amount, const int32_t heal_type) {
     if (m_callback_interface.expired()) {
         LOG_ERROR(StatusEffect, std::string("Failed to process heal callback effect with uuid: ") + m_uuid_string);
     } else {

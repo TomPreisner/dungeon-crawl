@@ -5,38 +5,37 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 #include "yaml-cpp/yaml.h"
+
+#include "effect_type.h"
+#include "effect_data.h"
 
 namespace Status {
 
-enum class EffectType {
-    NONE,
-    CLEAR,
-    DAMAGE,
-    DAMAGE_PERCENT,
-    HEAL,
-    HEAL_PERCENT,
-    MULTIPLY
-};
-
-class Effect {
+class Effect_Base {
 public:
-    explicit Effect(const YAML::Node& node);
-    virtual ~Effect() {}
+    Effect_Base() = default;
+    virtual ~Effect_Base() = default;
 
     virtual void RegisterCallback(std::function<void(float)> callback) { m_callback = callback; }  //< Not great, I need some checks
     virtual const EffectType get_effect_type() const { return m_effect_type; }
-    virtual float process_effect(const float amt = 0.f);
+    virtual float process_effect(const EffectData& data) = 0;
+
+    virtual const bool is_valid() const = 0;
 
 protected:
     // Protected functions exposing functionality for unit tests only
-    const bool test_has_valid_amount() const { return m_amount >= 0.f; }
-    const float test_get_amount() const { return m_amount; }
-    const bool test_has_valid_callback() const { return (m_callback != nullptr); }
+    virtual const bool test_has_valid_amount() const { return m_amount.has_value(); }
+    virtual const float test_get_amount() const { return m_amount.value(); }
+    virtual const bool test_has_valid_callback() const { return (m_callback != nullptr); }
 
-private:
-    EffectType m_effect_type;
-    float m_amount = -1.0;
+    virtual void init(const YAML::Node& node);
+    virtual void clear_values();
+
+    bool m_is_valid = false;
+    EffectType m_effect_type = EffectType::NONE;
+    std::optional<float> m_amount;
     std::function<void(float)> m_callback;
 };
 

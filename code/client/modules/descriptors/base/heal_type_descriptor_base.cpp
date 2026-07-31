@@ -4,6 +4,7 @@
 /********************************************************************/
 #include "heal_type_descriptor_base.h"
 
+#include "code/client/messages/proto/heal.pb.h"
 #include "code/core/log_manager.h"
 
 namespace Module {
@@ -22,23 +23,35 @@ bool HealTypeDescriptor_Base::init_descriptor(const YAML::Node& node) {
         return false;
     }
 
-    std::string heal_type;
-    try {
-        heal_type = heal_type_node.as<std::string>();
-    } catch (const YAML::TypedBadConversion<std::string>& e) {
-        LOG_ERROR(HealTypeDescriptor_Base, "Value in \"heal_type\" is not a string, skipping:\n" + YAML::Dump(heal_type_node));
-        clear_values();
-        return false;
-    }
-    code::client::messages::Heal::HealType value;
-    if (code::client::messages::Heal::HealType_Parse(heal_type, &value)) {
-        m_heal_type = value;
-    } else {
-        LOG_ERROR(HealTypeDescriptor_Base, "Invalid heal type: " + heal_type)
+    if (!heal_type_node.IsSequence()) {
+        LOG_ERROR(HealTypeDescriptor_Base, "\"heal_type\" is not a sequence, skipping:\n" + YAML::Dump(heal_type_node));
         clear_values();
         return false;
     }
     
+    for (int i = 0; i < heal_type_node.size(); ++i) {
+        std::string heal_type;
+        try {
+            heal_type = heal_type_node[i].as<std::string>();
+        } catch (const YAML::TypedBadConversion<std::string>& e) {
+            LOG_ERROR(HealTypeDescriptor_Base, "A value in \"heal_type\" is not a string, skipping:\n" + YAML::Dump(heal_type_node));
+            clear_values();
+            return false;
+        }
+        code::client::messages::Heal::HealType value;
+        if (code::client::messages::Heal::HealType_Parse(heal_type, &value)) {
+            if (m_heal_type.has_value()) {
+                m_heal_type = m_heal_type.value() | value;
+            } else {
+                m_heal_type = value;
+            }
+        } else {
+            LOG_ERROR(HealTypeDescriptor_Base, "Invalid heal type: " + heal_type)
+            clear_values();
+            return false;
+        }
+    }
+
     const YAML::Node& amount_node = node["amount"];
     if (!amount_node) {
         LOG_ERROR(HealTypeDescriptor_Base, "\"amount\" is not present, skipping:\n" + YAML::Dump(node));

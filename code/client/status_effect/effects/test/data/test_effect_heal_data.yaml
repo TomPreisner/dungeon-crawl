@@ -1,0 +1,46 @@
+TestData_Create:
+  - effect: HEAL
+    amount: 2.1
+    heal_type:
+      - MAGIC
+      - HOLY
+  - effect: HEAL
+    amount: 2.1
+  - effect: HEAL
+    amount: 2.1
+    heal_type: POTION
+  - effect: HEAL
+    amount: 2.1
+    heal_type:
+      - FOOBAR
+  - effect: HEAL
+    amount: 1.2
+    heal_type:
+      - POTION
+  - effect: heal
+    amount: 3.0
+    heal_type:
+      - POTION
+  - effect: HEAL
+    amount: -7.0
+    heal_type:
+      - POTION
+  - effect: HEAL
+    amount: 5
+    heal_type:
+      - POTION
+  - effect: HEAL
+    amount: double
+    heal_type:
+      - POTION
+
+TestData_Process:
+  - effect: HEAL
+    amount: 2.1
+    heal_type:
+      - MAGIC
+      - HOLY
+  - effect: HEAL
+    amount: 1.2
+    heal_type:
+      - POTION

@@ -28,7 +28,7 @@ public:
     virtual void cleanup_callback(const std::string& status_uuid) override {
         m_clear_status(status_uuid);
     }
-    virtual void heal_callback(const std::string& status_uuid, const float amount, const code::client::messages::Heal::HealType heal_type) override {
+    virtual void heal_callback(const std::string& status_uuid, const float amount, const int32_t heal_type) override {
         Messages::ApplyDirectHeal heal {amount, heal_type, status_uuid};
         m_heal_event(heal);
     }

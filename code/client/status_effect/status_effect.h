@@ -6,9 +6,11 @@
 
 #include <chrono>
 #include <memory>
-#include "code/client/status_effect/effect.h"
+#include "code/client/status_effect/effects/base_effect.h"
+#include "code/client/status_effect/effects/effect.h"
+#include "code/client/status_effect/effects/effect_damage.h"
+#include "code/client/status_effect/effects/effect_heal.h"
 #include "code/client/status_effect/status_effect_callback_interface.h"
-#include "code/client/messages/proto/heal.pb.h"
 #include "code/core/state_machine.h"
 #include "yaml-cpp/yaml.h"
 
@@ -57,7 +59,7 @@ public:
 
 protected:
     virtual void clear_callback() { clear_status_effect(); }
-    virtual void heal_callback(float amount, const code::client::messages::Heal::HealType heal_type);
+    virtual void heal_callback(float amount, const int32_t heal_type);
     virtual void damage_callback(float amount, const int32_t damage_flags);
     virtual void augment_callback(float amount);
 
@@ -68,8 +70,8 @@ protected:
     const bool test_has_valid_duration_ms() const { return m_duration_ms.count() >= 0; }
     const std::chrono::milliseconds test_get_duration_ms() const { return m_duration_ms; }
     const std::chrono::milliseconds test_get_current_tick_ms() const { return m_current_tick_ms; }
-    const std::vector<Effect>& test_get_heal_effects() const { return m_heal_effects; }
-    const std::vector<Effect>& test_get_damage_effects() const { return m_damage_effects; }
+    const std::vector<Effect_Heal>& test_get_heal_effects() const { return m_heal_effects; }
+    const std::vector<Effect_Damage>& test_get_damage_effects() const { return m_damage_effects; }
     const std::vector<Effect>& test_get_update_effects() const { return m_update_effects; }
 
 private:
@@ -103,8 +105,8 @@ private:
     std::chrono::milliseconds m_current_tick_ms = std::chrono::milliseconds(-1);
     std::chrono::milliseconds m_last_update_ms = std::chrono::milliseconds(-1);
 
-    std::vector<Effect> m_heal_effects;
-    std::vector<Effect> m_damage_effects;
+    std::vector<Effect_Heal> m_heal_effects;
+    std::vector<Effect_Damage> m_damage_effects;
     std::vector<Effect> m_update_effects;
 
     std::string m_vfx;

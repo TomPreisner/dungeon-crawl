@@ -1,0 +1,54 @@
+TestData_Create:
+  - effect: DAMAGE_MULTIPLY
+    amount: 4.1
+    damage_type:
+      - POISON
+  - effect: DAMAGE_MULTIPLY
+    amount: 2.1
+    damage_type:
+      - FOOBAR
+  - effect: DAMAGE_MULTIPLY
+    amount: 2.1
+  - effect: DAMAGE_MULTIPLY
+    amount: 2.1
+    damage_type: FOOBAR
+  - effect: DAMAGE_MULTIPLY
+    amount: 0.3
+    damage_type:
+      - POISON
+  - effect: DAMAGE_MULTIPLY
+    amount: 1.2
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: damage_multiply
+    amount: 3.0
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: DAMAGE_MULTIPLY
+    amount: -7.0
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: DAMAGE_MULTIPLY
+    amount: 5
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: DAMAGE_MULTIPLY
+    amount: double
+    damage_type:
+      - PHYSICAL
+      - FIRE
+
+TestData_Process:
+  - effect: DAMAGE_MULTIPLY
+    amount: 4.1
+    damage_type:
+      - POISON
+  - effect: DAMAGE_MULTIPLY
+    amount: 0.3
+    damage_type:
+      - PHYSICAL
+      - FIRE

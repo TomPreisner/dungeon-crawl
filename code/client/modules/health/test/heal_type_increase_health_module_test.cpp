@@ -14,7 +14,7 @@ class HealTypeIncrease_HealthModule_Test : public Module::HealTypeIncrease_Healt
 public:
     HealTypeIncrease_HealthModule_Test(const std::string& name, const YAML::Node& data) : Module::HealTypeIncrease_HealthModule(name, data) {}
 
-    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() {
+    std::optional<int32_t> test_get_heal_type() {
         Module::HealTypeAmount_Descriptor* desc = get_descriptor<Module::HealTypeAmount_Descriptor>();
         if (desc != nullptr) {
             return desc->get_heal_type(); 

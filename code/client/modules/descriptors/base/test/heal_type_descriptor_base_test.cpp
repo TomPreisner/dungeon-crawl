@@ -12,7 +12,7 @@ class HealTypeDescriptor_Base_Test : public Module::HealTypeDescriptor_Base {
 public:
     HealTypeDescriptor_Base_Test() : HealTypeDescriptor_Base() {}
 
-    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() { return m_heal_type; }
+    std::optional<int32_t> test_get_heal_type() { return m_heal_type; }
     std::optional<float> test_get_amount() { return m_amount; }
 };
 

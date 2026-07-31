@@ -11,6 +11,7 @@ message Damage {
     MAGIC = 2;      // 1 << 1
     FIRE = 4;       // 1 << 2
     POISON = 8;     // 1 << 3
+    ALL = 15;       // 1111   Update as needed and must be last
   }
 
   int32 damage_type = 1;

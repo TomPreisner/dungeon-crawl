@@ -1,0 +1,16 @@
+TestData_Create:
+  - effect: NONE
+    amount: 2.0
+  - effect: FOO_BAR
+    amount: 2.0
+  - effect: foo_BAR
+  - effect: CLEAR
+    amount: 2.0
+  - effect: cLeAr
+
+TestData_Process:
+  - effect: NONE
+    amount: 1.2
+  - effect: CLEAR
+    amount: 1.2
+  - effect: CLEAR

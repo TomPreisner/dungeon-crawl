@@ -1,0 +1,54 @@
+TestData_Create:
+  - effect: DAMAGE
+    amount: 4.1
+    damage_type:
+      - POISON
+  - effect: DAMAGE
+    amount: 2.1
+    damage_type:
+      - FOOBAR
+  - effect: DAMAGE
+    amount: 2.1
+  - effect: DAMAGE
+    amount: 2.1
+    damage_type: FOOBAR
+  - effect: DAMAGE
+    amount: 0.3
+    damage_type:
+      - POISON
+  - effect: DAMAGE
+    amount: 1.2
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: damage
+    amount: 3.0
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: DAMAGE
+    amount: -7.0
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: DAMAGE
+    amount: 5
+    damage_type:
+      - PHYSICAL
+      - FIRE
+  - effect: DAMAGE
+    amount: double
+    damage_type:
+      - PHYSICAL
+      - FIRE
+
+TestData_Process:
+  - effect: DAMAGE
+    amount: 4.1
+    damage_type:
+      - POISON
+  - effect: DAMAGE
+    amount: 0.3
+    damage_type:
+      - PHYSICAL
+      - FIRE
