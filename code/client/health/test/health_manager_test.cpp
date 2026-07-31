@@ -202,10 +202,10 @@ TEST(HealthManager_Test, Test_HealthManager_ApplyHeal_Test) {
     EXPECT_FLOAT_EQ(health_manager->get_health(), 50.f);
 
     code::client::messages::Heal potion_heal;
-    potion_heal.set_type(code::client::messages::Heal::POTION);
+    potion_heal.set_heal_type(code::client::messages::Heal::POTION);
     potion_heal.set_amount(10.f);
     code::client::messages::Heal holy_heal;
-    holy_heal.set_type(code::client::messages::Heal::HOLY);
+    holy_heal.set_heal_type(code::client::messages::Heal::HOLY);
     holy_heal.set_amount(10.f);
 
     std::chrono::milliseconds dt(100);
@@ -462,7 +462,7 @@ TEST(HealthManager_Test, Test_HealthManager_MessagePublisher_Test) {
 
     // Test that the heal causes a health change
     code::client::messages::Heal holy_heal;
-    holy_heal.set_type(code::client::messages::Heal::HOLY);
+    holy_heal.set_heal_type(code::client::messages::Heal::HOLY);
     holy_heal.set_amount(10.f);
 
     health_manager->apply_heal(holy_heal);

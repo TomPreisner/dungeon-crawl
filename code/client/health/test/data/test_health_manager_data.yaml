@@ -35,10 +35,11 @@ TestData_Health_Manager_Apply_Heal:
   total_health: 100
   health: 50.0
   default_modules:
-    - DefaultResistance:
+    - AugmentHealing:
         name: HealIncreaseAmount
         data:
-          heal_type: POTION
+          heal_type:
+            - POTION
           amount: 7.5
           partial_effect_amount: 3.4
 

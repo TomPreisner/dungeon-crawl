@@ -12,7 +12,7 @@ class HealTypeDescriptor_Base_Test : public Module::HealTypeDescriptor_Base {
 public:
     HealTypeDescriptor_Base_Test() : HealTypeDescriptor_Base() {}
 
-    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() { return m_heal_type; }
+    std::optional<int32_t> test_get_heal_type() { return m_heal_type; }
     std::optional<float> test_get_amount() { return m_amount; }
 };
 
@@ -53,7 +53,7 @@ TEST(HealTypeDescriptor_Base, Test_HealTypeDescriptorCreation_HealNotString) {
 
     EXPECT_TRUE(modules.IsMap());
 
-    YAML::Node test_heal_not_string = modules["TestData_HealNotString"];
+    YAML::Node test_heal_not_string = modules["TestData_HealString"];
     EXPECT_TRUE(test_heal_not_string);
     EXPECT_TRUE(test_heal_not_string.IsMap());
     HealTypeDescriptor_Base_Test test_case_heal_not_string;

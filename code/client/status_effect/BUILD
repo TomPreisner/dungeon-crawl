@@ -1,17 +1,6 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 cc_library(
-    name = "effect",
-    srcs = ["effect.cpp"],
-    hdrs = ["effect.h"],
-    deps = [
-        "@yaml-cpp",
-        "//code/core:log_manager",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
     name = "status_effect",
     srcs = ["status_effect.cpp"],
     hdrs = [
@@ -21,7 +10,8 @@ cc_library(
     deps = [
         "@boost.uuid",
         "@yaml-cpp",
-        ":effect",
+        "//code/client/status_effect/effects:effect_base",
+        "//code/client/status_effect/effects:effect_factory",
         "//code/core:log_manager",
         "//code/core:state_machine",
         "//code/client/messages/proto:damage_cc_proto",

@@ -33,7 +33,7 @@ void HealTypeIncrease_HealthModule::process_heal(code::client::messages::Heal& i
         return; //< do nothing
     }
 
-    if (incoming.type() == desc->get_heal_type().value()) {
+    if (incoming.heal_type() == desc->get_heal_type().value()) {
         incoming.set_amount(incoming.amount() + desc->get_amount().value());
     }
 }

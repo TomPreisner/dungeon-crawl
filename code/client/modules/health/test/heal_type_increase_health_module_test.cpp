@@ -14,7 +14,7 @@ class HealTypeIncrease_HealthModule_Test : public Module::HealTypeIncrease_Healt
 public:
     HealTypeIncrease_HealthModule_Test(const std::string& name, const YAML::Node& data) : Module::HealTypeIncrease_HealthModule(name, data) {}
 
-    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() {
+    std::optional<int32_t> test_get_heal_type() {
         Module::HealTypeAmount_Descriptor* desc = get_descriptor<Module::HealTypeAmount_Descriptor>();
         if (desc != nullptr) {
             return desc->get_heal_type(); 
@@ -49,17 +49,17 @@ TEST(HealTypeIncrease_HealthModule, Test_HealTypeIncreaseModule_Simple_Apply) {
     EXPECT_FLOAT_EQ(test_case_simple.test_get_amount().value(), 2.5f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_simple.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 5.7f);
 
     code::client::messages::Heal test_heal_two;
-    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
+    test_heal_two.set_heal_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_simple.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.heal_type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     // Damage should not be affected
@@ -87,17 +87,17 @@ TEST(HealTypeIncrease_HealthModule, Test_HealTypeIncreaseModule_NoHeal_Apply) {
 
     // Nothing happens
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_heal.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     code::client::messages::Heal test_heal_two;
-    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
+    test_heal_two.set_heal_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_no_heal.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.heal_type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     code::client::messages::Damage test_output;
@@ -114,27 +114,27 @@ TEST(HealTypeIncrease_HealthModule, Test_HealTypeIncreaseModule_HealNotString_Ap
 
     EXPECT_TRUE(modules.IsMap());
 
-    YAML::Node test_heal_not_string = modules["TestData_HealNotString"];
+    YAML::Node test_heal_not_string = modules["TestData_HealString"];
     EXPECT_TRUE(test_heal_not_string);
     EXPECT_TRUE(test_heal_not_string.IsMap());
-    HealTypeIncrease_HealthModule_Test test_case_heal_not_string("TestData_HealNotString", test_heal_not_string);
-    EXPECT_EQ(test_case_heal_not_string.get_module_name(), "TestData_HealNotString");
+    HealTypeIncrease_HealthModule_Test test_case_heal_not_string("TestData_HealString", test_heal_not_string);
+    EXPECT_EQ(test_case_heal_not_string.get_module_name(), "TestData_HealString");
     EXPECT_FALSE(test_case_heal_not_string.test_get_heal_type().has_value());
     EXPECT_FALSE(test_case_heal_not_string.test_get_amount().has_value());
 
     // Nothing happens
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_heal_not_string.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     code::client::messages::Heal test_heal_two;
-    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
+    test_heal_two.set_heal_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_heal_not_string.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.heal_type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     code::client::messages::Damage test_output;
@@ -161,17 +161,17 @@ TEST(HealTypeIncrease_HealthModule, Test_HealTypeIncreaseModule_HealInvalidType_
 
     // Nothing happens
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_heal_invalid_type.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     code::client::messages::Heal test_heal_two;
-    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
+    test_heal_two.set_heal_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_heal_invalid_type.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.heal_type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     code::client::messages::Damage test_output;
@@ -198,17 +198,17 @@ TEST(HealTypeIncrease_HealthModule, Test_HealTypeIncreaseModule_No_Amount_Apply)
 
     // Nothing happens
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     code::client::messages::Heal test_heal_two;
-    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
+    test_heal_two.set_heal_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_no_amount.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.heal_type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     code::client::messages::Damage test_output;
@@ -235,17 +235,17 @@ TEST(HealTypeIncrease_HealthModule, Test_HealTypeIncreaseModule_Negative_Amount_
 
     // Nothing happens
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_negative_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     code::client::messages::Heal test_heal_two;
-    test_heal_two.set_type(code::client::messages::Heal::MAGIC);
+    test_heal_two.set_heal_type(code::client::messages::Heal::MAGIC);
     test_heal_two.set_amount(4.2f);
     test_case_negative_amount.process_heal(test_heal_two);
-    EXPECT_EQ(test_heal_two.type(), code::client::messages::Heal::MAGIC);
+    EXPECT_EQ(test_heal_two.heal_type(), code::client::messages::Heal::MAGIC);
     EXPECT_FLOAT_EQ(test_heal_two.amount(), 4.2f);
 
     code::client::messages::Damage test_output;

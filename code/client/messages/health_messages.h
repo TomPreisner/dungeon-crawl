@@ -14,7 +14,7 @@ namespace Messages {
 //  health, bypassing module checks
 struct ApplyDirectHeal {
     const float amount;
-    code::client::messages::Heal::HealType heal_type;
+    const int32_t heal_type; //< This is a bitfield
     std::string heal_source_uuid;
 };
 

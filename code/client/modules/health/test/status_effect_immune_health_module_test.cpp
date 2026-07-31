@@ -107,10 +107,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType) 
     
     // Healing should not be affected
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -165,10 +165,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType_I
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_Invalid.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -227,10 +227,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType_5
 
     // Healing should not be affected
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_50.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -285,10 +285,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType_N
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_NegativePercent.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -343,10 +343,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType_T
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_TooMuchPercent.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -401,10 +401,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType_Z
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_statusType_ZeroPercent.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();
@@ -459,10 +459,10 @@ TEST(StatusEffectImmune_HealthModule, Test_StatusEffectImmuneModule_StatusType_S
     EXPECT_EQ(test_output_two.status_effect(2), "Venom_V1");
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_StatusName.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 
     Status::StatusEffectLibrary::get_Instance()->shutdown();

@@ -5,14 +5,23 @@ GoldenCase:
   on_heal:
     - effect: HEAL
       amount: 2.0
+      heal_type:
+        - HOLY
   on_damage:
-    - effect: MULTIPLY
+    - effect: DAMAGE_MULTIPLY
       amount: 1.5
+      damage_type:
+        - POISON
   on_update:
     - effect: DAMAGE
       amount: 2.0
+      damage_type:
+        - PHYSICAL
+        - FIRE
     - effect: HEAL
       amount: 2.0
+      heal_type:
+        - MAGIC
   vfx: "fire_effect.vfx"
   sfx: "fire_crackle.wav"
   icon: "flame_icon_small.png"
@@ -26,6 +35,9 @@ InvalidType_notEnum:
   on_update:
     - effect: DAMAGE
       amount: 0.1
+      damage_type:
+        - PHYSICAL
+        - FIRE
   vfx: 15
   sfx: 12
   icon: true
@@ -37,9 +49,15 @@ InvalidType_notScalar:
     - amount: Value
   on_heal:
     - effect: CLEAR
-    - effect: MULTIPLY
+    - effect: HEAL_MULTIPLY
       amount: 1.5
+      heal_type:
+        - POTION
     - effect: DAMAGE
       amount: 0.1
+      damage_type:
+        - POISON
     - effect: HEAL
       amount: 4.1
+      heal_type:
+        - POTION

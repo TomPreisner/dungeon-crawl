@@ -1,0 +1,46 @@
+TestData_Create:
+  - effect: HEAL_MULTIPLY
+    amount: 2.1
+    heal_type:
+      - MAGIC
+      - HOLY
+  - effect: HEAL_MULTIPLY
+    amount: 2.1
+  - effect: HEAL_MULTIPLY
+    amount: 2.1
+    heal_type: POTION
+  - effect: HEAL_MULTIPLY
+    amount: 2.1
+    heal_type:
+      - FOOBAR
+  - effect: HEAL_MULTIPLY
+    amount: 1.2
+    heal_type:
+      - POTION
+  - effect: heal_multiply
+    amount: 3.0
+    heal_type:
+      - POTION
+  - effect: HEAL_MULTIPLY
+    amount: -7.0
+    heal_type:
+      - POTION
+  - effect: HEAL_MULTIPLY
+    amount: 5
+    heal_type:
+      - POTION
+  - effect: HEAL_MULTIPLY
+    amount: double
+    heal_type:
+      - POTION
+
+TestData_Process:
+  - effect: HEAL_MULTIPLY
+    amount: 2.1
+    heal_type:
+      - MAGIC
+      - HOLY
+  - effect: HEAL_MULTIPLY
+    amount: 1.2
+    heal_type:
+      - POTION

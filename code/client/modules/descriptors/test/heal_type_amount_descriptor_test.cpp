@@ -11,7 +11,7 @@ class HealTypeAmount_Descriptor_Test : public Module::HealTypeAmount_Descriptor 
 public:
     HealTypeAmount_Descriptor_Test() : HealTypeAmount_Descriptor() {}
 
-    std::optional<code::client::messages::Heal::HealType> test_get_heal_type() { return m_heal_type; }
+    std::optional<int32_t> test_get_heal_type() { return m_heal_type; }
     std::optional<float> test_get_amount() { return m_amount; }
 };
 
@@ -52,7 +52,7 @@ TEST(HealTypeAmount_Descriptor, Test_HealTypeAmountDescriptor_HealNotString_Appl
 
     EXPECT_TRUE(modules.IsMap());
 
-    YAML::Node test_heal_not_string = modules["TestData_HealNotString"];
+    YAML::Node test_heal_not_string = modules["TestData_HealString"];
     EXPECT_TRUE(test_heal_not_string);
     EXPECT_TRUE(test_heal_not_string.IsMap());
     HealTypeAmount_Descriptor_Test test_case_heal_not_string;

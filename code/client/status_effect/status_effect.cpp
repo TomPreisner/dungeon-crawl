@@ -14,6 +14,8 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include "code/core/log_manager.h"
+#include "code/client/status_effect/effects/effect_factory.h"
+#include "code/client/status_effect/effects/effect_data.h"
 
 namespace Status {
 CREATE_LOGGER(StatusEffect);
@@ -169,7 +171,6 @@ StatusEffect::StatusEffect(const StatusEffect& other) {
     init_state_machine();
 }
 
-
 void StatusEffect::init_state_machine() {
     std::map<StatusState, core::State> stateMap = {
     { StatusState::INACTIVE,
@@ -198,7 +199,7 @@ void StatusEffect::init_state_machine() {
     m_state_machine.init(StatusState::INACTIVE, stateMap);
 }
 
-void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::string& value_key, std::vector<Effect>& value_out) {
+void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::string& value_key, StatusEffect::Effect_List& value_out) {
     if (!node.IsSequence()) {
         log_error("Key \"" + value_key + "\" is not a sequence, skipping: " + YAML::Dump(node));
         return;
@@ -210,36 +211,31 @@ void StatusEffect::extract_effect_sequence(const YAML::Node& node, const std::st
     // For each element in the sequence create the effect
     const YAML::const_iterator itEnd = node.end();
     for (YAML::const_iterator iter = node.begin(); iter != itEnd; ++iter) {
-        Effect effect(*iter);
+        auto effect = EffectFactory::get_Instance()->create_effect(*iter);
         register_effect(effect);
         value_out.push_back(effect);
     }
 }
 
-void StatusEffect::register_effect(Effect& effect) {
-    switch (effect.get_effect_type()) {
+void StatusEffect::register_effect(std::shared_ptr<Effect_Base> effect) {
+    switch (effect->get_effect_type()) {
         case EffectType::NONE:
             break;
         case EffectType::CLEAR:
-            effect.RegisterCallback([this](float value) {
+            effect->RegisterCallback([this](float value, int32_t flags) {
                 clear_callback();
             });
             break;
         case EffectType::DAMAGE:
-        case EffectType::DAMAGE_PERCENT:
-            effect.RegisterCallback([this](float value) {
-                damage_callback(value, 0/*const int32_t damage_flags*/);//TODO FIX
+        case EffectType::DAMAGE_MULTIPLY:
+            effect->RegisterCallback([this](float value, int32_t flags) {
+                damage_callback(value, flags);
             });
             break;
         case EffectType::HEAL:
-        case EffectType::HEAL_PERCENT:
-            effect.RegisterCallback([this](float value) {
-                heal_callback(value, code::client::messages::Heal::POTION/*const code::client::messages::Heal::HealType heal_type*/);//TODO FIX
-            });
-            break;
-        case EffectType::MULTIPLY:
-            effect.RegisterCallback([this](float value) {
-                augment_callback(value);//here
+        case EffectType::HEAL_MULTIPLY:
+            effect->RegisterCallback([this](float value, int32_t flags) {
+                heal_callback(value, flags);
             });
             break;
     }
@@ -259,25 +255,27 @@ void StatusEffect::on_update(const std::chrono::milliseconds& dt) {
 
 ////////////////////////////////////////////////////////////
 // These can be called asynchronously outside of the update loop calls
-void StatusEffect::on_heal(const float amt) {
+void StatusEffect::on_heal(const code::client::messages::Heal& heal) {
     if (!m_is_active) {
         return;
     }
+
     for (auto & effect : m_heal_effects ) {
-        effect.process_effect(amt);
+        effect->process_effect(EffectData_Heal_Type(heal.amount(), heal.heal_type()));
     }
 }
 
-void StatusEffect::on_damage(const float amt) {
+void StatusEffect::on_damage(const code::client::messages::Damage& dmg) {
     if (!m_is_active) {
         return;
     }
+
     for (auto & effect : m_damage_effects ) {
-        effect.process_effect(amt);
+        effect->process_effect(EffectData_Damage_Type(dmg.amount(), dmg.damage_type()));
     }
 }
 
-void StatusEffect::heal_callback(float amount, const code::client::messages::Heal::HealType heal_type) {
+void StatusEffect::heal_callback(float amount, const int32_t heal_type) {
     if (m_callback_interface.expired()) {
         LOG_ERROR(StatusEffect, std::string("Failed to process heal callback effect with uuid: ") + m_uuid_string);
     } else {
@@ -325,7 +323,7 @@ void StatusEffect::Active_OnUpdate(const std::chrono::milliseconds& dt) {
                (m_current_tick_ms - m_last_update_ms) >= m_update_rate_ms) {
         m_last_update_ms = m_current_tick_ms;
         for (auto & effect : m_update_effects ) {
-            effect.process_effect(0.f);
+            effect->process_effect(EffectData(0.f));
         }
     }
 }

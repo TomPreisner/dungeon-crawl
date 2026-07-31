@@ -76,10 +76,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_Simple_A
 
     // Healing should not be affected
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_simple.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -126,10 +126,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_SimplePa
 
     // Healing should not be affected
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_simple_partial.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -203,10 +203,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_Multiple
 
     // Healing should not be affected
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_multi_damage.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -275,10 +275,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_Multiple
 
     // Healing should not be affected
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_multi_damage_partial.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -305,10 +305,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_NoDamage
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_damage.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -335,10 +335,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_NoAmount
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_no_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -365,10 +365,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_Negative
     EXPECT_FLOAT_EQ(test_output.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_negative_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -402,10 +402,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_PercentT
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_percent_too_large.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -439,10 +439,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_PercentP
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_percent_partial_negative.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -476,10 +476,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_PercentP
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_percent_partial_larger_than_amount.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 
@@ -513,10 +513,10 @@ TEST(DamageTypeResistPercent_Module, Test_DamageTypeResistPercentModule_PercentP
     EXPECT_FLOAT_EQ(test_output_two.amount(), 3.2f);
 
     code::client::messages::Heal test_heal;
-    test_heal.set_type(code::client::messages::Heal::POTION);
+    test_heal.set_heal_type(code::client::messages::Heal::POTION);
     test_heal.set_amount(3.2f);
     test_case_percent_partial_too_large.process_heal(test_heal);
-    EXPECT_EQ(test_heal.type(), code::client::messages::Heal::POTION);
+    EXPECT_EQ(test_heal.heal_type(), code::client::messages::Heal::POTION);
     EXPECT_FLOAT_EQ(test_heal.amount(), 3.2f);
 }
 

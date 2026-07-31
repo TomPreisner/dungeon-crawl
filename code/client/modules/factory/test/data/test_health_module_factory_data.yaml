@@ -17,7 +17,8 @@ TestData_Damage_Resist_Percent:
 TestData_Heal_Increase_Amount:
   name: HealIncreaseAmount
   data:
-    heal_type: POTION
+    heal_type:
+      - POTION
     amount: 2.5
 
 TestData_Status_Effect_Immune:

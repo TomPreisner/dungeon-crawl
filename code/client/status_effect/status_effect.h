@@ -6,9 +6,10 @@
 
 #include <chrono>
 #include <memory>
-#include "code/client/status_effect/effect.h"
-#include "code/client/status_effect/status_effect_callback_interface.h"
+#include "code/client/messages/proto/damage.pb.h"
 #include "code/client/messages/proto/heal.pb.h"
+#include "code/client/status_effect/effects/base_effect.h"
+#include "code/client/status_effect/status_effect_callback_interface.h"
 #include "code/core/state_machine.h"
 #include "yaml-cpp/yaml.h"
 
@@ -40,8 +41,8 @@ public:
         m_callback_interface = interface;
     }
 
-    virtual void on_heal(const float amt);
-    virtual void on_damage(const float amt);
+    virtual void on_heal(const code::client::messages::Heal& heal);
+    virtual void on_damage(const code::client::messages::Damage& dmg);
     virtual void on_update(const std::chrono::milliseconds& dt);
 
     virtual StatusEffectType get_type() const { return m_status_type; }
@@ -57,32 +58,34 @@ public:
 
 protected:
     virtual void clear_callback() { clear_status_effect(); }
-    virtual void heal_callback(float amount, const code::client::messages::Heal::HealType heal_type);
+    virtual void heal_callback(float amount, const int32_t heal_type);
     virtual void damage_callback(float amount, const int32_t damage_flags);
     virtual void augment_callback(float amount);
 
 protected:
+    typedef std::vector<std::shared_ptr<Effect_Base>> Effect_List;
+
     // Protected functions exposing functionality for unit tests only
     const bool test_has_valid_update_rate_ms() const { return m_update_rate_ms.count() >= 0; }
     const std::chrono::milliseconds test_get_update_rate_ms() const { return m_update_rate_ms; }
     const bool test_has_valid_duration_ms() const { return m_duration_ms.count() >= 0; }
     const std::chrono::milliseconds test_get_duration_ms() const { return m_duration_ms; }
     const std::chrono::milliseconds test_get_current_tick_ms() const { return m_current_tick_ms; }
-    const std::vector<Effect>& test_get_heal_effects() const { return m_heal_effects; }
-    const std::vector<Effect>& test_get_damage_effects() const { return m_damage_effects; }
-    const std::vector<Effect>& test_get_update_effects() const { return m_update_effects; }
+    const Effect_List& test_get_heal_effects() const { return m_heal_effects; }
+    const Effect_List& test_get_damage_effects() const { return m_damage_effects; }
+    const Effect_List& test_get_update_effects() const { return m_update_effects; }
 
 private:
     // Functions to extract values from the data.
     template<typename T>
     void extract_scalar(const YAML::Node& node, const std::string& value_key, T& value_out);
 
-    void extract_effect_sequence(const YAML::Node& node, const std::string& value_key, std::vector<Effect>& value_out);
+    void extract_effect_sequence(const YAML::Node& node, const std::string& value_key, Effect_List& value_out);
 
     void log_error(const std::string& message);
 
     void init_state_machine();
-    void register_effect(Effect& effect);
+    void register_effect(std::shared_ptr<Effect_Base> effect);
 
     // state functions
     void Inactive_OnExit();
@@ -103,9 +106,9 @@ private:
     std::chrono::milliseconds m_current_tick_ms = std::chrono::milliseconds(-1);
     std::chrono::milliseconds m_last_update_ms = std::chrono::milliseconds(-1);
 
-    std::vector<Effect> m_heal_effects;
-    std::vector<Effect> m_damage_effects;
-    std::vector<Effect> m_update_effects;
+    Effect_List m_heal_effects;
+    Effect_List m_damage_effects;
+    Effect_List m_update_effects;
 
     std::string m_vfx;
     std::string m_sfx;
