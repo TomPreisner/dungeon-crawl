@@ -60,7 +60,6 @@ protected:
     virtual void clear_callback() { clear_status_effect(); }
     virtual void heal_callback(float amount, const int32_t heal_type);
     virtual void damage_callback(float amount, const int32_t damage_flags);
-    virtual void augment_callback(float amount);
 
 protected:
     typedef std::vector<std::shared_ptr<Effect_Base>> Effect_List;
