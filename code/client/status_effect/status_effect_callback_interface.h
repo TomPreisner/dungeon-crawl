@@ -18,7 +18,6 @@ public:
     virtual void cleanup_callback(const std::string& status_uuid) = 0;
     virtual void heal_callback(const std::string& status_uuid, const float amount, const int32_t heal_type) = 0;
     virtual void damage_callback(const std::string& status_uuid, const float amount, const int32_t damage_flags) = 0;
-    virtual void augment_callback(const std::string& status_uuid, const float amount) = 0; // TODO, a work in progress of what needs to be sent
 };
  
 } // namespace Status

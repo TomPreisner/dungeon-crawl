@@ -293,15 +293,6 @@ void StatusEffect::damage_callback(float amount, const int32_t damage_flags) {
     }
 }
 
-void StatusEffect::augment_callback(float amount) {
-    if (m_callback_interface.expired()) {
-        LOG_ERROR(StatusEffect, std::string("Failed to process augment callback effect with uuid: ") + m_uuid_string);
-    } else {
-        std::shared_ptr<StatusEffectCallbackInterface> callback_interface = m_callback_interface.lock();
-        callback_interface->augment_callback(m_uuid_string, amount);
-    }
-}
-
 ////////////////////////////////////////////////////////////
 // State Machine callbacks
 void StatusEffect::Inactive_OnExit() {

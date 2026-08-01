@@ -22,7 +22,6 @@ public:
     void assign_clear_callback(std::function<void(const std::string&)> clear) { m_clear_status = clear; }
     void assign_heal_callback(std::function<void(const Messages::ApplyDirectHeal&)> heal) { m_heal_event = heal; }
     void assign_damage_callback(std::function<void(const Messages::ApplyDirectDamage&)> damage) { m_damage_event = damage; }
-    void assign_augment_callback(std::function<void(const std::string&)> augment) { m_augment_event = augment; }
 
     // No try catch for the function calls. This class is consumed only in this file, assume it won't be misused.
     virtual void cleanup_callback(const std::string& status_uuid) override {
@@ -36,16 +35,12 @@ public:
         Messages::ApplyDirectDamage damage {amount, damage_flags, status_uuid};
         m_damage_event(damage);
     }
-    virtual void augment_callback(const std::string& status_uuid, const float amount) override {
-        m_augment_event(status_uuid);
-    }
 
 private:
     // here there are function callbacks for certain functionality on the owner
     std::function<void(const std::string&)> m_clear_status;
     std::function<void(const Messages::ApplyDirectHeal&)> m_heal_event;
     std::function<void(const Messages::ApplyDirectDamage&)> m_damage_event;
-    std::function<void(const std::string&)> m_augment_event;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -80,9 +75,6 @@ void StatusEffectManager::init_manager(core::MessageSwitchboard& switchboard) {
     });
     callback->assign_damage_callback([this](const Messages::ApplyDirectDamage& damage) {
         add_outgoing_message(damage); //< add an outgoing message
-    });
-    callback->assign_augment_callback([this](const std::string& uuid) {
-        //Do nothing
     });
 
     m_callback_interface = callback;

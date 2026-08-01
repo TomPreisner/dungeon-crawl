@@ -31,14 +31,10 @@ public:
     virtual void damage_callback(float amount, const int32_t damage_flags) override {
         ++m_damage_callback_count;
     }
-    virtual void augment_callback(float amount) override {
-        ++m_augment_callback_count;
-    }
 
     int m_clear_callback_count = 0;
     int m_heal_callback_count = 0;
     int m_damage_callback_count = 0;
-    int m_augment_callback_count = 0;
 };
 
 std::string k_yaml_file = "code\\client\\status_effect\\test\\data\\test_status_effect_data.yaml";
