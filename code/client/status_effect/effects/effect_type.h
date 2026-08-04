@@ -16,6 +16,8 @@ enum class EffectType {
     DAMAGE_MULTIPLY,
     HEAL,
     HEAL_MULTIPLY,
+
+    COUNT
 };
 
 // the string is not a const and not a reference because it will be modified
