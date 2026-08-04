@@ -1,0 +1,26 @@
+TestData_Create:
+  - effect: NONE
+    amount: 2.0
+  - effect: FOO_BAR
+    amount: 2.0
+  - effect: CLEAR
+    amount: 2.0
+  - effect: DAMAGE
+    amount: 4.1
+    damage_type:
+      - POISON
+  - effect: DAMAGE_MULTIPLY
+    amount: 4.1
+    damage_type:
+      - POISON
+  - effect: HEAL
+    amount: 2.1
+    heal_type:
+      - MAGIC
+      - HOLY
+  - effect: HEAL_MULTIPLY
+    amount: 2.1
+    heal_type:
+      - MAGIC
+      - HOLY
+
